@@ -5,32 +5,22 @@
   Click to scroll to full reviews section
 {% endcomment %}
 <style>
-  /* Hide Yotpo widget to prevent duplicate stars - targets both product-meta and app blocks */
-  .product-meta .the-app-wrapper,
+  /* Hide Yotpo star rating widget ONLY in product info area (not the main review section at bottom) */
   .product-meta .yotpo-widget-instance,
   .product-meta .yotpo-bottomline,
-  .product-meta [class*="yotpo-bottom-line"],
-  .product-info__block-item--app .the-app-wrapper,
-  .product-info__block-item--app .yotpo-widget-instance,
-  .product-info__block-item[data-block-type="app"] .the-app-wrapper,
-  .product-info__block-item[data-block-id] .the-app-wrapper,
-  .shopify-app-block .the-app-wrapper,
+  .product-meta [class*="yotpo-bottom-line"] {
+    display: none !important;
+  }
+
+  /* Hide the Yotpo app block in product-info section only */
+  .product-form .product-info__block-item--app:has(.yotpo-reviews-star-ratings-widget),
+  .card .product-info__block-item--app:has(.yotpo-reviews-star-ratings-widget),
+  product-form .product-info__block-item[data-block-type="app"]:has(.yotpo-reviews-star-ratings-widget) {
+    display: none !important;
+  }
+
+  /* Target specific Yotpo star rating widget by ID (not the main reviews) */
   #shopify-block-AeUtvMlZNMUNJV1B6a__98e0b222-0db6-4ffd-b5dc-ac118cb6455e {
-    display: none !important;
-  }
-
-  /* Hide app block container that has Yotpo */
-  .product-info__block-item--app:has(.yotpo-widget-instance),
-  .product-info__block-item[data-block-type="app"]:has(.yotpo-widget-instance),
-  .product-info__block-item--app:has(.the-app-wrapper),
-  .product-info__block-item[data-block-type="app"]:has(.the-app-wrapper) {
-    display: none !important;
-  }
-
-  /* Hide loading state of app wrapper */
-  .the-app-wrapper.loading,
-  .the-app-wrapper.loading::before,
-  .the-app-wrapper.loading::after {
     display: none !important;
   }
 
@@ -325,11 +315,14 @@
       customRating.classList.add('loaded');
       hasLoaded = true;
 
-      // Hide the original Yotpo widgets and app wrapper
-      const elementsToHide = document.querySelectorAll('.the-app-wrapper, .yotpo-widget-instance, .yotpo-bottomline, [class*="yotpo-bottom-line"]');
-      elementsToHide.forEach(el => {
-        el.style.display = 'none';
-      });
+      // Hide the original Yotpo star rating widget ONLY in product info (not main reviews)
+      const productForm = document.querySelector('product-form, .product-form');
+      if (productForm) {
+        const elementsToHide = productForm.querySelectorAll('.yotpo-reviews-star-ratings-widget, .yotpo-widget-instance');
+        elementsToHide.forEach(el => {
+          el.style.display = 'none';
+        });
+      }
     }
   }
 
