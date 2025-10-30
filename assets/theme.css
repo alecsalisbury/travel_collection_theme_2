@@ -13360,3 +13360,7 @@ button[name="add"][disabled] {
   padding-left: 0 !important;
   padding-right: 0 !important;
 }
+
+.gm-tabs-left ul.gm-tab-links > li.gm-item.gm-has-submenu.gm-active > .gm-target > .gm-icon {
+  padding-left: 8px !important;
+}
