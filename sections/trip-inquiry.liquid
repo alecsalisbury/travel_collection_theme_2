@@ -615,8 +615,26 @@
       margin-bottom: 15px;
     }
 
-    .form-submit {
-      width: 100%;
+    /* Reorder last row on mobile so button appears at bottom */
+    .form-row--last {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Show fields in order: non-anglers input, textarea, then button */
+    .form-row--last .form-field:first-child {
+      display: flex;
+      flex-direction: column;
+      order: 1;
+    }
+
+    .form-row--last .form-field:last-child {
+      order: 2;
+    }
+
+    .form-row--last .form-submit {
+      order: 3;
+      margin-top: 15px;
     }
   }
 </style>
