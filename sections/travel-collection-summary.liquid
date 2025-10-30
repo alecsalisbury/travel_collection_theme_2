@@ -36,7 +36,11 @@
 
   # Determine if section should be shown
   assign show_section = false
-  if summary_content.value != blank or section.settings.default_content != blank
+  if has_custom_format and summary_html != blank
+    assign show_section = true
+  elsif summary_content.value != blank and has_custom_format == false
+    assign show_section = true
+  elsif section.settings.default_content != blank
     assign show_section = true
   endif
 -%}
