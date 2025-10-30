@@ -172,7 +172,11 @@
   // Yotpo API configuration
   const YOTPO_APP_KEY = 'OoIPsp7sWXUEAUt03yK0HAtt';
   const productId = {{ product.id | json }};
+  const productHandle = {{ product.handle | json }};
   const shopDomain = {{ shop.permanent_domain | json }};
+
+  console.log('[CUSTOM RATING API] Product ID:', productId);
+  console.log('[CUSTOM RATING API] Product Handle:', productHandle);
 
   // Store loaded state globally to persist across variant changes
   if (!window.customRatingState) {
