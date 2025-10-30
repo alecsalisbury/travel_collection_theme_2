@@ -320,7 +320,7 @@
 
   let hasLoaded = false;
   let attemptsMade = 0;
-  const maxAttempts = 5; // Total attempts before giving up (within 2 seconds)
+  const maxAttempts = 15; // Total attempts before giving up (within 5 seconds)
 
   function updateCustomRating() {
     if (hasLoaded) return;
@@ -459,17 +459,23 @@
     subtree: true
   });
 
-  // Fallback timeouts - give up after 2 seconds
-  setTimeout(updateCustomRating, 500);
+  // Fallback timeouts - give up after 5 seconds with more frequent checks
+  setTimeout(updateCustomRating, 300);
+  setTimeout(updateCustomRating, 600);
   setTimeout(updateCustomRating, 1000);
   setTimeout(updateCustomRating, 1500);
   setTimeout(updateCustomRating, 2000);
+  setTimeout(updateCustomRating, 2500);
+  setTimeout(updateCustomRating, 3000);
+  setTimeout(updateCustomRating, 3500);
+  setTimeout(updateCustomRating, 4000);
+  setTimeout(updateCustomRating, 5000);
 
   // Listen for Yotpo events
   document.addEventListener('yotpo.bottomline.loaded', updateCustomRating);
   window.addEventListener('yotpo.initialized', updateCustomRating);
 
-  // Cleanup observer after 2 seconds
-  setTimeout(() => observer.disconnect(), 2000);
+  // Cleanup observer after 5 seconds
+  setTimeout(() => observer.disconnect(), 5000);
 })();
 </script>
