@@ -170,6 +170,11 @@
         "type": "shopify://apps/turbo-speed-boost-pasilobus/blocks/turbo/b60f64a7-2618-4d56-876c-fcf619939a47",
         "disabled": false,
         "settings": {}
+      },
+      "14060646107696862457": {
+        "type": "shopify://apps/judge-me-reviews/blocks/judgeme_core/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+        "disabled": false,
+        "settings": {}
       }
     }
   },
