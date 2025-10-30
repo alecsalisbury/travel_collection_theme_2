@@ -156,10 +156,19 @@
 
     // Product data from Liquid
     const productsData = '{{ mapped_products }}';
+    console.log('Raw products data:', productsData);
 
     // Parse product data
     const products = productsData.split('|').map(function(item) {
+      console.log('Processing item:', item);
       const parts = item.split('|||');
+      console.log('Parts:', parts);
+
+      if (parts.length < 5) {
+        console.error('Not enough parts in item:', item);
+        return null;
+      }
+
       const coords = parts[1].split(',');
 
       return {
@@ -171,8 +180,10 @@
         image: parts[4]
       };
     }).filter(function(product) {
-      return !isNaN(product.lat) && !isNaN(product.lng);
+      return product && !isNaN(product.lat) && !isNaN(product.lng);
     });
+
+    console.log('Parsed products:', products);
 
     // Initialize map with scroll wheel zoom disabled and dragging enabled
     const map = L.map('travel-collection-map', {
