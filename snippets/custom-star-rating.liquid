@@ -1,28 +1,26 @@
 {% comment %}
-  Custom Star Rating Display
-  Extracts review data from Yotpo widget on page load
-  Displays stars and count when reviews are available
-  Click to scroll to full reviews section
+  Custom Star Rating Display - NO LONGER USED
+  Now using product-rating.liquid with skeleton loader instead
 {% endcomment %}
 <style>
-  /* Hide Yotpo star rating widget ONLY in product info area (not the main review section at bottom) */
+  /* DISABLED - No longer hiding Yotpo widget, using it with skeleton instead */
+  /*
   .product-meta .yotpo-widget-instance,
   .product-meta .yotpo-bottomline,
   .product-meta [class*="yotpo-bottom-line"] {
     display: none !important;
   }
 
-  /* Hide the entire app block container that has Yotpo star rating widget */
   .product-info__block-item[data-block-type="@app"]:has(.yotpo-reviews-star-ratings-widget),
   .product-info__block-item--\@app:has(.yotpo-reviews-star-ratings-widget),
   [class*="product-info__block-item"][data-block-id*="98e0b222-0db6-4ffd-b5dc-ac118cb6455e"] {
     display: none !important;
   }
 
-  /* Target specific Yotpo star rating widget by ID (not the main reviews) */
   #shopify-block-AeUtvMlZNMUNJV1B6a__98e0b222-0db6-4ffd-b5dc-ac118cb6455e {
     display: none !important;
   }
+  */
 
   .custom-star-rating {
     display: flex; /* Show immediately with placeholder */
