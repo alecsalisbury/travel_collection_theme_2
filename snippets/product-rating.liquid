@@ -1,22 +1,17 @@
-{% comment %}
-  Product Rating using Yotpo API
-  Fetches rating data directly from Yotpo CDN API
-{% endcomment %}
-
-{%- assign yotpo_app_key = "OoIPsp7sWXUEAUt03yK0HAtt" -%}
-{%- assign product_id = product.id -%}
-
 <style>
   /* Skeleton loader for rating */
   .rating-wrapper {
     position: relative;
-    min-height: 20px;
   }
 
   .rating-skeleton {
+    position: absolute;
+    top: 0;
+    left: 0;
     display: flex;
     align-items: center;
     gap: 8px;
+    z-index: 1;
   }
 
   .rating-skeleton__stars {
@@ -77,46 +72,25 @@
     display: none;
   }
 
-  /* Rating display */
+  /* Show rating immediately, no hiding */
   .rating-wrapper .rating {
-    display: none;
+    opacity: 1;
+    display: flex;
     align-items: center;
     gap: 8px;
   }
 
+  .rating-wrapper:not(.loaded) .rating {
+    /* Keep visible but show skeleton on top */
+    position: relative;
+  }
+
   .rating-wrapper.loaded .rating {
-    display: flex;
-  }
-
-  .rating__stars {
-    display: flex;
-    gap: 2px;
-  }
-
-  .rating__star {
-    width: 16px;
-    height: 16px;
-  }
-
-  .rating__star--full svg path {
-    fill: #ffa500;
-  }
-
-  .rating__star--half svg path {
-    fill: url(#rating-star-gradient-half);
-  }
-
-  .rating__star--empty svg path {
-    fill: rgba(0, 0, 0, 0.1);
-  }
-
-  .rating__caption {
-    font-size: 14px;
-    color: #666;
+    opacity: 1;
   }
 </style>
 
-<div class="rating-wrapper" data-product-id="{{ product_id }}" data-yotpo-app-key="{{ yotpo_app_key }}">
+<div class="rating-wrapper">
   <!-- Skeleton placeholder -->
   <div class="rating-skeleton">
     <div class="rating-skeleton__stars">
@@ -149,187 +123,109 @@
     <div class="rating-skeleton__text"></div>
   </div>
 
-  <!-- Actual rating content (populated by JavaScript) -->
-  <div class="rating">
-    <div class="rating__stars" role="img"></div>
-    <span class="rating__caption"></span>
-  </div>
+  <!-- Actual rating content -->
+  {%- if product.metafields.reviews.rating.value != blank -%}
+    {%- assign rating_decimal = 0 -%}
+    {%- assign decimal = product.metafields.reviews.rating.value.rating | modulo: 1 -%}
+
+    {%- if decimal >= 0.3 and decimal <= 0.7 -%}
+      {%- assign rating_decimal = 0.5 -%}
+    {%- elsif decimal > 0.7 -%}
+      {%- assign rating_decimal = 1 -%}
+    {%- endif -%}
+
+    <div class="rating">
+      <div class="rating__stars" role="img" aria-label="{{ 'general.accessibility.star_reviews_info' | t: rating_value: product.metafields.reviews.rating.value, rating_max: product.metafields.reviews.rating.value.scale_max }}">
+        {%- assign rating_as_float = product.metafields.reviews.rating.value.rating | times: 1.0 -%}
+
+        {%- for i in (product.metafields.reviews.rating.value.scale_min..product.metafields.reviews.rating.value.scale_max) -%}
+          {%- if rating_as_float >= i -%}
+            {%- render 'icon' with 'rating-star', class: 'rating__star rating__star--full' -%}
+          {%- else -%}
+            {%- if rating_decimal == 0.5 -%}
+              {%- render 'icon' with 'rating-star-half', class: 'rating__star rating__star--half' -%}
+            {%- elsif rating_decimal == 1 -%}
+              {%- render 'icon' with 'rating-star', class: 'rating__star rating__star--full' -%}
+            {%- else -%}
+              {%- render 'icon' with 'rating-star', class: 'rating__star rating__star--empty' -%}
+            {%- endif -%}
+
+            {%- assign rating_decimal = false -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+      <span class="rating__caption">{{ 'product.general.reviews_count' | t: count: product.metafields.reviews.rating_count.value }}</span>
+    </div>
+  {%- else -%}
+    <div class="rating">
+      <div class="rating__stars" role="img" aria-label="{{ 'general.accessibility.star_reviews_info' | t: rating_value: 0, rating_max: 5 }}">
+        {%- for i in (1..5) -%}
+          {%- render 'icon' with 'rating-star', class: 'rating__star rating__star--empty' -%}
+        {%- endfor -%}
+      </div>
+
+      <span class="rating__caption">{{ 'product.general.reviews_count' | t: count: 0 }}</span>
+    </div>
+  {%- endif -%}
 </div>
 
 <script>
 (function() {
-  console.log('[YOTPO DEBUG] ========== INITIALIZATION START ==========');
+  console.log('[RATING SKELETON] Initializing...');
 
   const wrapper = document.querySelector('.rating-wrapper');
   if (!wrapper) {
-    console.error('[YOTPO DEBUG] ❌ No wrapper found');
+    console.log('[RATING SKELETON] No wrapper found');
     return;
   }
 
-  const appKey = wrapper.getAttribute('data-yotpo-app-key');
-  const productId = wrapper.getAttribute('data-product-id');
+  // Check if rating content already has data
+  const ratingElement = wrapper.querySelector('.rating');
+  if (ratingElement) {
+    const hasStars = ratingElement.querySelector('.rating__star--full, .rating__star--half');
+    const hasCaption = ratingElement.querySelector('.rating__caption');
 
-  console.log('[YOTPO DEBUG] 🔑 App Key:', appKey);
-  console.log('[YOTPO DEBUG] 🆔 Product ID:', productId);
-
-  if (!appKey || !productId) {
-    console.error('[YOTPO DEBUG] ❌ Missing required data - App Key:', !!appKey, 'Product ID:', !!productId);
-    wrapper.classList.add('loaded');
-    return;
+    if (hasStars || (hasCaption && hasCaption.textContent.trim())) {
+      console.log('[RATING SKELETON] Rating already loaded, showing immediately');
+      wrapper.classList.add('loaded');
+      return;
+    }
   }
 
-  // Fetch rating data from Yotpo API
-  const apiUrl = `https://api-cdn.yotpo.com/products/${appKey}/${productId}/bottomline`;
+  // Watch for when Yotpo metafields populate the rating
+  const observer = new MutationObserver(function(mutations) {
+    console.log('[RATING SKELETON] Mutation detected');
 
-  console.log('[YOTPO DEBUG] 🌐 API URL:', apiUrl);
-  console.log('[YOTPO DEBUG] 📡 Starting API fetch...');
+    const ratingElement = wrapper.querySelector('.rating');
+    if (ratingElement) {
+      const hasStars = ratingElement.querySelector('.rating__star--full, .rating__star--half');
+      const hasCaption = ratingElement.querySelector('.rating__caption');
 
-  fetch(apiUrl)
-    .then(function(response) {
-      console.log('[YOTPO DEBUG] ✅ Response received - Status:', response.status, response.statusText);
-      return response.json();
-    })
-    .then(function(data) {
-      console.log('[YOTPO DEBUG] 📦 Full API Response:', data);
-
-      // Check if we got a 404 error
-      if (data.status && data.status.code === 404) {
-        console.warn('[YOTPO DEBUG] ⚠️ Product-specific API not available, trying alternative endpoint...');
-        // Try the alternative endpoint for all products
-        const altApiUrl = `https://api-cdn.yotpo.com/v1/apps/${appKey}/bottom_lines`;
-        console.log('[YOTPO DEBUG] 🌐 Alternative API URL:', altApiUrl);
-        return fetch(altApiUrl).then(function(altResponse) {
-          return altResponse.json();
-        }).then(function(altData) {
-          console.log('[YOTPO DEBUG] 📦 Alternative API Response:', altData);
-          // Find our product in the bottomlines array
-          if (altData.response && altData.response.bottomlines) {
-            const productBottomline = altData.response.bottomlines.find(function(bl) {
-              return bl.domain_key === productId.toString();
-            });
-            if (productBottomline) {
-              console.log('[YOTPO DEBUG] 🎯 Found product bottomline:', productBottomline);
-              return {
-                response: {
-                  bottomline: {
-                    average_score: productBottomline.product_score || 0,
-                    total_reviews: productBottomline.total_reviews || 0
-                  }
-                }
-              };
-            } else {
-              console.warn('[YOTPO DEBUG] ⚠️ Product not found in bottomlines array');
-              return data; // Return original error response
-            }
-          }
-          return altData;
-        });
-      }
-      return data;
-    })
-    .then(function(data) {
-      console.log('[YOTPO DEBUG] 📦 Final data to process:', data);
-
-      if (!data.response || !data.response.bottomline) {
-        console.warn('[YOTPO DEBUG] ⚠️ No bottomline data in response');
-        console.log('[YOTPO DEBUG] Response structure:', {
-          hasResponse: !!data.response,
-          hasBottomline: !!(data.response && data.response.bottomline)
-        });
+      if (hasStars || (hasCaption && hasCaption.textContent.trim() && !hasCaption.textContent.includes('0'))) {
+        console.log('[RATING SKELETON] Rating loaded!');
         wrapper.classList.add('loaded');
-        return;
+        observer.disconnect();
       }
+    }
+  });
 
-      const bottomline = data.response.bottomline;
-      console.log('[YOTPO DEBUG] 📊 Bottomline data:', bottomline);
-
-      const averageScore = bottomline.average_score || 0;
-      const totalReviews = bottomline.total_reviews || 0;
-
-      console.log('[YOTPO DEBUG] ⭐ Average Score:', averageScore);
-      console.log('[YOTPO DEBUG] 📝 Total Reviews:', totalReviews);
-
-      // Build star rating
-      const starsContainer = wrapper.querySelector('.rating__stars');
-      const captionElement = wrapper.querySelector('.rating__caption');
-
-      if (!starsContainer || !captionElement) {
-        console.log('[YOTPO RATING] Missing rating elements');
-        return;
-      }
-
-      // Clear existing content
-      starsContainer.innerHTML = '';
-
-      // Generate stars
-      const fullStars = Math.floor(averageScore);
-      const hasHalfStar = (averageScore % 1) >= 0.5;
-      const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-
-      console.log('[YOTPO DEBUG] 🌟 Star breakdown:', {
-        fullStars: fullStars,
-        hasHalfStar: hasHalfStar,
-        emptyStars: emptyStars
-      });
-
-      // Add full stars
-      for (let i = 0; i < fullStars; i++) {
-        starsContainer.innerHTML += `
-          <span class="rating__star rating__star--full">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-            </svg>
-          </span>
-        `;
-      }
-
-      // Add half star
-      if (hasHalfStar) {
-        starsContainer.innerHTML += `
-          <span class="rating__star rating__star--half">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-            </svg>
-          </span>
-        `;
-      }
-
-      // Add empty stars
-      for (let i = 0; i < emptyStars; i++) {
-        starsContainer.innerHTML += `
-          <span class="rating__star rating__star--empty">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-            </svg>
-          </span>
-        `;
-      }
-
-      // Set aria-label
-      starsContainer.setAttribute('aria-label', averageScore + ' out of 5 stars, ' + totalReviews + ' reviews');
-
-      // Set caption
-      if (totalReviews === 0) {
-        captionElement.textContent = 'No reviews';
-      } else if (totalReviews === 1) {
-        captionElement.textContent = '1 review';
-      } else {
-        captionElement.textContent = totalReviews + ' reviews';
-      }
-
-      console.log('[YOTPO DEBUG] 📺 Final display text:', captionElement.textContent);
-
-      // Show rating, hide skeleton
-      wrapper.classList.add('loaded');
-      console.log('[YOTPO DEBUG] ✅ Rating displayed successfully');
-      console.log('[YOTPO DEBUG] ========== INITIALIZATION COMPLETE ==========');
-    })
-    .catch(function(error) {
-      console.error('[YOTPO DEBUG] ❌ Error fetching rating:', error);
-      console.error('[YOTPO DEBUG] Error details:', error.message, error.stack);
-      // Still mark as loaded to hide skeleton
-      wrapper.classList.add('loaded');
-      console.log('[YOTPO DEBUG] ========== INITIALIZATION FAILED ==========');
+  // Observe the rating element for changes
+  if (ratingElement) {
+    observer.observe(ratingElement, {
+      childList: true,
+      subtree: true,
+      characterData: true
     });
+  }
+
+  // Fallback: mark as loaded after 3 seconds
+  setTimeout(function() {
+    console.log('[RATING SKELETON] Timeout reached, showing rating');
+    wrapper.classList.add('loaded');
+    observer.disconnect();
+  }, 3000);
+
+  console.log('[RATING SKELETON] Watching for rating to load...');
 })();
 </script>

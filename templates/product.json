@@ -17,7 +17,7 @@
           "settings": {
             "show_vendor": true,
             "show_sku": false,
-            "show_reviews_badge": true,
+            "show_reviews_badge": false,
             "show_share_buttons": false
           }
         },
@@ -202,6 +202,7 @@
       },
       "block_order": [
         "product_meta",
+        "98e0b222-0db6-4ffd-b5dc-ac118cb6455e",
         "separator_RAcFzh",
         "product_price_mDVxWR",
         "variant_selector",

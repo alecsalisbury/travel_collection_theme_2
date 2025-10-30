@@ -99,33 +99,22 @@
 
   // Initialize the message
   function initAffirmMessage() {
-    console.log('[AFFIRM DEBUG] ========== INITIALIZATION START ==========');
     const messageContainer = document.querySelector('.custom-affirm-message');
-    if (!messageContainer) {
-      console.error('[AFFIRM DEBUG] ❌ No message container found');
-      return;
-    }
+    if (!messageContainer) return;
 
     const priceInCents = parseInt(messageContainer.getAttribute('data-product-price')) || 0;
-    console.log('[AFFIRM DEBUG] 💰 Price in cents:', priceInCents);
-
     const priceElement = document.querySelector('.custom-affirm-message__price');
     const logoContainer = document.querySelector('#custom-affirm-logo-container');
 
-    if (!priceElement || !logoContainer) {
-      console.error('[AFFIRM DEBUG] ❌ Missing elements - priceElement:', !!priceElement, 'logoContainer:', !!logoContainer);
-      return;
-    }
+    if (!priceElement || !logoContainer) return;
 
     // Calculate and display monthly price immediately
     const monthlyPrice = calculateMonthlyPayment(priceInCents);
-    console.log('[AFFIRM DEBUG] 📊 Calculated monthly price:', monthlyPrice);
 
     priceElement.textContent = monthlyPrice;
     logoContainer.innerHTML = affirmLogoSvg;
 
-    console.log('[AFFIRM DEBUG] ✅ Custom message initialized successfully');
-    console.log('[AFFIRM DEBUG] ========== INITIALIZATION COMPLETE ==========');
+    console.log('[AFFIRM] Custom message initialized with price:', monthlyPrice);
   }
 
   // Set up modal triggers
@@ -162,35 +151,21 @@
 
   // Update price when variant changes
   function updatePriceOnVariantChange(newPrice) {
-    console.log('[AFFIRM DEBUG] ========== VARIANT CHANGE START ==========');
-    console.log('[AFFIRM DEBUG] 🔄 New price received:', newPrice, 'cents');
-
     const messageContainer = document.querySelector('.custom-affirm-message');
     const priceElement = document.querySelector('.custom-affirm-message__price');
 
-    if (!messageContainer || !priceElement) {
-      console.error('[AFFIRM DEBUG] ❌ Missing elements - container:', !!messageContainer, 'price:', !!priceElement);
-      return;
+    if (messageContainer && priceElement) {
+      messageContainer.setAttribute('data-product-price', newPrice);
+      const monthlyPrice = calculateMonthlyPayment(newPrice);
+      priceElement.textContent = monthlyPrice;
+
+      // Update data-amount on all triggers
+      document.querySelectorAll('.affirm-modal-trigger').forEach(function(trigger) {
+        trigger.setAttribute('data-amount', newPrice);
+      });
+
+      console.log('[AFFIRM] Updated price to:', monthlyPrice);
     }
-
-    const oldPrice = messageContainer.getAttribute('data-product-price');
-    console.log('[AFFIRM DEBUG] 📊 Old price:', oldPrice, '→ New price:', newPrice);
-
-    messageContainer.setAttribute('data-product-price', newPrice);
-    const monthlyPrice = calculateMonthlyPayment(newPrice);
-    priceElement.textContent = monthlyPrice;
-
-    console.log('[AFFIRM DEBUG] 💳 New monthly payment:', monthlyPrice);
-
-    // Update data-amount on all triggers
-    const triggers = document.querySelectorAll('.affirm-modal-trigger');
-    console.log('[AFFIRM DEBUG] 🔗 Updating', triggers.length, 'modal triggers');
-    triggers.forEach(function(trigger) {
-      trigger.setAttribute('data-amount', newPrice);
-    });
-
-    console.log('[AFFIRM DEBUG] ✅ Variant change complete');
-    console.log('[AFFIRM DEBUG] ========== VARIANT CHANGE COMPLETE ==========');
   }
 
   // Initialize when DOM is ready
@@ -205,23 +180,15 @@
   }
 
   // Listen for variant changes
-  console.log('[AFFIRM DEBUG] 👂 Setting up variant change event listeners');
-
   document.addEventListener('variant:changed', function(e) {
-    console.log('[AFFIRM DEBUG] 🎯 Event "variant:changed" fired!', e.detail);
     if (e.detail && e.detail.variant && e.detail.variant.price) {
       updatePriceOnVariantChange(e.detail.variant.price);
-    } else {
-      console.warn('[AFFIRM DEBUG] ⚠️ "variant:changed" event missing price data', e.detail);
     }
   });
 
   document.addEventListener('product:variant:change', function(e) {
-    console.log('[AFFIRM DEBUG] 🎯 Event "product:variant:change" fired!', e.detail);
     if (e.detail && e.detail.variant && e.detail.variant.price) {
       updatePriceOnVariantChange(e.detail.variant.price);
-    } else {
-      console.warn('[AFFIRM DEBUG] ⚠️ "product:variant:change" event missing price data', e.detail);
     }
   });
 
