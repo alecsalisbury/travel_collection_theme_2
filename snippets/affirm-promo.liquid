@@ -1,0 +1,250 @@
+{% comment %}
+  Affirm Promo Component - Modern Implementation
+  Uses Affirm's Promo JS API for faster loading
+  Creates component while DOM loads, renders when ready
+{% endcomment %}
+
+{%- assign selected_variant = product.selected_or_first_available_variant -%}
+{%- assign price = selected_variant.price -%}
+
+<style>
+  .affirm-promo-container {
+    margin: 12px 0;
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 1.5em;
+  }
+
+  .affirm-promo-wrapper {
+    cursor: pointer;
+  }
+
+  .affirm-promo-wrapper:hover {
+    opacity: 0.8;
+  }
+
+  /* Loading skeleton */
+  .affirm-promo-skeleton {
+    display: inline-block;
+    width: 250px;
+    height: 1em;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 2px;
+    vertical-align: middle;
+  }
+
+  .affirm-promo-skeleton.hidden {
+    display: none;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+</style>
+
+<div class="affirm-promo-container">
+  <span class="affirm-promo-skeleton" id="affirm-promo-skeleton-{{ section.id }}"></span>
+  <div class="affirm-promo-wrapper" id="affirm-promo-{{ section.id }}" data-amount="{{ price }}"></div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  var SECTION_ID = '{{ section.id }}';
+  var INITIAL_PRICE = {{ price }};
+  var promoComponent = null;
+  var isRendered = false;
+  var container = null;
+  var skeleton = null;
+
+  console.log('[AFFIRM PROMO] Initializing for section:', SECTION_ID, 'price:', INITIAL_PRICE);
+
+  // Create component immediately (before DOM is fully ready)
+  function createPromoComponent(price) {
+    if (!window.affirm || !window.affirm.ui || !window.affirm.ui.components) {
+      console.log('[AFFIRM PROMO] Affirm.js not ready yet, retrying...');
+      setTimeout(function() { createPromoComponent(price); }, 100);
+      return;
+    }
+
+    try {
+      console.log('[AFFIRM PROMO] Creating promo component with price:', price);
+
+      promoComponent = window.affirm.ui.components.create('promo', {
+        amount: price,
+        pageType: 'product',
+        affirmLogoColor: 'blue',
+        learnMoreShow: true
+      });
+
+      console.log('[AFFIRM PROMO] Component created successfully');
+
+      // Try to render if DOM is already ready
+      renderComponent();
+    } catch (error) {
+      console.error('[AFFIRM PROMO] Error creating component:', error);
+    }
+  }
+
+  // Render component to DOM
+  function renderComponent() {
+    if (!promoComponent) {
+      console.log('[AFFIRM PROMO] Component not created yet');
+      return;
+    }
+
+    if (isRendered) {
+      console.log('[AFFIRM PROMO] Component already rendered');
+      return;
+    }
+
+    container = document.getElementById('affirm-promo-' + SECTION_ID);
+    skeleton = document.getElementById('affirm-promo-skeleton-' + SECTION_ID);
+
+    if (!container) {
+      console.log('[AFFIRM PROMO] Container not ready yet, will retry');
+      return;
+    }
+
+    try {
+      console.log('[AFFIRM PROMO] Rendering component to container');
+
+      promoComponent.render(container);
+      isRendered = true;
+
+      // Hide skeleton once rendered
+      if (skeleton) {
+        skeleton.classList.add('hidden');
+      }
+
+      console.log('[AFFIRM PROMO] Component rendered successfully');
+
+      // Setup click handler for modal
+      setupModalHandler();
+    } catch (error) {
+      console.error('[AFFIRM PROMO] Error rendering component:', error);
+
+      // Hide skeleton on error too
+      if (skeleton) {
+        skeleton.classList.add('hidden');
+      }
+    }
+  }
+
+  // Update component with new price
+  function updateComponent(newPrice) {
+    if (!promoComponent) {
+      console.log('[AFFIRM PROMO] Component not created, creating with new price:', newPrice);
+      createPromoComponent(newPrice);
+      return;
+    }
+
+    try {
+      console.log('[AFFIRM PROMO] Updating component with new price:', newPrice);
+
+      // Show skeleton during update
+      if (skeleton) {
+        skeleton.classList.remove('hidden');
+      }
+
+      promoComponent.update({
+        amount: newPrice,
+        pageType: 'product',
+        affirmLogoColor: 'blue',
+        learnMoreShow: true
+      });
+
+      // Hide skeleton after update
+      setTimeout(function() {
+        if (skeleton) {
+          skeleton.classList.add('hidden');
+        }
+      }, 500);
+
+      console.log('[AFFIRM PROMO] Component updated successfully');
+
+      // Update container data attribute
+      if (container) {
+        container.setAttribute('data-amount', newPrice);
+      }
+    } catch (error) {
+      console.error('[AFFIRM PROMO] Error updating component:', error);
+    }
+  }
+
+  // Setup modal handler
+  function setupModalHandler() {
+    if (!container) return;
+
+    container.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      var amount = parseInt(container.getAttribute('data-amount')) || INITIAL_PRICE;
+      console.log('[AFFIRM PROMO] Opening modal for amount:', amount);
+
+      if (window.affirm && window.affirm.ui && window.affirm.ui.ready) {
+        window.affirm.ui.ready(function() {
+          if (window.affirm.ui.prequal && window.affirm.ui.prequal.show) {
+            console.log('[AFFIRM PROMO] Opening prequal modal');
+            window.affirm.ui.prequal.show({ amount: amount });
+          } else {
+            console.log('[AFFIRM PROMO] Prequal not available');
+          }
+        });
+      }
+    });
+  }
+
+  // Listen for variant changes
+  function handleVariantChange(e) {
+    if (e.detail && e.detail.variant && e.detail.variant.price) {
+      var newPrice = e.detail.variant.price;
+      console.log('[AFFIRM PROMO] Variant changed to price:', newPrice);
+      updateComponent(newPrice);
+    }
+  }
+
+  // Re-initialize after DOM changes
+  function handleRerender() {
+    console.log('[AFFIRM PROMO] Product rerendered');
+
+    // Reset state
+    isRendered = false;
+    container = null;
+    skeleton = null;
+
+    // Try to render again
+    renderComponent();
+  }
+
+  // Initialize
+  function init() {
+    // Create component immediately
+    createPromoComponent(INITIAL_PRICE);
+
+    // Setup event listeners
+    document.addEventListener('variant:changed', handleVariantChange);
+    document.addEventListener('product:variant:change', handleVariantChange);
+    document.addEventListener('product:rerendered', handleRerender);
+
+    // Try to render when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', renderComponent);
+    } else {
+      renderComponent();
+    }
+  }
+
+  // Start initialization
+  init();
+})();
+</script>

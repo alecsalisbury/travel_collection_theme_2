@@ -98,12 +98,13 @@
           {%- endif -%}
         </div>
         {%- comment -%}
-        Old custom Affirm message (replaced with official widget)
-        To revert: uncomment line below and comment out affirm-widget line
-        {%- render 'custom-affirm-message', product: product -%}
+        Affirm Promo Component (Modern Promo JS API)
+        Old implementations (commented out for reference):
+        - affirm-widget: Old polling-based implementation
+        - custom-affirm-message: Old legacy API implementation
         {%- endcomment -%}
 
-        {%- render 'affirm-widget', product: product -%}
+        {%- render 'affirm-promo', product: product -%}
 
         <div
           class="product-form__price-info"
@@ -154,78 +155,17 @@
     if (!container) return;
 
     function replacePrice(html) {
-      // 1) Save current custom Affirm message state BEFORE any DOM changes
-      var currentPrice = window.affirmMessageState && window.affirmMessageState.price;
-      var currentLogoHtml = window.affirmMessageState && window.affirmMessageState.logoHtml;
-      var affirmLoaded = window.affirmMessageState && window.affirmMessageState.loaded;
-
-      // 2) Keep a ref to the current Affirm widget (so it survives the innerHTML swap)
-      var existingAffirm = container.querySelector('.affirm-as-low-as');
-
       var temp = document.createElement('div');
       temp.innerHTML = html;
 
       var fresh = temp.querySelector('[data-price-block="{{ block.id }}"][data-section-id="{{ section.id }}"]');
       if (!fresh) return;
 
-      // 3) Hide skeleton in the NEW HTML before inserting it
-      if (currentPrice && affirmLoaded) {
-        var freshSkeleton = fresh.querySelector('#affirm-skeleton-loader');
-        if (freshSkeleton) {
-          freshSkeleton.classList.add('hidden');
-        }
-        var freshPrice = fresh.querySelector('.custom-affirm-message__price');
-        if (freshPrice) {
-          freshPrice.textContent = currentPrice;
-          freshPrice.style.display = 'inline';
-        }
-        var freshLogo = fresh.querySelector('#custom-affirm-logo-container');
-        if (freshLogo && currentLogoHtml) {
-          freshLogo.innerHTML = currentLogoHtml;
-        }
-        var freshSuffix = fresh.querySelector('#custom-affirm-suffix');
-        if (freshSuffix) {
-          freshSuffix.style.display = 'inline';
-        }
-      }
-
-      // 4) Replace the price block content (now with skeleton already hidden)
+      // Replace the price block content
       container.innerHTML = fresh.innerHTML;
 
-      // 5) Put the old widget back into the new anchor (if the app created it elsewhere originally)
-      var anchor = container.querySelector('#affirm-under-price');
-      if (anchor && existingAffirm) {
-        anchor.appendChild(existingAffirm);
-      }
-
-      // 5) notify the rest of the page & re-run Affirm
+      // Notify the rest of the page (Affirm promo component will handle its own updates)
       try { document.dispatchEvent(new Event('product:rerendered')); } catch (e) {}
-      if (window.affirm && affirm.ui && typeof affirm.ui.refresh === 'function') {
-        try {
-          affirm.ui.refresh();
-          // Wait 1 second before updating the price display
-          if (window.updateAffirmPrice) {
-            setTimeout(function() {
-              var attempts = 0;
-              var maxAttempts = 10;
-              var pollInterval = setInterval(function() {
-                attempts++;
-                console.log('[PRODUCT-PRICE] Polling for Affirm price, attempt', attempts);
-
-                if (window.updateAffirmPrice()) {
-                  // Price updated successfully
-                  console.log('[PRODUCT-PRICE] Affirm price updated successfully');
-                  clearInterval(pollInterval);
-                } else if (attempts >= maxAttempts) {
-                  // Timeout, stop polling
-                  console.log('[PRODUCT-PRICE] Affirm price poll timeout');
-                  clearInterval(pollInterval);
-                }
-              }, 200);
-            }, 1000); // Wait 1 second before starting to poll
-          }
-        } catch (e) {}
-      }
     }
 
     function refreshPrice(variantId) {
