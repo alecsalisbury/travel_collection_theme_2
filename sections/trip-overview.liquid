@@ -338,41 +338,50 @@
     if (descriptionContent) {
       console.log('Fallback description detected, attempting to reorder gallery...');
 
-      const overviewSection = document.getElementById('trip-overview-{{ section.id }}');
+      function reorderGallery() {
+        const overviewSection = document.getElementById('trip-overview-{{ section.id }}');
 
-      // Try multiple selectors to find gallery
-      let gallerySection = document.querySelector('[id*="trip-gallery"]');
-      if (!gallerySection) {
-        gallerySection = document.querySelector('.trip-gallery');
-      }
-      if (!gallerySection) {
-        // Try finding by section type in DOM
-        const allSections = document.querySelectorAll('section');
-        for (let section of allSections) {
-          if (section.className && section.className.includes('gallery')) {
-            gallerySection = section;
-            break;
+        // Try multiple selectors to find gallery - prioritize by specificity
+        let gallerySection = document.querySelector('section[id^="trip-gallery-"]');
+        if (!gallerySection) {
+          gallerySection = document.querySelector('section.trip-gallery');
+        }
+        if (!gallerySection) {
+          gallerySection = document.querySelector('[id*="trip-gallery"]');
+        }
+
+        console.log('Overview section found:', !!overviewSection);
+        console.log('Gallery section found:', !!gallerySection);
+        if (gallerySection) {
+          console.log('Gallery section ID:', gallerySection.id);
+          console.log('Gallery section class:', gallerySection.className);
+        }
+
+        if (overviewSection && gallerySection) {
+          // Check if gallery comes after overview in DOM order
+          const comparison = overviewSection.compareDocumentPosition(gallerySection);
+
+          // DOCUMENT_POSITION_FOLLOWING = 4 means gallerySection comes after overviewSection
+          if (comparison & Node.DOCUMENT_POSITION_FOLLOWING) {
+            // Move gallery before overview
+            overviewSection.parentNode.insertBefore(gallerySection, overviewSection);
+            console.log('✓ Gallery moved above Overview (fallback description detected)');
+            return true;
+          } else {
+            console.log('Gallery already before Overview, no reordering needed');
+            return true;
           }
+        } else {
+          console.log('Could not find both sections for reordering');
+          return false;
         }
       }
 
-      console.log('Overview section found:', !!overviewSection);
-      console.log('Gallery section found:', !!gallerySection);
-
-      if (overviewSection && gallerySection) {
-        // Check if gallery comes after overview in DOM order
-        const comparison = overviewSection.compareDocumentPosition(gallerySection);
-
-        // DOCUMENT_POSITION_FOLLOWING = 4 means gallerySection comes after overviewSection
-        if (comparison & Node.DOCUMENT_POSITION_FOLLOWING) {
-          // Move gallery before overview
-          overviewSection.parentNode.insertBefore(gallerySection, overviewSection);
-          console.log('✓ Gallery moved above Overview (fallback description detected)');
-        } else {
-          console.log('Gallery already before Overview, no reordering needed');
-        }
-      } else {
-        console.log('Could not find both sections for reordering');
+      // Try immediately
+      if (!reorderGallery()) {
+        // If it fails, try again after a short delay (in case gallery loads late)
+        console.log('Retrying gallery reorder after delay...');
+        setTimeout(reorderGallery, 100);
       }
     }
   });
