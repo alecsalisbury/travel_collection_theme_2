@@ -454,17 +454,17 @@
     subtree: true
   });
 
-  // Fallback timeouts
+  // Fallback timeouts - give up after 2 seconds
   setTimeout(updateCustomRating, 500);
+  setTimeout(updateCustomRating, 1000);
   setTimeout(updateCustomRating, 1500);
-  setTimeout(updateCustomRating, 3000);
-  setTimeout(updateCustomRating, 5000);
+  setTimeout(updateCustomRating, 2000);
 
   // Listen for Yotpo events
   document.addEventListener('yotpo.bottomline.loaded', updateCustomRating);
   window.addEventListener('yotpo.initialized', updateCustomRating);
 
-  // Cleanup observer after 10 seconds
-  setTimeout(() => observer.disconnect(), 10000);
+  // Cleanup observer after 2 seconds
+  setTimeout(() => observer.disconnect(), 2000);
 })();
 </script>
