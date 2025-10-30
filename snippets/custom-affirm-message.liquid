@@ -227,23 +227,14 @@
             customPriceElement.textContent = monthlyPrice;
           }
 
-          // Clone the logo (but don't show yet)
+          // Add Affirm logo SVG directly
           if (customLogoContainer) {
-            console.log('[AFFIRM SKELETON DEBUG] Logo element found, will clone after delay...');
-            console.log('[AFFIRM SKELETON DEBUG] Logo HTML:', affirmLogoElement.outerHTML);
+            console.log('[AFFIRM SKELETON DEBUG] Adding Affirm logo SVG...');
 
-            // Wait 100ms for Affirm's JS to fully process the logo element
-            setTimeout(function() {
-              const freshLogoElement = affirmAnchor.querySelector('.__affirm-logo');
-              if (freshLogoElement) {
-                console.log('[AFFIRM SKELETON DEBUG] Cloning logo after delay...');
-                const logoClone = freshLogoElement.cloneNode(true);
-                customLogoContainer.innerHTML = '';
-                customLogoContainer.appendChild(logoClone);
-                console.log('[AFFIRM SKELETON DEBUG] Replaced with Affirm logo!');
-                console.log('[AFFIRM SKELETON DEBUG] Container HTML after:', customLogoContainer.innerHTML);
-              }
-            }, 100);
+            // Use Affirm's official logo SVG
+            customLogoContainer.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 60" style="height: 0.9em; width: auto; vertical-align: baseline; position: relative; top: 0.05em;"><path fill="#0FA0EA" d="M12.9 17.8c-1.7 0-3 1.4-3 3 0 1.7 1.4 3 3 3s3-1.4 3-3c0-1.7-1.3-3-3-3zM121.8 22.3c-1.7 0-3 1.4-3 3s1.3 3 3 3c1.7 0 3-1.4 3-3s-1.3-3-3-3zM70.2 38.2h-6.7V24.5c0-2.6-1-4-3.4-4-2.4 0-4 1.8-4 4.6v13.1H49V24.5c0-2.6-1-4-3.4-4-2.4 0-4 1.8-4 4.6v13.1H34V17.9h7.1v2c1.2-1.5 3.2-2.6 6-2.6 2.8 0 5 1.1 6.3 3.3 1.4-2 3.7-3.3 6.8-3.3 4.6 0 7.6 3 7.6 7.9v12.9h.4zM12.9 42.1c-4.8 0-8.6-3.9-8.6-8.6 0-4.8 3.9-8.6 8.6-8.6 4.8 0 8.6 3.9 8.6 8.6 0 4.8-3.9 8.6-8.6 8.6zM86 42.1c-7.2 0-12.7-5.4-12.7-12.3s5.5-12.3 12.7-12.3c3.7 0 6.4 1.3 8.4 3.2l-3.7 4.6c-1.2-1-2.6-1.7-4.4-1.7-3.1 0-5.6 2.5-5.6 6.2 0 3.7 2.4 6.2 5.6 6.2 1.8 0 3.2-.7 4.4-1.8l3.7 4.6c-2 2-4.7 3.3-8.4 3.3zM108.5 42.1c-7.2 0-12.8-5.4-12.8-12.3s5.6-12.3 12.8-12.3 12.8 5.4 12.8 12.3-5.6 12.3-12.8 12.3zm0-6.2c3 0 5.3-2.5 5.3-6.1s-2.3-6.1-5.3-6.1c-3 0-5.3 2.5-5.3 6.1s2.3 6.1 5.3 6.1zM121.8 42.1c-4.8 0-8.6-3.9-8.6-8.6 0-4.8 3.9-8.6 8.6-8.6 4.8 0 8.6 3.9 8.6 8.6 0 4.8-3.9 8.6-8.6 8.6zM172.5 38.2h-7.2V32c-1.3 4-4.4 6.1-8 6.1-5.3 0-8.6-3.6-8.6-9V17.9h7.2v10.3c0 3 1.4 4.7 4 4.7s4.2-1.7 4.2-5.1V17.9h7.2v20.3h1.2zM182.5 21.5c-2.7 0-4.6 2.1-4.6 5.4v11.3H171V17.9h7.2v2.5c1.1-1.8 3-3 5.5-3h1.4v6.8c-.5-.5-1.4-1.1-2.1-1.1l-.5-1.6zM193 24.8c-2.6 0-4.4 2-4.4 5.2 0 3.2 1.8 5.2 4.4 5.2 1.4 0 2.5-.6 3.3-1.5l4.3 4c-1.8 2.2-4.6 3.5-8.2 3.5-6.8 0-11.5-4.9-11.5-11.2 0-6.4 4.7-11.2 11.5-11.2 3.6 0 6.4 1.3 8.2 3.5l-4.3 4c-.8-.9-1.9-1.5-3.3-1.5zM221 38.2h-7.2V32c-1.3 4-4.4 6.1-8 6.1-5.3 0-8.6-3.6-8.6-9V17.9h7.2v10.3c0 3 1.4 4.7 4 4.7s4.2-1.7 4.2-5.1V17.9h7.2v20.3H221zM235.2 17.9h-4.6v20.3h-7.2V17.9h-3v-6.2h3V6.1h7.2v5.6h4.6v6.2z"/></svg>';
+
+            console.log('[AFFIRM SKELETON DEBUG] Added Affirm logo SVG!');
           }
 
           console.log('[AFFIRM SKELETON DEBUG] Affirm data ready!');
