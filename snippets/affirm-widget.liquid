@@ -1,0 +1,94 @@
+{% comment %}
+  Affirm Official Widget
+  Uses Affirm's built-in promotional messaging widget
+  Automatically fetches and displays accurate monthly payments from Affirm's API
+{% endcomment %}
+
+{%- assign selected_variant = product.selected_or_first_available_variant -%}
+{%- assign price = selected_variant.price -%}
+
+<div class="affirm-widget-container" style="margin: 12px 0;">
+  {%- comment -%}
+    Affirm's official promotional messaging widget
+    - Automatically displays accurate monthly payment from Affirm's API
+    - Updates when affirm.ui.refresh() is called
+  {%- endcomment -%}
+  <p class="affirm-as-low-as"
+     data-page-type="product"
+     data-amount="{{ price }}"
+     data-affirm-color="blue"
+     style="font-size: 14px; line-height: 1.5;">
+  </p>
+
+  {%- comment -%}
+    "Check your purchasing power" link
+  {%- endcomment -%}
+  <a class="affirm-check-power-link"
+     href="#"
+     onclick="affirm.ui.ready(function() { affirm.ui.prequal.show({ amount: {{ price }} }); }); return false;"
+     style="display: inline-block; margin-top: 4px; color: #08c; font-size: inherit; text-decoration: none; cursor: pointer;"
+     onmouseover="this.style.textDecoration='underline'"
+     onmouseout="this.style.textDecoration='none'"
+     aria-label="Check your purchasing power - Learn more about Affirm Financing (opens in modal)">
+    Check your purchasing power
+  </a>
+</div>
+
+<script>
+(function() {
+  console.log('[AFFIRM WIDGET] Initialized with price:', {{ price }});
+
+  // Update Affirm widget when variant changes
+  function updateAffirmWidget(newPrice) {
+    console.log('[AFFIRM WIDGET] Updating price to:', newPrice);
+
+    // Update the affirm-as-low-as element
+    var affirmWidget = document.querySelector('.affirm-as-low-as');
+    if (affirmWidget) {
+      affirmWidget.setAttribute('data-amount', newPrice);
+    }
+
+    // Update the prequal link
+    var prqualLink = document.querySelector('.affirm-check-power-link');
+    if (prqualLink) {
+      prqualLink.onclick = function() {
+        affirm.ui.ready(function() {
+          affirm.ui.prequal.show({ amount: newPrice });
+        });
+        return false;
+      };
+    }
+
+    // Refresh Affirm UI to show new payment amount
+    if (window.affirm && window.affirm.ui && window.affirm.ui.refresh) {
+      affirm.ui.ready(function() {
+        affirm.ui.refresh();
+        console.log('[AFFIRM WIDGET] UI refreshed');
+      });
+    }
+  }
+
+  // Listen for variant changes
+  document.addEventListener('variant:changed', function(e) {
+    if (e.detail && e.detail.variant && e.detail.variant.price) {
+      updateAffirmWidget(e.detail.variant.price);
+    }
+  });
+
+  document.addEventListener('product:variant:change', function(e) {
+    if (e.detail && e.detail.variant && e.detail.variant.price) {
+      updateAffirmWidget(e.detail.variant.price);
+    }
+  });
+
+  // Re-initialize after DOM changes
+  document.addEventListener('product:rerendered', function() {
+    console.log('[AFFIRM WIDGET] Product rerendered, refreshing...');
+    if (window.affirm && window.affirm.ui && window.affirm.ui.refresh) {
+      affirm.ui.ready(function() {
+        affirm.ui.refresh();
+      });
+    }
+  });
+})();
+</script>

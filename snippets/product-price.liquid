@@ -97,15 +97,13 @@
             </span>
           {%- endif -%}
         </div>
-        <div id="affirm-under-price" class="affirm-anchor" aria-live="polite" style="display: none;">
-          <p class="affirm-as-low-as"
-             data-page-type="product"
-             data-amount="{{ selected_variant.price }}"
-             data-affirm-type="logo"
-             data-affirm-color="blue">
-          </p>
-        </div>
+        {%- comment -%}
+        Old custom Affirm message (replaced with official widget)
+        To revert: uncomment line below and comment out affirm-widget line
         {%- render 'custom-affirm-message', product: product -%}
+        {%- endcomment -%}
+
+        {%- render 'affirm-widget', product: product -%}
 
         <div
           class="product-form__price-info"
