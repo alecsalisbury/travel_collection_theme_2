@@ -153,6 +153,10 @@
     {% render 'social-meta-tags' %}
     {% render 'css-variables' %}
 
+    {%- comment -%}Preconnect to Affirm CDN for faster loading{%- endcomment -%}
+    <link rel="preconnect" href="https://cdn1.affirm.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn1.affirm.com">
+
     {{ content_for_header }}
 
     <link rel="stylesheet" href="{{ 'theme.css' | asset_url }}">
