@@ -1,0 +1,266 @@
+{%- comment -%}
+  Warehouse – Contact page section (custom, with GA4)
+  - Left: WRITE US form (Name*, Email*, Phone Number, Message*)
+  - Right: CONTACT DETAILS (rich text + phone / alt phone / email rows)
+  - Honeypot field included
+  - GA4 events:
+      • contact_form_submission  (fires on successful submit)
+      • contact_form_error       (fires when Shopify returns validation errors)
+  - Works with both GTM (dataLayer) and direct gtag.js if either is present
+  - Turn on Shopify reCAPTCHA in: Settings → Online store → Preferences → Spam protection
+{%- endcomment -%}
+
+<div {% if page.handle != 'contact' %}class="section"{% endif %}>
+  <div class="container container--medium">
+    <div class="layout">
+      <!-- LEFT: CONTACT FORM -->
+      <div class="layout__section">
+        {%- form 'contact', class: 'form' -%}
+          <div class="form__header {% unless section.settings.show_details %}text-center{% endunless %}">
+            <h2 class="heading h3">{{ section.settings.form_heading | default: 'WRITE US' }}</h2>
+            {%- if section.settings.form_content != blank -%}
+              {{ section.settings.form_content }}
+            {%- endif -%}
+          </div>
+
+          {%- if form.posted_successfully? -%}
+            <p class="alert alert--success">{{ 'contact.form.successfully_sent' | t }}</p>
+            <script>
+              (function() {
+                var params = {
+                  event: 'contact_form_submission',
+                  form_name: 'Contact',
+                  form_location: window.location.pathname,
+                  template: {{ template | json }},
+                  logged_in: {% if customer %}true{% else %}false{% endif %}
+                };
+                // GTM dataLayer (preferred if present)
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push(params);
+                // Direct GA4 (if gtag is present)
+                if (typeof window.gtag === 'function') {
+                  window.gtag('event', 'contact_form_submission', {
+                    form_name: params.form_name,
+                    form_location: params.form_location,
+                    template: params.template,
+                    logged_in: params.logged_in
+                  });
+                }
+              })();
+            </script>
+          {%- endif -%}
+
+          {%- if form.errors -%}
+            <div class="alert alert--error" id="contact-form-error">
+              <ul class="alert__error-list" role="list">
+                {%- for field in form.errors -%}
+                  {%- if field == 'form' -%}
+                    <li class="alert__error-item">{{ form.errors.messages[field] }}</li>
+                  {%- else -%}
+                    <li class="alert__error-item">{{ form.errors.translated_fields[field] | capitalize }} {{ form.errors.messages[field] }}</li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ul>
+            </div>
+            <script>
+              (function() {
+                var params = {
+                  event: 'contact_form_error',
+                  form_name: 'Contact',
+                  form_location: window.location.pathname,
+                  template: {{ template | json }},
+                  logged_in: {% if customer %}true{% else %}false{% endif %}
+                };
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push(params);
+                if (typeof window.gtag === 'function') {
+                  window.gtag('event', 'contact_form_error', {
+                    form_name: params.form_name,
+                    form_location: params.form_location,
+                    template: params.template,
+                    logged_in: params.logged_in
+                  });
+                }
+              })();
+            </script>
+          {%- endif -%}
+
+          <div class="form__input-row">
+            <div class="form__input-wrapper form__input-wrapper--labelled">
+              <input id="contact-form-name" type="text" class="form__field form__field--text {% if customer.name != blank %}is-filled{% endif %}" name="contact[name]" aria-label="{{ 'contact.form.name' | t }}" required {% if customer %}value="{{ customer.name }}"{% endif %}>
+              <label for="contact-form-name" class="form__floating-label">{{ 'contact.form.name' | t }}</label>
+            </div>
+
+            <div class="form__input-wrapper form__input-wrapper--labelled">
+              <input id="contact-form-email" type="email" class="form__field form__field--text {% if customer.email != blank %}is-filled{% endif %}" name="contact[email]" aria-label="{{ 'contact.form.email' | t }}" required {% if customer %}value="{{ customer.email }}"{% endif %} {% if form.errors contains 'email' %}aria-invalid="true" aria-describedby="contact-form-error"{% endif %}>
+              <label for="contact-form-email" class="form__floating-label">{{ 'contact.form.email' | t }}</label>
+            </div>
+          </div>
+
+          <!-- Phone Number (optional) -->
+          <div class="form__input-wrapper form__input-wrapper--labelled">
+            <input id="contact-form-phone" type="tel" class="form__field form__field--text" name="contact[Phone Number]" aria-label="Phone Number">
+            <label for="contact-form-phone" class="form__floating-label">Phone Number</label>
+          </div>
+
+          <!-- Optional extra fields via blocks (kept from Warehouse) -->
+          {%- for block in section.blocks -%}
+            {%- assign field_title = block.settings.title -%}
+            {%- if field_title == blank -%}
+              {%- capture field_title -%}Custom field {% increment custom_field %}{%- endcapture -%}
+            {%- endif -%}
+
+            {%- if block.type == 'text' -%}
+              <div class="form__input-wrapper form__input-wrapper--labelled" {{ block.shopify_attributes }}>
+                {%- if block.settings.use_long_text -%}
+                  <textarea id="contact-form-{{ field_title | handle }}" name="contact[{{ field_title | escape }}]" rows="7" class="form__field form__field--textarea" aria-label="{{ block.settings.title | escape }}" {% if block.settings.is_required %}required{% endif %}></textarea>
+                  <label for="contact-form-{{ field_title | handle }}" class="form__floating-label">{{ block.settings.title | escape }}</label>
+                {%- else -%}
+                  <input id="contact-form-{{ field_title | handle }}" type="text" class="form__field form__field--text" name="contact[{{ field_title | escape }}]" aria-label="{{ block.settings.title | escape }}" {% if block.settings.is_required %}required{% endif %}>
+                  <label for="contact-form-{{ field_title | handle }}" class="form__floating-label">{{ block.settings.title | escape }}</label>
+                {%- endif -%}
+              </div>
+            {%- elsif block.type == 'dropdown' -%}
+              {%- assign values = block.settings.values | split: ',' -%}
+              {%- if values != empty -%}
+                <div class="form__input-wrapper form__input-wrapper--labelled" {{ block.shopify_attributes }}>
+                  <div id="contact-form-{{ field_title | handle }}" class="select-wrapper select-wrapper--primary">
+                    {%- render 'icon', icon: 'arrow-bottom' -%}
+                    <select name="contact[{{ field_title | escape }}]" title="{{ block.settings.title | escape }}" {% if block.settings.is_required %}required{% endif %}>
+                      <option value="" disabled selected></option>
+                      {%- for value in values -%}
+                        {%- assign trim_value = value | strip -%}
+                        <option value="{{ trim_value | escape }}">{{ trim_value | escape }}</option>
+                      {%- endfor -%}
+                    </select>
+                  </div>
+                  <label for="contact-form-{{ field_title | handle }}" class="form__floating-label">{{ block.settings.title | escape }}</label>
+                </div>
+              {%- endif -%}
+            {%- endif -%}
+          {%- endfor -%}
+
+          <div class="form__input-wrapper form__input-wrapper--labelled">
+            <textarea id="contact-form-message" name="contact[body]" rows="8" class="form__field form__field--textarea" aria-label="{{ section.settings.message_label | default: "What's on your mind?" }}" required></textarea>
+            <label for="contact-form-message" class="form__floating-label">{{ section.settings.message_label | default: "What's on your mind?" }}</label>
+          </div>
+
+          <!-- Honeypot: helps catch basic bots -->
+          <div class="hp-field" aria-hidden="true">
+            <label for="contact-company" tabindex="-1">Company</label>
+            <input id="contact-company" type="text" name="contact[company]" tabindex="-1" autocomplete="off">
+          </div>
+
+          <button type="submit" class="form__submit {% unless section.settings.show_details %}form__submit--centered{% endunless %} button button--primary button--min-width">{{ 'contact.form.submit' | t }}</button>
+        {%- endform -%}
+      </div>
+
+      <!-- RIGHT: CONTACT DETAILS -->
+      {%- if section.settings.show_details -%}
+        <div class="layout__section layout__section--large-secondary">
+          <div class="contact__details">
+            <h2 class="heading h3">{{ section.settings.details_heading | default: 'CONTACT DETAILS' }}</h2>
+
+            {%- if section.settings.details_richtext != blank -%}
+              <div class="rte contact__details-text">
+                {{ section.settings.details_richtext }}
+              </div>
+            {%- endif -%}
+
+            <ul class="contact__list" role="list">
+              {%- if section.settings.phone != blank -%}
+                <li class="contact__item">
+                  <span class="contact__icon" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.91 15.91 0 006.59 6.59l2.2-2.2a1 1 0 011.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 011 1v3.5a1 1 0 01-1 1C10.07 20.02 3.98 13.93 3.99 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.24.2 2.45.57 3.57a1 1 0 01-.24 1.02l-2.2 2.2z"/></svg>
+                  </span>
+                  <a href="tel:{{ section.settings.phone | strip }}" class="contact__link">{{ section.settings.phone_label | default: section.settings.phone }}</a>
+                </li>
+              {%- endif -%}
+
+              {%- if section.settings.alt_phone != blank -%}
+                <li class="contact__item">
+                  <span class="contact__icon" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 2h12a2 2 0 012 2v16a2 2 0 01-2 2H6a2 2 0 01-2-2V4a2 2 0 012-2zm6 19a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/></svg>
+                  </span>
+                  <a href="tel:{{ section.settings.alt_phone | strip }}" class="contact__link">{{ section.settings.alt_phone_label | default: section.settings.alt_phone }}</a>
+                </li>
+              {%- endif -%}
+
+              {%- if section.settings.email != blank -%}
+                <li class="contact__item">
+                  <span class="contact__icon" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4a2 2 0 00-2 2v0l10 6 10-6v0a2 2 0 00-2-2zm0 4.236l-8.445 5.067a1 1 0 01-1.11 0L2 8.236V18a2 2 0 002 2h16a2 2 0 002-2V8.236z"/></svg>
+                  </span>
+                  <a href="mailto:{{ section.settings.email | strip }}" class="contact__link">{{ section.settings.email_label | default: section.settings.email }}</a>
+                </li>
+              {%- endif -%}
+            </ul>
+          </div>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Honeypot: visible to bots, off-screen to users */
+  .hp-field{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;}
+
+  /* Simple icon tile styling (keeps Warehouse look) */
+  .contact__list{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:12px}
+  .contact__item{display:flex;align-items:center;gap:12px}
+  .contact__icon{display:inline-flex;width:40px;height:40px;border-radius:8px;background:#1976d2;color:#fff;align-items:center;justify-content:center}
+  .contact__link{text-decoration:none}
+  .contact__details-text p{margin:0 0 10px}
+</style>
+
+{% schema %}
+{
+  "name": "Contact form",
+  "settings": [
+    { "type": "header", "content": "Form" },
+    { "type": "text", "id": "form_heading", "label": "Heading", "default": "WRITE US" },
+    { "type": "richtext", "id": "form_content", "label": "Intro content" },
+    { "type": "text", "id": "message_label", "label": "Message label", "default": "What's on your mind?" },
+
+    { "type": "header", "content": "Contact details (right column)" },
+    { "type": "checkbox", "id": "show_details", "label": "Show contact details column", "default": true },
+    { "type": "text", "id": "details_heading", "label": "Details heading", "default": "CONTACT DETAILS" },
+    {
+      "type": "richtext",
+      "id": "details_richtext",
+      "label": "Address & hours text",
+      "default": "<p>Trident Fly Fishing<br>190 Riverside St Suite 9A<br>Portland, ME 04103</p><p>Please note we are <strong>closed</strong> on all postal holidays and Dec. 24 - Jan. 2</p><p><strong>Customer Support Hours:</strong><br>Mon - Fri 10:00AM - 6:00PM</p><p><strong>Portland Store TEMPORARY Hours:</strong><br>Tues - Fri: 11:30 - 5:00PM<br>Can't Make it? Call us to schedule an appointment</p>"
+    },
+    { "type": "text", "id": "phone", "label": "Phone (tel link)", "default": "(888) 413-5211" },
+    { "type": "text", "id": "phone_label", "label": "Phone label (display)", "default": "(888) 413-5211" },
+    { "type": "text", "id": "alt_phone", "label": "Alt phone (optional)" },
+    { "type": "text", "id": "alt_phone_label", "label": "Alt phone label" },
+    { "type": "text", "id": "email", "label": "Email (mailto link)", "default": "support@tridentflyfishing.com" },
+    { "type": "text", "id": "email_label", "label": "Email label (display)", "default": "support@tridentflyfishing.com" }
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "name": "Extra text field",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Name", "default": "Custom field" },
+        { "type": "checkbox", "id": "use_long_text", "label": "Use long text", "default": false },
+        { "type": "checkbox", "id": "is_required", "label": "Field is required", "default": false }
+      ]
+    },
+    {
+      "type": "dropdown",
+      "name": "Dropdown",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Name", "default": "Custom field" },
+        { "type": "text", "id": "values", "label": "Values (comma-separated)", "default": "value 1, value 2, value 3" },
+        { "type": "checkbox", "id": "is_required", "label": "Field is required", "default": false }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "Contact form", "settings": { "show_details": true } }
+  ]
+}
+{% endschema %}

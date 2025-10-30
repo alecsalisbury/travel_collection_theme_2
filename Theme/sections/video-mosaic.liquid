@@ -1,0 +1,399 @@
+<section class="section" data-section-id="{{ section.id }}" data-section-type="video-mosaic">
+  <div class="container">
+
+    {% if section.settings.title != blank %}
+      <header class="section__header">
+        <div class="section__header-stack">
+          <h2 class="section__title heading h3">{{ section.settings.title | escape }}</h2>
+        </div>
+      </header>
+    {% endif %}
+
+    {%- for block in section.blocks -%}
+      {%- capture block_capture -%}
+        <div class="mosaic__item">
+          <div id="block-{{ block.id }}" class="promo-block promo-block--{{ block.settings.content_position | replace: '_', '-' }} {% if block.settings.show_overlay %}promo-block--overlay{% endif %} promo-block--video" data-action="open-modal" aria-controls="video-modal-{{ section.id }}" data-video-url="{{ block.settings.video_url.id }}" data-video-type="{{ block.settings.video_url.type }}" {{ block.shopify_attributes }}>
+            <div class="promo-block__image-clip video-mosaic__image-clip">
+              <div class="promo-block__image-wrapper promo-block__image-wrapper--cover">
+                {%- if block.settings.image -%}
+                  {{ block.settings.image | image_url: width: block.settings.image.width | image_tag: loading: 'lazy', sizes: 'min(100vw, 560px)', widths: '200,300,400,500,600,800,1000,1200,1400,1600', class: 'image-background' }}
+                {%- elsif block.settings.video_url.type == 'youtube' -%}
+                  <img class="image-background video-mosaic__image-background" src="https://img.youtube.com/vi/{{ block.settings.video_url.id }}/maxresdefault.jpg" alt="{{ block.settings.title | escape }}" width="1280" height="720">
+                {%- else -%}
+                  <div class="placeholder-background">
+                    {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                  </div>
+                {%- endif -%}
+                
+                {%- comment -%} Play button overlay {%- endcomment -%}
+                <div class="video-play-button">
+                  {% render 'play-icon' %}
+                </div>
+              </div>
+            </div>
+
+            <div class="promo-block__inner">
+              {%- if block.settings.title != blank -%}
+                <p class="promo-block__heading heading h3">{{ block.settings.title | escape }}</p>
+              {%- endif -%}
+
+              {%- if block.settings.content != blank -%}
+                <p class="promo-block__content">{{ block.settings.content | escape | newline_to_br }}</p>
+              {%- endif -%}
+
+              {%- if block.settings.button_text != blank -%}
+                <span class="promo-block__cta button button--floating">{{ block.settings.button_text | escape }}</span>
+              {%- endif -%}
+            </div>
+
+            <style>
+              #block-{{ block.id }} {
+                background-color: {{ block.settings.background }};
+                color: {{ block.settings.text_color }}
+              }
+
+              #block-{{ block.id }} .button {
+                background: {{ block.settings.button_background }};
+                color: {{ block.settings.button_text_color }};
+              }
+
+              {%- if block.settings.show_overlay -%}
+                #block-{{ block.id }}.promo-block--overlay::before {
+                  {%- assign overlay_opacity = block.settings.overlay_opacity | divided_by: 100.0 -%}
+                  background: linear-gradient(to top, rgba(0, 0, 0, 0) 15%, {{ '#000000' | color_modify: 'alpha', overlay_opacity }});
+                }
+              {%- endif -%}
+            </style>
+
+            {%- if block.settings.image -%}
+              <noscript>
+                <style>
+                  #block-{{ block.id }} .promo-block__image-wrapper {
+                    background-image: url({{ block.settings.image | image_url: width: 800 }});
+                  }
+                </style>
+              </noscript>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endcapture -%}
+
+      {%- if forloop.index == 1 -%}
+        {%- capture block_1 -%}{{ block_capture }}{%- endcapture -%}
+      {%- elsif forloop.index == 2 -%}
+        {%- capture block_2 -%}{{ block_capture }}{%- endcapture -%}
+      {%- elsif forloop.index == 3 -%}
+        {%- capture block_3 -%}{{ block_capture }}{%- endcapture -%}
+      {%- elsif forloop.index == 4 -%}
+        {%- capture block_4 -%}{{ block_capture }}{%- endcapture -%}
+      {%- elsif forloop.index == 5 -%}
+        {%- capture block_5 -%}{{ block_capture }}{%- endcapture -%}
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- comment -%}We have accumulated all the different blocks, so now we simply create the columns based on the number of blocks{%- endcomment -%}
+
+    <div class="mosaic video-mosaic mosaic--{{ section.settings.section_size }} mosaic--{% if section.blocks.size == 1 %}one-column{% elsif section.blocks.size == 2 %}two-columns{% else %}three-columns{% endif %}">
+      {%- case section.blocks.size -%}
+        {%- when 1 or '1' -%}
+          <div class="mosaic__column">
+            {{ block_1 }}
+          </div>
+
+        {%- when 2 -%}
+          <div class="mosaic__column">
+            {{ block_1 }}
+          </div>
+
+          <div class="mosaic__column">
+            {{ block_2 }}
+          </div>
+
+        {%- when 3 -%}
+          <div class="mosaic__column">
+            {{ block_1 }}
+          </div>
+
+          <div class="mosaic__column">
+            {{ block_2 }}
+          </div>
+
+          <div class="mosaic__column">
+            {{ block_3 }}
+          </div>
+
+        {%- when 4 -%}
+          <div class="mosaic__column">
+            {{ block_1 }}
+          </div>
+
+          <div class="mosaic__column">
+            {{ block_2 }}
+          </div>
+
+          <div class="mosaic__column">
+            {{ block_3 }}
+            {{ block_4 }}
+          </div>
+
+        {%- when 5 -%}
+          <div class="mosaic__column">
+            {{ block_1 }}
+            {{ block_2 }}
+          </div>
+
+          <div class="mosaic__column">
+            {{ block_3 }}
+          </div>
+
+          <div class="mosaic__column">
+            {{ block_4 }}
+            {{ block_5 }}
+          </div>
+      {%- endcase -%}
+    </div>
+  </div>
+
+  {%- comment -%} Video Modal {%- endcomment -%}
+  <div class="modal modal--video" id="video-modal-{{ section.id }}" aria-hidden="true" role="dialog" aria-labelledby="video-modal-title">
+    <div class="modal__dialog modal__dialog--video">
+      <div class="modal__header">
+        <button class="modal__close" data-action="close-modal" type="button" aria-label="{{ 'general.accessibility.close' | t }}">
+          {% render 'icon', icon: 'close' %}
+        </button>
+      </div>
+      <div class="modal__content modal__content--video">
+        <div class="video-modal__wrapper">
+          <iframe id="video-iframe-{{ section.id }}" src="" frameborder="0" allowfullscreen allow="autoplay"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const videoModal = document.getElementById('video-modal-{{ section.id }}');
+  const videoIframe = document.getElementById('video-iframe-{{ section.id }}');
+  
+  // Listen for modal open events
+  document.addEventListener('click', function(e) {
+    const trigger = e.target.closest('[data-action="open-modal"][aria-controls="video-modal-{{ section.id }}"]');
+    if (trigger) {
+      e.preventDefault();
+      const videoId = trigger.getAttribute('data-video-url');
+      const videoType = trigger.getAttribute('data-video-type');
+      
+      if (videoId && videoType) {
+        let embedUrl = '';
+        
+        // Handle YouTube URLs
+        if (videoType === 'youtube') {
+          embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+        }
+        // Handle Vimeo URLs  
+        else if (videoType === 'vimeo') {
+          embedUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&color={{ settings.accent_color | remove_first: '#' }}`;
+        }
+        
+        if (embedUrl) {
+          // Set the iframe src before the modal opens
+          setTimeout(() => {
+            videoIframe.src = embedUrl;
+          }, 100);
+        }
+      }
+    }
+  });
+  
+  // Listen for modal close events
+  videoModal.addEventListener('modal:closed', function() {
+    videoIframe.src = '';
+  });
+
+});
+</script>
+
+{% schema %}
+{
+  "name": "Video Mosaic",
+  "max_blocks": 5,
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Video mosaic"
+    },
+    {
+      "type": "select",
+      "id": "section_size",
+      "label": "Section height",
+      "options": [
+        {
+          "value": "small",
+          "label": "S"
+        },
+        {
+          "value": "medium",
+          "label": "M"
+        },
+        {
+          "value": "large",
+          "label": "L"
+        },
+        {
+          "value": "extra-large",
+          "label": "XL"
+        }
+      ],
+      "default": "medium"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Video Item",
+      "settings": [
+        {
+          "type": "video_url",
+          "id": "video_url",
+          "accept": ["vimeo", "youtube"],
+          "label": "Video URL",
+          "info": "YouTube or Vimeo video URL"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Custom thumbnail",
+          "info": "800 x 520px .jpg recommended for standard images. 1100 x 1100px .jpg recommended for center images. Leave blank to use video thumbnail."
+        },
+        {
+          "type": "checkbox",
+          "id": "show_overlay",
+          "label": "Show overlay",
+          "info": "Increase text readability on busy images.",
+          "default": false
+        },
+        {
+          "type": "range",
+          "id": "overlay_opacity",
+          "label": "Overlay opacity",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 50
+        },
+        {
+          "type": "color",
+          "id": "background",
+          "label": "Background",
+          "default": "#f3f4f4"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Text",
+          "default": "#4f5558"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Your video title"
+        },
+        {
+          "type": "textarea",
+          "id": "content",
+          "label": "Text",
+          "default": "Tell more about your video content..."
+        },
+        {
+          "type": "select",
+          "id": "content_position",
+          "label": "Content position",
+          "options": [
+            {
+              "value": "top_left",
+              "label": "Top left"
+            },
+            {
+              "value": "top_center",
+              "label": "Top center"
+            },
+            {
+              "value": "top_right",
+              "label": "Top right"
+            },
+            {
+              "value": "middle_left",
+              "label": "Middle left"
+            },
+            {
+              "value": "middle_center",
+              "label": "Middle center"
+            },
+            {
+              "value": "middle_right",
+              "label": "Middle right"
+            },
+            {
+              "value": "bottom_left",
+              "label": "Bottom left"
+            },
+            {
+              "value": "bottom_center",
+              "label": "Bottom center"
+            },
+            {
+              "value": "bottom_right",
+              "label": "Bottom right"
+            }
+          ],
+          "default": "bottom_left"
+        },
+        {
+          "type": "header",
+          "content": "Button"
+        },
+        {
+          "type": "color",
+          "id": "button_background",
+          "label": "Background",
+          "default": "#4f5558"
+        },
+        {
+          "type": "color",
+          "id": "button_text_color",
+          "label": "Text",
+          "default": "#f3f4f4"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Text",
+          "default": "Watch Video"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "category": "Video",
+      "name": "Video Mosaic",
+      "blocks": [
+        {
+          "type": "item"
+        },
+        {
+          "type": "item"
+        },
+        {
+          "type": "item"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

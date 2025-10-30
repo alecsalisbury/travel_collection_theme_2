@@ -1,0 +1,407 @@
+{% comment %}
+  Trip Overview/Introduction Text Section
+  Center-aligned rich text content from metafield
+{% endcomment %}
+
+<section id="trip-overview-{{ section.id }}" class="trip-overview">
+  <div id="overview" style="position: absolute; top: -70px;"></div>
+  <div class="container">
+    <div class="trip-overview__wrapper">
+      <h2 class="trip-overview__title">
+        <span class="trip-overview__bullet"></span>
+        {% if section.settings.use_metafield and product.metafields.trip.trip_summary != blank %}
+          Trip Summary
+        {% else %}
+          Trip Details
+        {% endif %}
+      </h2>
+
+      {% if section.settings.use_metafield and product.metafields.trip.trip_summary != blank %}
+        <div class="trip-overview__content">
+          {% assign summary_data = product.metafields.trip.trip_summary.value %}
+          {% if summary_data.children %}
+            {% for item in summary_data.children %}
+              {% if item.type == 'paragraph' %}
+                <p>
+                  {% for child in item.children %}
+                    {% if child.bold %}
+                      <strong>{{ child.value }}</strong>
+                    {% elsif child.italic %}
+                      <em>{{ child.value }}</em>
+                    {% else %}
+                      {{ child.value }}
+                    {% endif %}
+                  {% endfor %}
+                </p>
+              {% elsif item.type == 'heading' %}
+                {% if item.level == 2 %}
+                  <h2>
+                    {% for child in item.children %}{{ child.value }}{% endfor %}
+                  </h2>
+                {% elsif item.level == 3 %}
+                  <h3>
+                    {% for child in item.children %}{{ child.value }}{% endfor %}
+                  </h3>
+                {% endif %}
+              {% elsif item.type == 'list' %}
+                {% if item.listType == 'unordered' %}
+                  <ul>
+                    {% for list_item in item.children %}
+                      <li>
+                        {% for child in list_item.children %}
+                          {% if child.bold %}
+                            <strong>{{ child.value }}</strong>
+                          {% elsif child.italic %}
+                            <em>{{ child.value }}</em>
+                          {% else %}
+                            {{ child.value }}
+                          {% endif %}
+                        {% endfor %}
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% elsif item.listType == 'ordered' %}
+                  <ol>
+                    {% for list_item in item.children %}
+                      <li>
+                        {% for child in list_item.children %}
+                          {% if child.bold %}
+                            <strong>{{ child.value }}</strong>
+                          {% elsif child.italic %}
+                            <em>{{ child.value }}</em>
+                          {% else %}
+                            {{ child.value }}
+                          {% endif %}
+                        {% endfor %}
+                      </li>
+                    {% endfor %}
+                  </ol>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            {{ product.metafields.trip.trip_summary }}
+          {% endif %}
+        </div>
+      {% elsif product.description != blank %}
+        <div class="trip-overview__content" id="product-description-content">
+          {{ product.description }}
+        </div>
+      {% elsif section.settings.content != blank %}
+        <div class="trip-overview__content">
+          {{ section.settings.content }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .trip-overview {
+    padding: 50px 0 60px 0;
+    margin-bottom: 0;
+    background-color: #E7E9EB;
+  }
+
+  .trip-overview__wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .trip-overview__title {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 2rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .trip-overview__bullet {
+    width: 12px;
+    height: 12px;
+    background-color: #4A9FD8;
+    flex-shrink: 0;
+  }
+
+  /* Default styles for metafield content (not fallback) */
+  .trip-overview__content:not(#product-description-content) {
+    font-size: 24px;
+    line-height: 1.8;
+    color: #000000;
+    text-align: left;
+    font-weight: 700;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .trip-overview__content:not(#product-description-content) p {
+    margin-bottom: 1.75rem;
+    font-weight: 700;
+  }
+
+  .trip-overview__content:not(#product-description-content) p:last-child {
+    margin-bottom: 0;
+  }
+
+  .trip-overview__content:not(#product-description-content) h2 {
+    font-size: 2.25rem;
+    font-weight: 300;
+    color: #111827;
+    margin-bottom: 2rem;
+    margin-top: 2.5rem;
+    line-height: 1.3;
+  }
+
+  .trip-overview__content:not(#product-description-content) h3 {
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: #374151;
+    margin-bottom: 1.25rem;
+    margin-top: 2rem;
+    line-height: 1.4;
+  }
+
+  /* Reset ALL styles for product description HTML to respect original formatting */
+  #product-description-content {
+    all: revert;
+    display: block;
+  }
+
+  #product-description-content * {
+    all: revert;
+  }
+
+  /* Only constrain images */
+  #product-description-content img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  /* Target specific badge image */
+  #product-description-content img[src*="GRBadgeColor"] {
+    max-width: 150px !important;
+    width: auto !important;
+    height: auto !important;
+    display: block !important;
+    margin: 1rem auto !important;
+  }
+
+  .trip-overview__content ul,
+  .trip-overview__content ol {
+    text-align: left;
+    margin: 1.5rem 0;
+    padding-left: 1.5rem;
+    font-size: 24px;
+    line-height: 1.8;
+    color: #000000;
+    font-weight: 700;
+  }
+
+  .trip-overview__content li {
+    margin-bottom: 0.875rem;
+    line-height: 1.8;
+  }
+
+  .trip-overview__content strong {
+    color: #111827;
+    font-weight: 900;
+  }
+
+  .trip-overview__content em {
+    font-style: italic;
+    color: #374151;
+  }
+
+  .trip-overview__content a {
+    color: #2563eb;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-bottom 0.3s ease;
+  }
+
+  .trip-overview__content a:hover {
+    border-bottom: 1px solid #2563eb;
+  }
+
+  @media screen and (max-width: 768px) {
+    .trip-overview {
+      padding: 60px 20px;
+    }
+
+    .trip-overview__content {
+      font-size: 1rem;
+    }
+
+    .trip-overview__content h2 {
+      font-size: 1.875rem;
+    }
+
+    .trip-overview__content h3 {
+      font-size: 1.25rem;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('=== OVERVIEW: SCRIPT RUNNING ===');
+    const descriptionContent = document.getElementById('product-description-content');
+    console.log('Product description content found:', !!descriptionContent);
+
+    if (!descriptionContent) {
+      console.log('No #product-description-content element - not using fallback description');
+      return;
+    }
+
+    console.log('Product description HTML:', descriptionContent.innerHTML.substring(0, 500));
+
+    // Find tab navigation in the product description
+    const tabNavigation = descriptionContent.querySelector('.tabs-navigation');
+    console.log('Tab navigation found:', !!tabNavigation);
+
+    if (!tabNavigation) {
+      console.log('No .tabs-navigation found in product description - no quicklinks to extract');
+      return;
+    }
+
+    // Extract quicklinks from tabs
+    const quicklinks = [];
+    const tabHeaders = tabNavigation.querySelectorAll('.tab-header');
+
+    tabHeaders.forEach((header, index) => {
+      const link = header.querySelector('a');
+      const titleSpan = header.querySelector('.tab-title');
+      if (link && titleSpan) {
+        const href = link.getAttribute('href');
+        const title = titleSpan.textContent.trim();
+
+        // Store quicklink data
+        quicklinks.push({
+          id: href.replace('#', ''),
+          title: title,
+          index: index
+        });
+      }
+    });
+
+    // Hide the entire tab navigation structure
+    const tabContainer = descriptionContent.querySelector('[data-content-type="tabs"]');
+    if (tabContainer) {
+      // Hide the tab navigation
+      if (tabNavigation) {
+        tabNavigation.style.display = 'none';
+      }
+
+      // Show all tab content panels (remove tab behavior)
+      const tabPanels = tabContainer.querySelectorAll('[data-content-type="tab-item"]');
+      tabPanels.forEach(panel => {
+        panel.style.display = 'block';
+        panel.style.opacity = '1';
+      });
+
+      // Remove tabs-content wrapper styling that may hide content
+      const tabsContent = tabContainer.querySelector('.tabs-content');
+      if (tabsContent) {
+        tabsContent.style.border = 'none';
+        tabsContent.style.minHeight = 'auto';
+      }
+    }
+
+    // Dispatch event with quicklinks data for sticky nav to consume
+    if (quicklinks.length > 0) {
+      window.productDescriptionQuicklinks = quicklinks;
+
+      console.log('=== OVERVIEW: DISPATCHING QUICKLINKS ===');
+      console.log('Quicklinks to dispatch:', quicklinks);
+      console.log('Sticky nav exists?', !!document.getElementById('sticky-nav'));
+
+      // Dispatch custom event
+      const event = new CustomEvent('quicklinksExtracted', {
+        detail: { quicklinks: quicklinks },
+        bubbles: true
+      });
+      document.dispatchEvent(event);
+
+      // Also dispatch on window for redundancy
+      window.dispatchEvent(event);
+
+      console.log('Quicklinks event dispatched');
+      console.log('=== END OVERVIEW DISPATCH ===');
+    }
+
+    // If using fallback description, move gallery section above overview
+    if (descriptionContent) {
+      console.log('Fallback description detected, attempting to reorder gallery...');
+
+      const overviewSection = document.getElementById('trip-overview-{{ section.id }}');
+
+      // Try multiple selectors to find gallery
+      let gallerySection = document.querySelector('[id*="trip-gallery"]');
+      if (!gallerySection) {
+        gallerySection = document.querySelector('.trip-gallery');
+      }
+      if (!gallerySection) {
+        // Try finding by section type in DOM
+        const allSections = document.querySelectorAll('section');
+        for (let section of allSections) {
+          if (section.className && section.className.includes('gallery')) {
+            gallerySection = section;
+            break;
+          }
+        }
+      }
+
+      console.log('Overview section found:', !!overviewSection);
+      console.log('Gallery section found:', !!gallerySection);
+
+      if (overviewSection && gallerySection) {
+        // Check if gallery comes after overview in DOM order
+        const comparison = overviewSection.compareDocumentPosition(gallerySection);
+
+        // DOCUMENT_POSITION_FOLLOWING = 4 means gallerySection comes after overviewSection
+        if (comparison & Node.DOCUMENT_POSITION_FOLLOWING) {
+          // Move gallery before overview
+          overviewSection.parentNode.insertBefore(gallerySection, overviewSection);
+          console.log('✓ Gallery moved above Overview (fallback description detected)');
+        } else {
+          console.log('Gallery already before Overview, no reordering needed');
+        }
+      } else {
+        console.log('Could not find both sections for reordering');
+      }
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Trip Overview",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "use_metafield",
+      "label": "Use Product Metafield",
+      "default": true,
+      "info": "Pull content from product.metafields.trip.trip_summary"
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "Overview Content",
+      "default": "<p>Experience world-class fly fishing in the heart of Alaska's wilderness.</p>",
+      "info": "Used when metafield is not available"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trip Overview"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,762 @@
+[
+  {
+    "name": "Atlantic Salmon",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/atlantic-salmon_6.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/atlantic-salmon_6.jpg"
+    }
+  },
+  {
+    "name": "Baja Fade",
+    "tier": "Drag Knob Tier #2",
+    "tier_price": 100.0,
+    "tier_variant_id": 49116101017833,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-baja-fade_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-baja-fade_2.jpg"
+    }
+  },
+  {
+    "name": "Bass",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/largemouth-swatch_5.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/largemouth-swatch_5.jpg"
+    }
+  },
+  {
+    "name": "Black Blue Fade",
+    "tier": "Drag Knob Tier #2",
+    "tier_price": 100.0,
+    "tier_variant_id": 49116101017833,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-black-blue_1_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-black-blue_1_2.jpg"
+    }
+  },
+  {
+    "name": "Black Green Fade",
+    "tier": "Drag Knob Tier #2",
+    "tier_price": 100.0,
+    "tier_variant_id": 49116101017833,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-black-green_1_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-black-green_1_2.jpg"
+    }
+  },
+  {
+    "name": "Black Platinum Fade",
+    "tier": "Drag Knob Tier #2",
+    "tier_price": 100.0,
+    "tier_variant_id": 49116101017833,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-black-platinum_1_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-black-platinum_1_2.jpg"
+    }
+  },
+  {
+    "name": "Black Red Fade",
+    "tier": "Drag Knob Tier #2",
+    "tier_price": 100.0,
+    "tier_variant_id": 49116101017833,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-black-red_1_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-black-red_1_2.jpg"
+    }
+  },
+  {
+    "name": "Blue III",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-blue-iii_1_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-blue-iii_1_1.jpg"
+    }
+  },
+  {
+    "name": "Bonefish",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/bonefish_5_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/bonefish_5_2.jpg"
+    }
+  },
+  {
+    "name": "Bronze",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-bronze_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-bronze_4.jpg"
+    }
+  },
+  {
+    "name": "Chinook",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/chinook_9.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/chinook_9.jpg"
+    }
+  },
+  {
+    "name": "Chrome Steelhead",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/chrome-steelhead_5.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/chrome-steelhead_5.jpg"
+    }
+  },
+  {
+    "name": "Classic Atlantic Salmon",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/atlantic-salmon_5.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/atlantic-salmon_5.jpg"
+    }
+  },
+  {
+    "name": "Classic Brook Trout",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/brook_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/brook_4.jpg"
+    }
+  },
+  {
+    "name": "Classic Brown Trout",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/brown_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/brown_4.jpg"
+    }
+  },
+  {
+    "name": "Classic Dorado",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/old-dorado_12_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/old-dorado_12_1.jpg"
+    }
+  },
+  {
+    "name": "Classic Rainbow Trout",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/rainbow_4_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/rainbow_4_1.jpg"
+    }
+  },
+  {
+    "name": "Dark Brown",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-brown_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-brown_4.jpg"
+    }
+  },
+  {
+    "name": "Dark Olive",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-dark-olive_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-dark-olive_4.jpg"
+    }
+  },
+  {
+    "name": "Deep Blue",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-deep-blue_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-deep-blue_4.jpg"
+    }
+  },
+  {
+    "name": "Deep Green",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/deep-green_2_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/deep-green_2_1.jpg"
+    }
+  },
+  {
+    "name": "Dorado",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/new-dorado_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/new-dorado_1.jpg"
+    }
+  },
+  {
+    "name": "False Albacore",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/albacore-title-1_3.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/albacore-title-1_3.jpg"
+    }
+  },
+  {
+    "name": "Flats Fade",
+    "tier": "Drag Knob Tier #2",
+    "tier_price": 100.0,
+    "tier_variant_id": 49116101017833,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-flats-fade_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-flats-fade_2.jpg"
+    }
+  },
+  {
+    "name": "Golden Dorado",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/dorado-swatch_16.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/dorado-swatch_16.jpg"
+    }
+  },
+  {
+    "name": "Grass Green",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-grass-green_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-grass-green_4.jpg"
+    }
+  },
+  {
+    "name": "Grateful Dead",
+    "tier": "Drag Knob Tier #4",
+    "tier_price": 200.0,
+    "tier_variant_id": 49116101083369,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gd-swatch_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gd-swatch_2.jpg"
+    }
+  },
+  {
+    "name": "Grayling",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/grayling-swatch_5.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/grayling-swatch_5.jpg"
+    }
+  },
+  {
+    "name": "Lime Green",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-lime-green_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-lime-green_4.jpg"
+    }
+  },
+  {
+    "name": "Native Brook",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/native-brook_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/native-brook_4.jpg"
+    }
+  },
+  {
+    "name": "Native Brown",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/native-brown_5.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/native-brown_5.jpg"
+    }
+  },
+  {
+    "name": "Native Cutthroat",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/native-cutthroat_5.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/native-cutthroat_5.jpg"
+    }
+  },
+  {
+    "name": "Native Rainbow",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/native-rainbow_5.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/native-rainbow_5.jpg"
+    }
+  },
+  {
+    "name": "Northern Lights Fade",
+    "tier": "Drag Knob Tier #2",
+    "tier_price": 100.0,
+    "tier_variant_id": 49116101017833,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-northern-lights_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-northern-lights_2.jpg"
+    }
+  },
+  {
+    "name": "Olive",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/olive_2_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/olive_2_1.jpg"
+    }
+  },
+  {
+    "name": "Orange",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-orange_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-orange_4.jpg"
+    }
+  },
+  {
+    "name": "Peacock Bass",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/peacock-bass_12.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/peacock-bass_12.jpg"
+    }
+  },
+  {
+    "name": "Penumbra",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/penumbra-title-1_3.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/penumbra-title-1_3.jpg"
+    }
+  },
+  {
+    "name": "Pink",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/pink_2_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/pink_2_1.jpg"
+    }
+  },
+  {
+    "name": "Platinum",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/platinum_2_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/platinum_2_1.jpg"
+    }
+  },
+  {
+    "name": "Purple",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/purple_2_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/purple_2_1.jpg"
+    }
+  },
+  {
+    "name": "Rasta Fade",
+    "tier": "Drag Knob Tier #2",
+    "tier_price": 100.0,
+    "tier_variant_id": 49116101017833,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-rasta_1_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-rasta_1_2.jpg"
+    }
+  },
+  {
+    "name": "Red",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/red_2_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/red_2_1.jpg"
+    }
+  },
+  {
+    "name": "Redfish",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/redfish_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/redfish_4.jpg"
+    }
+  },
+  {
+    "name": "Retro Caribbean",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/retro-caribean_12.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/retro-caribean_12.jpg"
+    }
+  },
+  {
+    "name": "Retro Carnival",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/retro-carnival_11.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/retro-carnival_11.jpg"
+    }
+  },
+  {
+    "name": "Retro Fire",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/retro-fire_12.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/retro-fire_12.jpg"
+    }
+  },
+  {
+    "name": "Retro Green Black",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/retro-green-black_1_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/retro-green-black_1_1.jpg"
+    }
+  },
+  {
+    "name": "Rooster Fish",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/roosterfish-swatch_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/roosterfish-swatch_1.jpg"
+    }
+  },
+  {
+    "name": "Satin Black",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-black_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-black_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Black Blue Fade",
+    "tier": "Drag Knob Tier #2",
+    "tier_price": 100.0,
+    "tier_variant_id": 49116101017833,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-black-blue_1_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-black-blue_1_2.jpg"
+    }
+  },
+  {
+    "name": "Satin Black Green Fade",
+    "tier": "Drag Knob Tier #2",
+    "tier_price": 100.0,
+    "tier_variant_id": 49116101017833,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-black-green_1_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-black-green_1_2.jpg"
+    }
+  },
+  {
+    "name": "Satin Blue III",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-blue-iii_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-blue-iii_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Bronze",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-bronze_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-bronze_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Dark Brown",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-brown_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-brown_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Dark Olive",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-dark-olive_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-dark-olive_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Deep Blue",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-deep-blue_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-deep-blue_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Deep Green",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-deep-green_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-deep-green_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Grass Green",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-grass-green_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-grass-green_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Lime Green",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-lime-green_3.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-lime-green_3.jpg"
+    }
+  },
+  {
+    "name": "Satin Olive",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-olive_6.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-olive_6.jpg"
+    }
+  },
+  {
+    "name": "Satin Orange",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-orange_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-orange_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Pink",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-pink_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-pink_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Platinum",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-platinum_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-platinum_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Purple",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-purple_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-purple_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Red",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-red_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-red_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Slate",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-slate_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-slate_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Teal",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-teal_9.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-teal_9.jpg"
+    }
+  },
+  {
+    "name": "Slate",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/slate_2_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/slate_2_1.jpg"
+    }
+  },
+  {
+    "name": "Striper",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/striper.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/striper.jpg"
+    }
+  },
+  {
+    "name": "Sunset Fade",
+    "tier": "Drag Knob Tier #2",
+    "tier_price": 100.0,
+    "tier_variant_id": 49116101017833,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-sunset-fade_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-sunset-fade_2.jpg"
+    }
+  },
+  {
+    "name": "Tarpon",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/tarpon_2_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/tarpon_2_2.jpg"
+    }
+  },
+  {
+    "name": "Teal",
+    "tier": "Drag Knob Tier #1",
+    "tier_price": 50.0,
+    "tier_variant_id": 49115962999017,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/teal_6_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/teal_6_1.jpg"
+    }
+  },
+  {
+    "name": "Tiger Trout",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/tiger-trout_12.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/tiger-trout_12.jpg"
+    }
+  },
+  {
+    "name": "Wild Trout",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/wild-trout_6_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/wild-trout_6_2.jpg"
+    }
+  },
+  {
+    "name": "Yamame",
+    "tier": "Drag Knob Tier #3",
+    "tier_price": 125.0,
+    "tier_variant_id": 49116101050601,
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/yamame_4_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/yamame_4_1.jpg"
+    }
+  }
+]

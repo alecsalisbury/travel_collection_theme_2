@@ -1,0 +1,842 @@
+{% comment %}
+  Choose Your Adventure - Trip Packages Section
+  Uses product.metafields.trip.starting_price for overview tab
+  Uses product.metafields.trip.rates (rich text) for pricing & packages tab
+  Section only displays if at least one of these metafields has content
+{% endcomment %}
+
+{% if product.metafields.trip.starting_price != blank or product.metafields.trip.rates != blank %}
+<section class="trip-packages">
+  <div id="packages" style="position: absolute; top: -70px;"></div>
+  <div class="packages-container">
+
+    {%- comment -%} Section Header {%- endcomment -%}
+    <div class="packages-header">
+      <h2 class="packages-title">CHOOSE YOUR ADVENTURE</h2>
+    </div>
+
+    {%- comment -%} Tabs Navigation {%- endcomment -%}
+    <div class="packages-tabs">
+      <button class="tab-button active" data-tab="overview">Overview</button>
+      <button class="tab-button" data-tab="pricing">Pricing & Packages</button>
+    </div>
+
+    {%- comment -%} Overview Tab Content {%- endcomment -%}
+    <div class="tab-content active" data-tab-content="overview">
+      <div class="overview-content">
+        {% assign starting_price = product.metafields.trips.starting_price.value %}
+        {% if starting_price != blank %}
+        <div class="overview-left">
+          <p class="overview-label">TRIPS STARTING FROM</p>
+          <p class="overview-price">${{ starting_price | times: 100 | money_without_currency | remove: '.00' }}</p>
+          <a href="#pricing" class="overview-button pricing-tab-trigger">VIEW PRICING & PACKAGES</a>
+        </div>
+        <div class="overview-divider"></div>
+        {% endif %}
+        <div class="overview-right">
+          <h3 class="overview-benefits-title">WHY BOOK WITH TRIDENT</h3>
+          <ul class="overview-benefits">
+            <li class="benefit-item">
+              <svg class="benefit-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="6" width="18" height="13" rx="2" stroke="#4A9FD8" stroke-width="2"/>
+                <path d="M3 10h18M7 14h4" stroke="#4A9FD8" stroke-width="2" stroke-linecap="round"/>
+                <path d="M3 6L12 3l9 3" stroke="#4A9FD8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span class="benefit-text">No Credit Card Fees</span>
+            </li>
+            <li class="benefit-item">
+              <svg class="benefit-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 6L9 17l-5-5" stroke="#4A9FD8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span class="benefit-text">Same Price as Booking Direct</span>
+            </li>
+            <li class="benefit-item">
+              <svg class="benefit-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#4A9FD8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span class="benefit-text">Earn Trident Rewards</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="overview-cta">
+        <a href="#trip-inquiry" class="book-now-button">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; vertical-align: middle; margin-right: 8px;">
+            <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+            <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          BOOK NOW
+        </a>
+      </div>
+    </div>
+
+    {%- comment -%} Pricing & Packages Tab Content {%- endcomment -%}
+    <div class="tab-content" data-tab-content="pricing">
+      <div class="pricing-content">
+        {% if product.metafields.trip.rates != blank %}
+          {% assign rates_data = product.metafields.trip.rates.value %}
+          {% if rates_data.children %}
+            {% for item in rates_data.children %}
+              {% if item.type == 'paragraph' %}
+                <p>
+                  {% for child in item.children %}
+                    {% if child.bold %}
+                      <strong>{{ child.value }}</strong>
+                    {% elsif child.italic %}
+                      <em>{{ child.value }}</em>
+                    {% else %}
+                      {{ child.value }}
+                    {% endif %}
+                  {% endfor %}
+                </p>
+              {% elsif item.type == 'heading' %}
+                {% if item.level == 2 %}
+                  <h2>
+                    {% for child in item.children %}{{ child.value }}{% endfor %}
+                  </h2>
+                {% elsif item.level == 3 %}
+                  <h3>
+                    {% for child in item.children %}{{ child.value }}{% endfor %}
+                  </h3>
+                {% endif %}
+              {% elsif item.type == 'list' %}
+                {% if item.listType == 'unordered' %}
+                  <ul>
+                    {% for list_item in item.children %}
+                      <li>
+                        {% for child in list_item.children %}
+                          {% if child.bold %}
+                            <strong>{{ child.value }}</strong>
+                          {% elsif child.italic %}
+                            <em>{{ child.value }}</em>
+                          {% else %}
+                            {{ child.value }}
+                          {% endif %}
+                        {% endfor %}
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% elsif item.listType == 'ordered' %}
+                  <ol>
+                    {% for list_item in item.children %}
+                      <li>
+                        {% for child in list_item.children %}
+                          {% if child.bold %}
+                            <strong>{{ child.value }}</strong>
+                          {% elsif child.italic %}
+                            <em>{{ child.value }}</em>
+                          {% else %}
+                            {{ child.value }}
+                          {% endif %}
+                        {% endfor %}
+                      </li>
+                    {% endfor %}
+                  </ol>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            {{ product.metafields.trip.rates }}
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+
+    {%- comment -%} Legacy Package Cards (hidden, kept for backward compatibility) {%- endcomment -%}
+    <div class="packages-grid" style="display: none;">
+
+      {% if section.settings.use_metafield and product.metafields.trip.trip_packages != blank %}
+
+        {%- comment -%} Use Metafield Data {%- endcomment -%}
+        {% assign packages = product.metafields.trip.trip_packages.value %}
+
+        {% for package in packages %}
+          {% assign parts = package | split: ' | ' %}
+          {% assign duration = parts[0] %}
+          {% assign price = parts[1] %}
+          {% assign included_items = parts[2] | split: ', ' %}
+          {% assign not_included_items = parts[3] | split: ', ' %}
+
+          <div class="package-card">
+            <div class="package-pricing">
+              <p class="package-duration">{{ duration }}</p>
+              <p class="package-price">{{ price }}</p>
+              <a href="#trip-inquiry" class="package-button">BOOK NOW</a>
+            </div>
+
+            <div class="package-details">
+              <div class="package-column">
+                <h3 class="package-column-title">What's included</h3>
+                <ul class="package-list package-list-included">
+                  {% for item in included_items %}
+                    <li class="package-item">
+                      <span class="package-icon package-icon-check">✓</span>
+                      <span class="package-item-text">{{ item | strip }}</span>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+
+              <div class="package-column">
+                <h3 class="package-column-title">What's not included</h3>
+                <ul class="package-list package-list-not-included">
+                  {% for item in not_included_items %}
+                    <li class="package-item">
+                      <span class="package-icon package-icon-x">✕</span>
+                      <span class="package-item-text">{{ item | strip }}</span>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+
+      {% else %}
+
+        {%- comment -%} Fallback to Blocks {%- endcomment -%}
+        {% for block in section.blocks %}
+          {% if block.type == 'package' %}
+
+            {% assign included_items = block.settings.included | split: ', ' %}
+            {% assign not_included_items = block.settings.not_included | split: ', ' %}
+
+            <div class="package-card" {{ block.shopify_attributes }}>
+              <div class="package-pricing">
+                <p class="package-duration">{{ block.settings.duration }}</p>
+                <p class="package-price">{{ block.settings.price }}</p>
+                <a href="#trip-inquiry" class="package-button">BOOK NOW</a>
+              </div>
+
+              <div class="package-details">
+                <div class="package-column">
+                  <h3 class="package-column-title">What's included</h3>
+                  <ul class="package-list package-list-included">
+                    {% for item in included_items %}
+                      <li class="package-item">
+                        <span class="package-icon package-icon-check">✓</span>
+                        <span class="package-item-text">{{ item | strip }}</span>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+
+                <div class="package-column">
+                  <h3 class="package-column-title">What's not included</h3>
+                  <ul class="package-list package-list-not-included">
+                    {% for item in not_included_items %}
+                      <li class="package-item">
+                        <span class="package-icon package-icon-x">✕</span>
+                        <span class="package-item-text">{{ item | strip }}</span>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+          {% endif %}
+        {% endfor %}
+
+      {% endif %}
+
+    </div>
+  </div>
+</section>
+
+<style>
+  .trip-packages {
+    background-color: #e8e8e8;
+    padding: 80px 20px;
+  }
+
+  .packages-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* Header Section */
+  .packages-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .packages-title {
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    font-size: 76px;
+    font-weight: 300;
+    letter-spacing: 2px;
+    margin: 0;
+    color: #1a1a1a;
+    text-transform: uppercase;
+  }
+
+  /* Tabs Navigation */
+  .packages-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 0;
+    background-color: #ffffff;
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
+  }
+
+  .tab-button {
+    flex: 1;
+    max-width: 400px;
+    padding: 20px 40px;
+    background-color: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .tab-button:hover {
+    color: #4A9FD8;
+  }
+
+  .tab-button.active {
+    color: #4A9FD8;
+    border-bottom-color: #4A9FD8;
+  }
+
+  /* Tab Content */
+  .tab-content {
+    display: none;
+    background-color: #ffffff;
+    padding: 60px;
+    border-radius: 0 0 8px 8px;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  /* Overview Tab Styles */
+  .overview-content {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 60px;
+    align-items: center;
+    margin-bottom: 40px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  /* When only benefits section is shown (no starting price) */
+  .overview-content:has(.overview-right):not(:has(.overview-left)) {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .overview-left {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .overview-divider {
+    width: 1px;
+    height: 200px;
+    background-color: #e0e0e0;
+    flex-shrink: 0;
+  }
+
+  .overview-label {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    letter-spacing: 1px;
+    margin: 0 0 10px 0;
+    text-transform: uppercase;
+  }
+
+  .overview-price {
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    font-size: 72px;
+    font-weight: 900;
+    color: #4A9FD8;
+    margin: 0 0 30px 0;
+    line-height: 1;
+  }
+
+  .overview-button {
+    display: inline-block;
+    padding: 15px 30px;
+    background-color: transparent;
+    color: #4A9FD8;
+    border: 2px solid #4A9FD8;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .overview-button:hover {
+    background-color: #4A9FD8;
+    color: #ffffff;
+  }
+
+  .overview-right {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .overview-benefits-title {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 25px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .overview-benefits {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: inline-block;
+    text-align: left;
+  }
+
+  .benefit-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 16px;
+    color: #333;
+    text-align: left;
+  }
+
+  .benefit-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  .benefit-text {
+    flex: 1;
+  }
+
+  .overview-cta {
+    text-align: center;
+  }
+
+  .book-now-button {
+    display: inline-block;
+    padding: 18px 60px;
+    background-color: #4A9FD8;
+    color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .book-now-button:hover {
+    background-color: #3a8fc8;
+  }
+
+  /* Pricing & Packages Tab Styles */
+  .pricing-content {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    color: #333;
+  }
+
+  .pricing-content h2,
+  .pricing-content h3,
+  .pricing-content h4 {
+    color: #1a1a1a;
+    margin-top: 30px;
+    margin-bottom: 15px;
+  }
+
+  .pricing-content h2 {
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  .pricing-content h3 {
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  .pricing-content p {
+    margin-bottom: 15px;
+  }
+
+  .pricing-content ul,
+  .pricing-content ol {
+    margin-bottom: 20px;
+    padding-left: 25px;
+  }
+
+  .pricing-content li {
+    margin-bottom: 10px;
+  }
+
+  /* Package Cards Grid */
+  .packages-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .package-card {
+    background-color: #ffffff;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    min-height: 300px;
+  }
+
+  /* Pricing Column (Left Side) */
+  .package-pricing {
+    background-color: #ffffff;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border-right: 1px solid #e0e0e0;
+  }
+
+  .package-duration {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #4A9FD8;
+    margin: 0 0 8px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .package-price {
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    font-size: 52px;
+    font-weight: 900;
+    color: #1a1a1a;
+    margin: 0 0 20px 0;
+    line-height: 1;
+  }
+
+  .package-button {
+    background-color: #4A9FD8;
+    color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 15px 0;
+    width: 100%;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: block;
+  }
+
+  .package-button:hover {
+    background-color: #3a8fc8;
+  }
+
+  /* Package Details (Right Side) */
+  .package-details {
+    padding: 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    background-color: #ffffff;
+  }
+
+  .package-column-title {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 15px 0;
+  }
+
+  .package-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .package-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #333;
+  }
+
+  .package-icon {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    margin-right: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .package-icon-check {
+    color: #1a1a1a;
+  }
+
+  .package-icon-x {
+    color: #1a1a1a;
+  }
+
+  .package-item-text {
+    flex: 1;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .overview-content {
+      gap: 40px;
+    }
+
+    .overview-price {
+      font-size: 60px;
+    }
+
+    .tab-content {
+      padding: 40px;
+    }
+
+    .package-card {
+      grid-template-columns: 220px 1fr;
+    }
+
+    .package-pricing {
+      padding: 30px 20px;
+    }
+
+    .package-price {
+      font-size: 52px;
+    }
+
+    .package-details {
+      padding: 30px;
+      gap: 30px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .packages-title {
+      font-size: 48px;
+    }
+
+    .tab-button {
+      font-size: 14px;
+      padding: 15px 20px;
+    }
+
+    .tab-content {
+      padding: 30px 20px;
+    }
+
+    .overview-content {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+
+    .overview-divider {
+      display: none;
+    }
+
+    .overview-price {
+      font-size: 56px;
+    }
+
+    .overview-benefits-title {
+      font-size: 18px;
+    }
+
+    .benefit-item {
+      font-size: 14px;
+    }
+
+    .packages-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .package-card {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
+    }
+
+    .package-pricing {
+      border-right: none;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 30px;
+      text-align: center;
+      align-items: center;
+    }
+
+    .package-details {
+      grid-template-columns: 1fr;
+      gap: 30px;
+      padding: 30px;
+    }
+
+    .package-price {
+      font-size: 56px;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const tabButtons = document.querySelectorAll('.trip-packages .tab-button');
+    const tabContents = document.querySelectorAll('.trip-packages .tab-content');
+    const pricingTrigger = document.querySelector('.trip-packages .pricing-tab-trigger');
+
+    // Tab switching functionality
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const tabName = button.getAttribute('data-tab');
+
+        // Remove active class from all buttons and contents
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        tabContents.forEach(content => content.classList.remove('active'));
+
+        // Add active class to clicked button and corresponding content
+        button.classList.add('active');
+        const activeContent = document.querySelector(`.trip-packages .tab-content[data-tab-content="${tabName}"]`);
+        if (activeContent) {
+          activeContent.classList.add('active');
+        }
+      });
+    });
+
+    // "View Pricing & Packages" button functionality
+    if (pricingTrigger) {
+      pricingTrigger.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        // Switch to pricing tab
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        tabContents.forEach(content => content.classList.remove('active'));
+
+        const pricingButton = document.querySelector('.trip-packages .tab-button[data-tab="pricing"]');
+        const pricingContent = document.querySelector('.trip-packages .tab-content[data-tab-content="pricing"]');
+
+        if (pricingButton) pricingButton.classList.add('active');
+        if (pricingContent) pricingContent.classList.add('active');
+
+        // Scroll to packages section
+        const packagesSection = document.querySelector('.trip-packages');
+        if (packagesSection) {
+          packagesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    }
+  });
+</script>
+</section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Trip Packages",
+  "tag": "section",
+  "class": "section-trip-packages",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "use_metafield",
+      "label": "Use metafield data",
+      "default": true,
+      "info": "When enabled, uses product.metafields.trip.trip_packages (list of single line text). Format: Duration | Price | Included Items (comma-separated) | Not Included Items (comma-separated). Example: 3 Nights | $6,750 | Item 1, Item 2, Item 3 | Item 4, Item 5, Item 6"
+    },
+    {
+      "type": "paragraph",
+      "content": "Section heading ('CHOOSE YOUR ADVENTURE'), description, column titles ('What's included' / 'What's not included'), and button text ('BOOK NOW') are hardcoded and cannot be changed."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "package",
+      "name": "Package",
+      "settings": [
+        {
+          "type": "text",
+          "id": "duration",
+          "label": "Duration",
+          "default": "3 Nights",
+          "info": "Example: 3 Nights, 5 Nights, 1 Week"
+        },
+        {
+          "type": "text",
+          "id": "price",
+          "label": "Price",
+          "default": "$6,750",
+          "info": "Include currency symbol. Example: $6,750"
+        },
+        {
+          "type": "textarea",
+          "id": "included",
+          "label": "What's included",
+          "default": "Air transfers, Daily boat and guide service, Lodging, All meals, Rod and wader rental",
+          "info": "Comma-separated list of included items"
+        },
+        {
+          "type": "textarea",
+          "id": "not_included",
+          "label": "What's not included",
+          "default": "Guided fly-outs, Alaska Fishing License, Airfare to/from Anchorage, Gratuities",
+          "info": "Comma-separated list of not included items"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trip Packages",
+      "blocks": [
+        {
+          "type": "package",
+          "settings": {
+            "duration": "3 Nights",
+            "price": "$6,750",
+            "included": "Air transfers between Anchorage and Kulik Lodge, Daily boat and guide service on the Kulik River, Lodging at Kulik Lodge, All meals at Kulik Lodge, Rod and Wader rental, Flies and terminal tackle, Alcoholic beverages, Hot tub and sauna use, Alaskan taxes, Day trips to Brooks Lodge for bear viewing (unguided) June 29 - July 31 at no extra charge (not on arrival or departure days)",
+            "not_included": "Guided fly-outs ($500 per angler, per day), Alaska Fishing License (approximately $70), Airfare to/from Anchorage (ANC), Lodging and meals in Anchorage, Gratuities for lodge staff, Gratuities for guides, Premium liquors"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

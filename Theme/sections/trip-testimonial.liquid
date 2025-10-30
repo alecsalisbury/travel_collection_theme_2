@@ -1,0 +1,303 @@
+{% comment %}
+  Testimonial Quote Section
+  Full-width with dark background and carousel
+{% endcomment %}
+
+{% if section.settings.use_metafield and product.metafields.trip.testimonial != blank %}
+<section id="trip-testimonial-{{ section.id }}" class="trip-testimonial">
+  <div id="testimonial" style="position: absolute; top: -70px;"></div>
+  <div class="container">
+    {% if section.settings.title != blank %}
+      <div class="trip-testimonial__header">
+        <span class="trip-testimonial__badge"></span>
+        <h3 class="trip-testimonial__heading">{{ section.settings.title }}</h3>
+      </div>
+    {% endif %}
+
+    <div class="trip-testimonial__wrapper">
+      {% assign testimonial_items = product.metafields.trip.testimonial.value %}
+      {% assign testimonial_count = testimonial_items.size %}
+
+      <div class="testimonial-carousel" data-testimonial-count="{{ testimonial_count }}">
+        {% for item in testimonial_items %}
+          {% assign parts = item | split: '|' %}
+          {% if parts.size >= 2 %}
+            {% assign testimonial_text = parts[0] | strip %}
+            {% assign attribution = parts[1] | strip %}
+
+            <div class="testimonial-slide {% if forloop.first %}active{% endif %}">
+              <blockquote class="trip-testimonial__text">
+                "{{ testimonial_text }}"
+              </blockquote>
+              <cite class="trip-testimonial__author">
+                {{ attribution }}
+              </cite>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      {% if testimonial_count > 1 %}
+        <button class="testimonial-nav testimonial-nav--prev" aria-label="Previous testimonial">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+        </button>
+        <button class="testimonial-nav testimonial-nav--next" aria-label="Next testimonial">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </button>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .trip-testimonial {
+    padding: 100px 0;
+    background-color: #000000;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .trip-testimonial .container {
+    max-width: 100%;
+    padding: 0 80px;
+  }
+
+  .trip-testimonial__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4rem;
+  }
+
+  .trip-testimonial__badge {
+    width: 8px;
+    height: 32px;
+    background: #4a9fd8;
+    display: block;
+  }
+
+  .trip-testimonial__heading {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .trip-testimonial__wrapper {
+    position: relative;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .testimonial-carousel {
+    position: relative;
+    min-height: 300px;
+  }
+
+  .testimonial-slide {
+    display: none;
+    text-align: left;
+    padding: 0 80px;
+  }
+
+  .testimonial-slide.active {
+    display: block;
+    animation: fadeIn 0.5s ease-in;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .trip-testimonial__text {
+    font-size: 3.5rem;
+    line-height: 1.3;
+    font-style: normal;
+    color: #ffffff;
+    margin-bottom: 3rem;
+    font-weight: 400;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    max-width: 100%;
+  }
+
+  .trip-testimonial__author {
+    font-size: 0.95rem;
+    color: #ffffff;
+    font-style: normal;
+    display: block;
+    font-weight: 400;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    text-align: right;
+  }
+
+  .testimonial-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    padding: 10px;
+    transition: all 0.3s ease;
+    z-index: 10;
+  }
+
+  .testimonial-nav:hover {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .testimonial-nav--prev {
+    left: 0;
+  }
+
+  .testimonial-nav--next {
+    right: 0;
+  }
+
+  @media screen and (max-width: 1024px) {
+    .trip-testimonial .container {
+      padding: 0 60px;
+    }
+
+    .testimonial-slide {
+      padding: 0 60px;
+    }
+
+    .trip-testimonial__text {
+      font-size: 2.5rem;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .trip-testimonial {
+      padding: 60px 0;
+    }
+
+    .trip-testimonial .container {
+      padding: 0 40px;
+    }
+
+    .testimonial-slide {
+      padding: 0 40px;
+    }
+
+    .trip-testimonial__text {
+      font-size: 1.75rem;
+    }
+
+    .trip-testimonial__author {
+      font-size: 0.875rem;
+    }
+
+    .testimonial-nav {
+      padding: 5px;
+    }
+
+    .testimonial-nav svg {
+      width: 30px;
+      height: 30px;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const section = document.querySelector('#trip-testimonial-{{ section.id }}');
+    if (!section) return;
+
+    const carousel = section.querySelector('.testimonial-carousel');
+    const slides = section.querySelectorAll('.testimonial-slide');
+    const prevBtn = section.querySelector('.testimonial-nav--prev');
+    const nextBtn = section.querySelector('.testimonial-nav--next');
+
+    if (!carousel || slides.length <= 1) return;
+
+    let currentIndex = 0;
+
+    function showSlide(index) {
+      slides.forEach(slide => slide.classList.remove('active'));
+      slides[index].classList.add('active');
+    }
+
+    function nextSlide() {
+      currentIndex = (currentIndex + 1) % slides.length;
+      showSlide(currentIndex);
+    }
+
+    function prevSlide() {
+      currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+      showSlide(currentIndex);
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', nextSlide);
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', prevSlide);
+    }
+
+    // Optional: Auto-advance every 8 seconds
+    // setInterval(nextSlide, 8000);
+  });
+</script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Testimonial Quote",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "WHAT OUR GUESTS SAY"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_metafield",
+      "label": "Use Product Metafield",
+      "default": true,
+      "info": "Pull testimonials from product.metafields.trip.testimonial. Format: [testimonial]|[attribution]"
+    },
+    {
+      "type": "textarea",
+      "id": "quote_text",
+      "label": "Quote Text (Fallback)",
+      "default": "This was truly the fishing trip of a lifetime. The guides were exceptional, the lodging was comfortable, and the fishing was beyond anything I could have imagined."
+    },
+    {
+      "type": "text",
+      "id": "author_name",
+      "label": "Author Name (Fallback)",
+      "default": "Chris D."
+    },
+    {
+      "type": "text",
+      "id": "author_title",
+      "label": "Author Title (Fallback)",
+      "default": "Guest, August 2023"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonial Quote"
+    }
+  ]
+}
+{% endschema %}

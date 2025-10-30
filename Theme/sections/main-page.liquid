@@ -1,0 +1,113 @@
+<section data-section-id="{{ section.id }}" data-section-type="page">
+  <div class="container custom-page-container">
+    {%- if page.title != 'Help Center' -%}
+      <header class="page__header page__header--centered page__header--stack">
+        <h1 class="page__title heading h1">{{ page.title }}</h1>
+
+        {%- if page.content != blank and page.template_suffix == 'contact' or page.template_suffix == 'team' -%}
+          <div class="page__description rte">
+            {{ page.content }}
+          </div>
+        {%- endif -%}
+      </header>
+    {%- endif -%}
+
+    {%- if page.content != blank and page.template_suffix != 'contact' and page.template_suffix != 'team' -%}
+      {%- if page.title == 'Help Center' -%}
+        <div class="help-center-wrapper">
+          <div class="help-center-loading" id="helpCenterLoading">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">Loading Help Center...</p>
+          </div>
+          <div class="page__content rte" id="helpCenterContent" style="display: none;">
+            {{ page.content }}
+          </div>
+        </div>
+
+        <style>
+          .help-center-wrapper {
+            min-height: 400px;
+            position: relative;
+          }
+
+          .help-center-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+          }
+
+          .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #333;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+          }
+
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+
+          .loading-text {
+            margin-top: 20px;
+            color: #666;
+            font-size: 16px;
+          }
+        </style>
+
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            if (document.querySelector('.help-center-wrapper')) {
+              // Check if there's an iframe in the content
+              var checkIframe = setInterval(function() {
+                var iframe = document.querySelector('#helpCenterContent iframe');
+                var content = document.getElementById('helpCenterContent');
+                var loading = document.getElementById('helpCenterLoading');
+
+                if (iframe) {
+                  // If iframe exists, wait for it to load
+                  iframe.addEventListener('load', function() {
+                    loading.style.display = 'none';
+                    content.style.display = 'block';
+                  });
+                  clearInterval(checkIframe);
+                } else if (content && content.innerHTML.trim()) {
+                  // If no iframe but content exists, show it after a brief delay
+                  setTimeout(function() {
+                    loading.style.display = 'none';
+                    content.style.display = 'block';
+                  }, 500);
+                  clearInterval(checkIframe);
+                }
+              }, 100);
+
+              // Fallback: show content after 5 seconds if nothing loads
+              setTimeout(function() {
+                var content = document.getElementById('helpCenterContent');
+                var loading = document.getElementById('helpCenterLoading');
+                if (loading && loading.style.display !== 'none') {
+                  loading.style.display = 'none';
+                  content.style.display = 'block';
+                }
+              }, 5000);
+            }
+          });
+        </script>
+      {%- else -%}
+        <div class="page__content rte">
+          {{ page.content }}
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Page"
+}
+{% endschema %}

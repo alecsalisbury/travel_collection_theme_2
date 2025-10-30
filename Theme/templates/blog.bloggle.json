@@ -1,0 +1,619 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "blog_hero_JxHAGK": {
+      "type": "blog-hero",
+      "name": "Blog hero",
+      "settings": {
+        "image": "shopify://shop_images/canoe.jpg",
+        "title": "Trident Fly Fishing Blog",
+        "title_font_size": 72,
+        "title_font_family": "condensed",
+        "content": "",
+        "show_image_overlay": false,
+        "color": "#ffffff",
+        "hide_on_url_contains": "tagged",
+        "show_search_bar": true,
+        "search_placeholder": "Search the blog"
+      }
+    },
+    "tab_articles_bR9dxA": {
+      "type": "tab-articles",
+      "blocks": {
+        "tab_cib3kg": {
+          "type": "tab",
+          "settings": {
+            "label": "Latest",
+            "tag": "",
+            "background_color": "#ffffff",
+            "title": "Latest Posts"
+          }
+        },
+        "tab_gMFzLc": {
+          "type": "tab",
+          "settings": {
+            "label": "Shootouts",
+            "tag": "Category_Shootouts",
+            "background_color": "#ffffff",
+            "title": "Latest Posts"
+          }
+        },
+        "tab_HUfX8P": {
+          "type": "tab",
+          "settings": {
+            "label": "Fly Fishing Travel",
+            "tag": "Category_Fly Fishing Travel",
+            "background_color": "#ffffff",
+            "title": "Latest Posts"
+          }
+        },
+        "tab_UyFWej": {
+          "type": "tab",
+          "settings": {
+            "label": "Fly Rod Reviews",
+            "tag": "Category_Fly Rod Reviews",
+            "background_color": "#ffffff",
+            "title": "Latest Posts"
+          }
+        },
+        "tab_tgN9B8": {
+          "type": "tab",
+          "settings": {
+            "label": "Trip Reports",
+            "tag": "Category_Trip Reports",
+            "background_color": "#ffffff",
+            "title": "Latest Posts"
+          }
+        },
+        "tab_MdmjWw": {
+          "type": "tab",
+          "settings": {
+            "label": "Fly Reel Reviews",
+            "tag": "Category_Fly Reel Reviews",
+            "background_color": "#ffffff",
+            "title": "Latest Posts"
+          }
+        },
+        "tab_mb743y": {
+          "type": "tab",
+          "settings": {
+            "label": "Fly Tying",
+            "tag": "Category_Fly Tying",
+            "background_color": "#ffffff",
+            "title": "Latest Posts"
+          }
+        },
+        "tab_gLLYjx": {
+          "type": "tab",
+          "settings": {
+            "label": "Fly Line Reviews",
+            "tag": "Category_Fly Line Reviews",
+            "background_color": "#ffffff",
+            "title": "Latest Posts"
+          }
+        },
+        "tab_Abn6aa": {
+          "type": "tab",
+          "settings": {
+            "label": "Beginner",
+            "tag": "Category_Beginner",
+            "background_color": "#ffffff",
+            "title": "Latest Posts"
+          }
+        },
+        "tab_6R4YAi": {
+          "type": "tab",
+          "settings": {
+            "label": "How To",
+            "tag": "Category_How To",
+            "background_color": "#ffffff",
+            "title": "Latest Posts"
+          }
+        },
+        "tab_fRJK9m": {
+          "type": "tab",
+          "settings": {
+            "label": "Spey Reviews",
+            "tag": "Category_Spey Reviews",
+            "background_color": "#ffffff",
+            "title": "Latest Posts"
+          }
+        },
+        "tab_KywXkR": {
+          "type": "tab",
+          "settings": {
+            "label": "Wader Reviews",
+            "tag": "Category_Wader Reviews",
+            "background_color": "#ffffff",
+            "title": "Latest Posts"
+          }
+        }
+      },
+      "block_order": [
+        "tab_cib3kg",
+        "tab_gMFzLc",
+        "tab_HUfX8P",
+        "tab_UyFWej",
+        "tab_tgN9B8",
+        "tab_MdmjWw",
+        "tab_mb743y",
+        "tab_gLLYjx",
+        "tab_Abn6aa",
+        "tab_6R4YAi",
+        "tab_fRJK9m",
+        "tab_KywXkR"
+      ],
+      "name": "Tab Articles",
+      "settings": {
+        "section_background_color": "rgba(0,0,0,0)",
+        "blog": "all",
+        "title": "",
+        "articles_per_tab": 100,
+        "show_category": false,
+        "show_author": false,
+        "show_date": false,
+        "show_excerpt": true,
+        "view_more_text": "",
+        "view_more_bg_color": "#007acc",
+        "view_more_text_color": "#ffffff",
+        "hide_on_url_contains": "tagged",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "rich_text_banner_dEHpqt": {
+      "type": "rich-text-banner",
+      "name": "Rich text banner",
+      "settings": {
+        "image": "shopify://shop_images/tippet_blurred.png",
+        "title": "‎ The Ultimate 5x Tippet Shootout",
+        "title_font_size": 88,
+        "title_font_family": "condensed",
+        "content": "",
+        "content_font_size": 12,
+        "show_image_overlay": true,
+        "color": "#ffffff",
+        "banner_height_mobile": 400,
+        "banner_height_desktop": 460,
+        "content_position": "middle_center",
+        "button_background": "#0693e3",
+        "button_text_color": "#ffffff",
+        "button_text": "READ ARTICLE",
+        "button_link": "shopify://blogs/all/the-ultimate-tippet-shootout-5x",
+        "hide_on_url_contains": "tagged",
+        "disable_margin": true
+      }
+    },
+    "posts_collection_n7eNBd": {
+      "type": "posts-collection",
+      "name": "Posts Collection",
+      "settings": {
+        "section_background_color": "rgba(0,0,0,0)",
+        "blog": "all",
+        "title": "Beginner",
+        "content_title": "",
+        "tag": "Category_Beginner",
+        "articles_per_collection": 100,
+        "background_color": "#ffffff",
+        "show_category": false,
+        "show_author": false,
+        "show_date": false,
+        "show_excerpt": true,
+        "view_all_text": "VIEW ALL",
+        "view_all_link": "shopify://metaobjects/blog_categories/beginner",
+        "view_more_text": "",
+        "view_more_bg_color": "#007acc",
+        "view_more_text_color": "#ffffff",
+        "hide_on_url_contains": "tagged",
+        "padding_top": 0,
+        "padding_bottom": 2
+      }
+    },
+    "posts_collection_Rady6V": {
+      "type": "posts-collection",
+      "name": "Posts Collection",
+      "settings": {
+        "section_background_color": "rgba(0,0,0,0)",
+        "blog": "all",
+        "title": "Fly Fishing Travel",
+        "content_title": "",
+        "tag": "Category_Fly Fishing Travel",
+        "articles_per_collection": 100,
+        "background_color": "#ffffff",
+        "show_category": false,
+        "show_author": false,
+        "show_date": false,
+        "show_excerpt": true,
+        "view_all_text": "VIEW ALL",
+        "view_all_link": "shopify://metaobjects/blog_categories/fly-fishing-travel",
+        "view_more_text": "",
+        "view_more_bg_color": "#007acc",
+        "view_more_text_color": "#ffffff",
+        "hide_on_url_contains": "tagged",
+        "padding_top": 0,
+        "padding_bottom": 60
+      }
+    },
+    "rich_text_banner_PPwjjj": {
+      "type": "rich-text-banner",
+      "disabled": true,
+      "name": "Rich text banner",
+      "settings": {
+        "image": "shopify://shop_images/tippet_blurred.png",
+        "title": "‎ The Ultimate 5x Tippet Shootout",
+        "title_font_size": 88,
+        "title_font_family": "condensed",
+        "content": "",
+        "content_font_size": 12,
+        "show_image_overlay": true,
+        "color": "#ffffff",
+        "banner_height_mobile": 400,
+        "banner_height_desktop": 460,
+        "content_position": "middle_center",
+        "button_background": "#0693e3",
+        "button_text_color": "#ffffff",
+        "button_text": "READ ARTICLE",
+        "button_link": "shopify://blogs/all/the-ultimate-tippet-shootout-5x",
+        "hide_on_url_contains": "tagged",
+        "disable_margin": true
+      }
+    },
+    "posts_collection_gnAb9K": {
+      "type": "posts-collection",
+      "name": "Posts Collection",
+      "settings": {
+        "section_background_color": "rgba(0,0,0,0)",
+        "blog": "all",
+        "title": "Fly Line Reviews",
+        "content_title": "",
+        "tag": "Category_Fly Line Reviews",
+        "articles_per_collection": 100,
+        "background_color": "#ffffff",
+        "show_category": false,
+        "show_author": false,
+        "show_date": false,
+        "show_excerpt": true,
+        "view_all_text": "VIEW ALL",
+        "view_all_link": "shopify://metaobjects/blog_categories/fly-line-reviews",
+        "view_more_text": "",
+        "view_more_bg_color": "#007acc",
+        "view_more_text_color": "#ffffff",
+        "hide_on_url_contains": "tagged",
+        "padding_top": 0,
+        "padding_bottom": 2
+      }
+    },
+    "posts_collection_BRjjYR": {
+      "type": "posts-collection",
+      "name": "Posts Collection",
+      "settings": {
+        "section_background_color": "rgba(0,0,0,0)",
+        "blog": "all",
+        "title": "Fly Reel Reviews",
+        "content_title": "",
+        "tag": "Category_Fly Reel Reviews",
+        "articles_per_collection": 100,
+        "background_color": "#ffffff",
+        "show_category": false,
+        "show_author": false,
+        "show_date": false,
+        "show_excerpt": true,
+        "view_all_text": "VIEW ALL",
+        "view_all_link": "shopify://metaobjects/blog_categories/fly-reel-reviews",
+        "view_more_text": "",
+        "view_more_bg_color": "#007acc",
+        "view_more_text_color": "#ffffff",
+        "hide_on_url_contains": "tagged",
+        "padding_top": 0,
+        "padding_bottom": 60
+      }
+    },
+    "rich_text_banner_a39xnU": {
+      "type": "rich-text-banner",
+      "disabled": true,
+      "name": "Rich text banner",
+      "settings": {
+        "image": "shopify://shop_images/tippet_blurred.png",
+        "title": "‎ The Ultimate 5x Tippet Shootout",
+        "title_font_size": 88,
+        "title_font_family": "condensed",
+        "content": "",
+        "content_font_size": 12,
+        "show_image_overlay": true,
+        "color": "#ffffff",
+        "banner_height_mobile": 400,
+        "banner_height_desktop": 460,
+        "content_position": "middle_center",
+        "button_background": "#0693e3",
+        "button_text_color": "#ffffff",
+        "button_text": "READ ARTICLE",
+        "button_link": "shopify://blogs/all/the-ultimate-tippet-shootout-5x",
+        "hide_on_url_contains": "tagged",
+        "disable_margin": true
+      }
+    },
+    "posts_collection_yGQAGk": {
+      "type": "posts-collection",
+      "name": "Posts Collection",
+      "settings": {
+        "section_background_color": "rgba(0,0,0,0)",
+        "blog": "all",
+        "title": "Fly Rod Reviews",
+        "content_title": "",
+        "tag": "Category_Fly Rod Reviews",
+        "articles_per_collection": 100,
+        "background_color": "#ffffff",
+        "show_category": false,
+        "show_author": false,
+        "show_date": false,
+        "show_excerpt": true,
+        "view_all_text": "VIEW ALL",
+        "view_all_link": "shopify://metaobjects/blog_categories/fly-rod-reviews",
+        "view_more_text": "",
+        "view_more_bg_color": "#007acc",
+        "view_more_text_color": "#ffffff",
+        "hide_on_url_contains": "tagged",
+        "padding_top": 0,
+        "padding_bottom": 2
+      }
+    },
+    "posts_collection_gq4RFd": {
+      "type": "posts-collection",
+      "name": "Posts Collection",
+      "settings": {
+        "section_background_color": "rgba(0,0,0,0)",
+        "blog": "all",
+        "title": "Fly Tying",
+        "content_title": "",
+        "tag": "Category_Fly Tying",
+        "articles_per_collection": 100,
+        "background_color": "#ffffff",
+        "show_category": false,
+        "show_author": false,
+        "show_date": false,
+        "show_excerpt": true,
+        "view_all_text": "VIEW ALL",
+        "view_all_link": "shopify://metaobjects/blog_categories/fly-tying",
+        "view_more_text": "",
+        "view_more_bg_color": "#007acc",
+        "view_more_text_color": "#ffffff",
+        "hide_on_url_contains": "tagged",
+        "padding_top": 0,
+        "padding_bottom": 60
+      }
+    },
+    "rich_text_banner_FC3YqL": {
+      "type": "rich-text-banner",
+      "disabled": true,
+      "name": "Rich text banner",
+      "settings": {
+        "image": "shopify://shop_images/tippet_blurred.png",
+        "title": "‎ The Ultimate 5x Tippet Shootout",
+        "title_font_size": 88,
+        "title_font_family": "condensed",
+        "content": "",
+        "content_font_size": 12,
+        "show_image_overlay": true,
+        "color": "#ffffff",
+        "banner_height_mobile": 400,
+        "banner_height_desktop": 460,
+        "content_position": "middle_center",
+        "button_background": "#0693e3",
+        "button_text_color": "#ffffff",
+        "button_text": "READ ARTICLE",
+        "button_link": "shopify://blogs/all/the-ultimate-tippet-shootout-5x",
+        "hide_on_url_contains": "tagged",
+        "disable_margin": true
+      }
+    },
+    "posts_collection_GbiMED": {
+      "type": "posts-collection",
+      "name": "Posts Collection",
+      "settings": {
+        "section_background_color": "rgba(0,0,0,0)",
+        "blog": "all",
+        "title": "How To",
+        "content_title": "",
+        "tag": "Category_How To",
+        "articles_per_collection": 100,
+        "background_color": "#ffffff",
+        "show_category": false,
+        "show_author": false,
+        "show_date": false,
+        "show_excerpt": true,
+        "view_all_text": "VIEW ALL",
+        "view_all_link": "shopify://metaobjects/blog_categories/how-to",
+        "view_more_text": "",
+        "view_more_bg_color": "#007acc",
+        "view_more_text_color": "#ffffff",
+        "hide_on_url_contains": "tagged",
+        "padding_top": 0,
+        "padding_bottom": 2
+      }
+    },
+    "posts_collection_jqXypp": {
+      "type": "posts-collection",
+      "name": "Posts Collection",
+      "settings": {
+        "section_background_color": "rgba(0,0,0,0)",
+        "blog": "all",
+        "title": "Shootouts",
+        "content_title": "",
+        "tag": "Category_Shootouts",
+        "articles_per_collection": 100,
+        "background_color": "#ffffff",
+        "show_category": false,
+        "show_author": false,
+        "show_date": false,
+        "show_excerpt": true,
+        "view_all_text": "VIEW ALL",
+        "view_all_link": "shopify://metaobjects/blog_categories/shootouts",
+        "view_more_text": "",
+        "view_more_bg_color": "#007acc",
+        "view_more_text_color": "#ffffff",
+        "hide_on_url_contains": "tagged",
+        "padding_top": 0,
+        "padding_bottom": 60
+      }
+    },
+    "rich_text_banner_q3Dpr8": {
+      "type": "rich-text-banner",
+      "disabled": true,
+      "name": "Rich text banner",
+      "settings": {
+        "image": "shopify://shop_images/tippet_blurred.png",
+        "title": "‎ The Ultimate 5x Tippet Shootout",
+        "title_font_size": 88,
+        "title_font_family": "condensed",
+        "content": "",
+        "content_font_size": 12,
+        "show_image_overlay": true,
+        "color": "#ffffff",
+        "banner_height_mobile": 400,
+        "banner_height_desktop": 460,
+        "content_position": "middle_center",
+        "button_background": "#0693e3",
+        "button_text_color": "#ffffff",
+        "button_text": "READ ARTICLE",
+        "button_link": "shopify://blogs/all/the-ultimate-tippet-shootout-5x",
+        "hide_on_url_contains": "tagged",
+        "disable_margin": true
+      }
+    },
+    "posts_collection_4h63Pb": {
+      "type": "posts-collection",
+      "name": "Posts Collection",
+      "settings": {
+        "section_background_color": "rgba(0,0,0,0)",
+        "blog": "all",
+        "title": "Spey Reviews",
+        "content_title": "",
+        "tag": "Category_Spey Reviews",
+        "articles_per_collection": 100,
+        "background_color": "#ffffff",
+        "show_category": false,
+        "show_author": false,
+        "show_date": false,
+        "show_excerpt": true,
+        "view_all_text": "VIEW ALL",
+        "view_all_link": "shopify://metaobjects/blog_categories/spey-reviews",
+        "view_more_text": "",
+        "view_more_bg_color": "#007acc",
+        "view_more_text_color": "#ffffff",
+        "hide_on_url_contains": "tagged",
+        "padding_top": 0,
+        "padding_bottom": 2
+      }
+    },
+    "posts_collection_fgtjQq": {
+      "type": "posts-collection",
+      "name": "Posts Collection",
+      "settings": {
+        "section_background_color": "rgba(0,0,0,0)",
+        "blog": "all",
+        "title": "Trip Reports",
+        "content_title": "",
+        "tag": "Category_Trip Reports",
+        "articles_per_collection": 100,
+        "background_color": "#ffffff",
+        "show_category": false,
+        "show_author": false,
+        "show_date": false,
+        "show_excerpt": true,
+        "view_all_text": "VIEW ALL",
+        "view_all_link": "shopify://metaobjects/blog_categories/trip-reports",
+        "view_more_text": "",
+        "view_more_bg_color": "#007acc",
+        "view_more_text_color": "#ffffff",
+        "hide_on_url_contains": "tagged",
+        "padding_top": 0,
+        "padding_bottom": 60
+      }
+    },
+    "rich_text_banner_4QxFac": {
+      "type": "rich-text-banner",
+      "disabled": true,
+      "name": "Rich text banner",
+      "settings": {
+        "image": "shopify://shop_images/tippet_blurred.png",
+        "title": "‎ The Ultimate 5x Tippet Shootout",
+        "title_font_size": 88,
+        "title_font_family": "condensed",
+        "content": "",
+        "content_font_size": 12,
+        "show_image_overlay": true,
+        "color": "#ffffff",
+        "banner_height_mobile": 400,
+        "banner_height_desktop": 460,
+        "content_position": "middle_center",
+        "button_background": "#0693e3",
+        "button_text_color": "#ffffff",
+        "button_text": "READ ARTICLE",
+        "button_link": "shopify://blogs/all/the-ultimate-tippet-shootout-5x",
+        "hide_on_url_contains": "tagged",
+        "disable_margin": true
+      }
+    },
+    "posts_collection_BCdtec": {
+      "type": "posts-collection",
+      "name": "Posts Collection",
+      "settings": {
+        "section_background_color": "rgba(0,0,0,0)",
+        "blog": "all",
+        "title": "Wader Reviews",
+        "content_title": "",
+        "tag": "Category_Wader Reviews",
+        "articles_per_collection": 100,
+        "background_color": "#ffffff",
+        "show_category": false,
+        "show_author": false,
+        "show_date": false,
+        "show_excerpt": true,
+        "view_all_text": "VIEW ALL",
+        "view_all_link": "shopify://metaobjects/blog_categories/wader-reviews",
+        "view_more_text": "",
+        "view_more_bg_color": "#007acc",
+        "view_more_text_color": "#ffffff",
+        "hide_on_url_contains": "tagged",
+        "padding_top": 0,
+        "padding_bottom": 60
+      }
+    },
+    "blog": {
+      "type": "main-bloggle-blog",
+      "settings": {
+        "show_only_when_url_contains": "tagged"
+      }
+    }
+  },
+  "order": [
+    "blog_hero_JxHAGK",
+    "tab_articles_bR9dxA",
+    "rich_text_banner_dEHpqt",
+    "posts_collection_n7eNBd",
+    "posts_collection_Rady6V",
+    "rich_text_banner_PPwjjj",
+    "posts_collection_gnAb9K",
+    "posts_collection_BRjjYR",
+    "rich_text_banner_a39xnU",
+    "posts_collection_yGQAGk",
+    "posts_collection_gq4RFd",
+    "rich_text_banner_FC3YqL",
+    "posts_collection_GbiMED",
+    "posts_collection_jqXypp",
+    "rich_text_banner_q3Dpr8",
+    "posts_collection_4h63Pb",
+    "posts_collection_fgtjQq",
+    "rich_text_banner_4QxFac",
+    "posts_collection_BCdtec",
+    "blog"
+  ]
+}

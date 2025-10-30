@@ -1,0 +1,161 @@
+{%- comment -%}
+  Extract the page handle from the current page URL
+  For example: /pages/category/beginner -> "beginner"
+{%- endcomment -%}
+{%- assign page_handle = request.path | split: '/' | last -%}
+
+{%- comment -%}
+  Find the metaobject that matches the current page handle
+{%- endcomment -%}
+{%- assign header_data = nil -%}
+{%- for metaobject in shop.metaobjects.collection_header_image.values -%}
+  {%- if metaobject.page_url_handle.value == page_handle -%}
+    {%- assign header_data = metaobject -%}
+    {%- break -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{% unless section.settings.hide_on_url_contains != blank and request.path contains section.settings.hide_on_url_contains %}
+<style>
+  #shopify-section-{{ section.id }},
+  #shopify-section-{{ section.id }} :is(.heading, .rte h1, .rte h2, .rte h3, .rte h4, .rte h5, .rte h6) {
+    color: {{ section.settings.color }};
+  }
+
+  @media screen and (min-width: 641px) {
+    #shopify-section-{{ section.id }} .page__title {
+      font-size: {{ section.settings.title_font_size }}px;
+    }
+  }
+
+  {% if section.settings.title_font_family == "condensed" %}
+    #shopify-section-{{ section.id }} .page__title {
+      font-family: "Roboto Condensed", sans-serif;
+    }
+  {% endif %}
+
+  {% if section.settings.disable_margin %}
+  #shopify-section-{{ section.id }} .page__header {
+    margin: 0;
+  }
+  {% endif %}
+</style>
+
+<header class="page__header page__header--stack page__header--centered page__header--image {% if section.settings.show_image_overlay %}page__header--overlay{% endif %}" {% if settings.enable_banner_max_width %}style="max-width: {{ settings.banner_max_width }}px; margin-left: auto; margin-right: auto;"{% endif %}>
+  {%- if header_data and header_data.image.value != blank -%}
+    {{- header_data.image.value | image_url: width: 2000 | image_tag: loading: 'lazy', widths: '300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000', class: 'page__header-image' -}}
+  {%- elsif section.settings.image != blank -%}
+    {{- section.settings.image | image_url: width: 2000 | image_tag: loading: 'lazy', widths: '300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000', class: 'page__header-image' -}}
+  {%- else -%}
+    {{ 'lifestyle-1' | placeholder_svg_tag: 'page__header-image page__header-image--placeholder' }}
+  {%- endif -%}
+
+  {%- if section.settings.content != blank or section.settings.title != blank -%}
+    <div class="page__header-content container--narrow">
+      {%- if section.settings.title != blank -%}
+        <h1 class="page__title heading h1 {% if section.settings.title_uppercase %}uppercase{% endif %}">{{ section.settings.title | escape }}</h1>
+      {%- endif -%}
+      {%- if section.settings.content != blank -%}
+        <div class="page__description rte">
+          {{ section.settings.content }}
+        </div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+</header>
+{% endunless %}
+
+{% schema %}
+{
+  "name": "Image banner",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Image will be dynamically resized to fit into the box. To prevent image cut, please use Slideshow section instead."
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image",
+      "info": "2000 x 650px .jpg recommended"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Image banner"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "min": 12,
+      "max": 84,
+      "step": 2,
+      "unit": "px",
+      "label": "Title size",
+      "default": 32
+    },
+    {
+      "type": "select",
+      "id": "title_font_family",
+      "label": "Title font family",
+      "options": [
+        {
+          "value": "normal",
+          "label": "Normal"
+        },
+        {
+          "value": "condensed",
+          "label": "Condensed"
+        }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "checkbox",
+      "id": "title_uppercase",
+      "label": "Title uppercase",
+      "default": false
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "Content",
+      "default": "<p>Use overlay text to give your customers insight into your brand. Select imagery and text that relates to your style and story.</p>"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image_overlay",
+      "label": "Show image overlay",
+      "info": "Increase text readability on busy images.",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "color",
+      "label": "Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "text",
+      "id": "hide_on_url_contains",
+      "label": "Hide when URL contains",
+      "info": "Enter text to hide this section when the URL contains that text. Leave blank to disable."
+    },
+    {
+      "type": "checkbox",
+      "id": "disable_margin",
+      "label": "Disable margin",
+      "info": "Remove all margins from this section",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "category": "Image",
+      "name": "Image banner",
+      "settings": {}
+    }
+  ]
+}
+{% endschema %}

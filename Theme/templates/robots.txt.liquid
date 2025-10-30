@@ -1,0 +1,29 @@
+User-agent: *
+
+Disallow: /admin
+Disallow: /cart
+Disallow: /orders
+Disallow: /checkouts/
+Disallow: /checkout
+Disallow: /74918461673/checkouts
+Disallow: /74918461673/orders
+Disallow: /carts
+Disallow: /account
+Disallow: /*preview_theme_id*
+Disallow: /*preview_script_id*
+Disallow: /policies/
+Disallow: /*/policies/
+Disallow: /services/login_with_shop
+
+# Block search result pages (prevents crawl of spammy injected queries)
+Disallow: /search
+Disallow: /search/*
+
+# Block product search queries but allow vendor collection pages
+Disallow: /*?type=product&q=*
+
+# Allow vendor pages: /collections/vendors?q=*
+# (no disallow rule needed - these will be crawled)
+
+# (Keep collections/blogs allowed — no blanket disallow here)
+Sitemap: {{ shop.url }}/sitemap.xml

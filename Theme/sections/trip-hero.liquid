@@ -1,0 +1,331 @@
+{% comment %}
+  Hero Banner Section for Trip Pages
+  Full-bleed banner with background image and text overlay
+  Uses product.metafields.trip.hero_info (rich text) with format:
+  Location:Location text Hero Text:Hero title text Hero Summary:Summary description
+  (Also accepts "Summary:" instead of "Hero Summary:")
+{% endcomment %}
+
+{% comment %} Parse the rich text field to extract sections {% endcomment %}
+{% assign hero_data = product.metafields.trip.hero_info.value %}
+{% assign location_content = "" %}
+{% assign hero_text_content = "" %}
+{% assign summary_content = "" %}
+
+{% if hero_data.children %}
+  {% comment %} Render the entire content first {% endcomment %}
+  {% assign full_text = "" %}
+  {% for item in hero_data.children %}
+    {% if item.type == 'paragraph' %}
+      {% for child in item.children %}
+        {% assign full_text = full_text | append: child.value %}
+      {% endfor %}
+    {% elsif item.type == 'heading' %}
+      {% for child in item.children %}
+        {% assign full_text = full_text | append: child.value %}
+      {% endfor %}
+    {% endif %}
+  {% endfor %}
+
+  {% comment %} Now split by the section markers (case-insensitive) {% endcomment %}
+  {% assign full_text_lower = full_text | downcase %}
+
+  {% comment %} Find location content {% endcomment %}
+  {% if full_text_lower contains "location:" %}
+    {% assign parts_1 = full_text | split: "Location:" %}
+    {% if parts_1.size == 1 %}
+      {% assign parts_1 = full_text | split: "location:" %}
+    {% endif %}
+
+    {% if parts_1.size > 1 %}
+      {% assign after_location = parts_1[1] %}
+      {% assign parts_2 = after_location | split: "Hero Text:" %}
+      {% if parts_2.size == 1 %}
+        {% assign parts_2 = after_location | split: "hero text:" %}
+      {% endif %}
+      {% assign location_content = parts_2[0] | strip %}
+
+      {% if parts_2.size > 1 %}
+        {% assign after_hero_text = parts_2[1] %}
+        {% assign parts_3 = after_hero_text | split: "Hero Summary:" %}
+        {% if parts_3.size == 1 %}
+          {% assign parts_3 = after_hero_text | split: "hero summary:" %}
+        {% endif %}
+        {% if parts_3.size == 1 %}
+          {% assign parts_3 = after_hero_text | split: "Summary:" %}
+        {% endif %}
+        {% if parts_3.size == 1 %}
+          {% assign parts_3 = after_hero_text | split: "summary:" %}
+        {% endif %}
+        {% assign hero_text_content = parts_3[0] | strip %}
+
+        {% if parts_3.size > 1 %}
+          {% assign summary_content = parts_3[1] | strip %}
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  {% endif %}
+{% endif %}
+
+<section id="hero-{{ section.id }}" class="hero-trip">
+  <div class="hero-trip__wrapper">
+    {% comment %} Use hero_image metafield {% endcomment %}
+    {% if product.metafields.trip.hero_image != blank %}
+      <div class="hero-trip__image">
+        <img
+          src="{{ product.metafields.trip.hero_image | image_url: width: 1920 }}"
+          alt="{{ product.metafields.trip.hero_image.alt | default: 'Hero Image' }}"
+          loading="eager"
+          width="1920"
+          height="700"
+        >
+      </div>
+    {% elsif product.featured_image != blank %}
+      <div class="hero-trip__image">
+        <img
+          src="{{ product.featured_image | image_url: width: 1920 }}"
+          alt="{{ product.featured_image.alt | default: product.title }}"
+          loading="eager"
+          width="1920"
+          height="700"
+        >
+      </div>
+    {% elsif section.settings.hero_image != blank %}
+      <div class="hero-trip__image">
+        <img
+          src="{{ section.settings.hero_image | image_url: width: 1920 }}"
+          alt="{{ section.settings.hero_image.alt | default: 'Hero Image' }}"
+          loading="eager"
+          width="1920"
+          height="700"
+        >
+      </div>
+    {% else %}
+      <div class="hero-trip__placeholder">
+        {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg' }}
+      </div>
+    {% endif %}
+
+    <div class="hero-trip__overlay"></div>
+
+    <div class="hero-trip__content">
+      <div class="container">
+        {% if location_content != blank %}
+          <p class="hero-trip__location">{{ location_content }}</p>
+        {% endif %}
+
+        {% if hero_text_content != blank %}
+          <h1 class="hero-trip__title">{{ hero_text_content }}</h1>
+        {% elsif product.title != blank %}
+          <h1 class="hero-trip__title">{{ product.title }}</h1>
+        {% endif %}
+
+        {% if summary_content != blank %}
+          <p class="hero-trip__description">{{ summary_content }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero-trip {
+    position: relative;
+    width: 100%;
+    height: 600px;
+    margin-bottom: 0;
+    background-color: #E7E9EB;
+  }
+
+  .hero-trip__wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .hero-trip__image,
+  .hero-trip__placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero-trip__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .hero-trip__placeholder {
+    background: #f8f8f8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero-trip__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.4) 100%);
+  }
+
+  .hero-trip__content {
+    position: absolute;
+    top: 39%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 100%;
+    z-index: 2;
+    padding: 0 20px;
+    margin: 0;
+  }
+
+  .hero-trip__content .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    text-align: left;
+  }
+
+  .hero-trip__location {
+    color: #ffffff;
+    font-size: 1.125rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+    text-shadow: 0 4px 12px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.4);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .hero-trip__title {
+    color: #ffffff;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    letter-spacing: clamp(1px, 0.2vw, 2px);
+    max-width: 90%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    text-shadow: 0 4px 12px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.4);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .hero-trip__description {
+    color: #ffffff;
+    font-size: 1.25rem;
+    font-weight: 400;
+    line-height: 1.7;
+    max-width: 650px;
+    text-shadow: 0 4px 12px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.4);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  @media screen and (max-width: 1024px) {
+    .hero-trip__title {
+      max-width: 95%;
+      font-size: clamp(2rem, 7vw, 5rem);
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .hero-trip {
+      height: 600px;
+      margin-bottom: 0;
+    }
+
+    .hero-trip__content {
+      margin: 0;
+      padding: 0 20px;
+    }
+
+    .hero-trip__location {
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+    }
+
+    .hero-trip__title {
+      font-size: clamp(1.75rem, 9vw, 2.5rem);
+      letter-spacing: 1px;
+      max-width: 100%;
+      line-height: 1.15;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-trip__description {
+      font-size: 0.9rem;
+      max-width: 100%;
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .hero-trip__title {
+      font-size: clamp(1.5rem, 10vw, 2rem);
+      letter-spacing: 0.5px;
+    }
+
+    .hero-trip__description {
+      font-size: 0.85rem;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Hero Banner - Trip",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Background Image (Fallback)",
+      "info": "Fallback image. Primary source is product.metafields.trip.hero_image, then product featured image"
+    },
+    {
+      "type": "text",
+      "id": "location",
+      "label": "Location (Fallback)",
+      "default": "Anchorage, Alaska",
+      "info": "Fallback location. Primary source is product.metafields.trip.hero_info (Location:)"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title (Fallback)",
+      "default": "Kulik Lodge",
+      "info": "Fallback title. Primary source is product.metafields.trip.hero_info (Hero Text:)"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description (Fallback)",
+      "default": "Alaska is a bucket list destination for nearly every angler and offers a little bit of everything. We'll to walk you through everything you need to know before you book your trip.",
+      "info": "Fallback description. Primary source is product.metafields.trip.hero_info (Summary:)"
+    },
+    {
+      "type": "paragraph",
+      "content": "Hero content is pulled from product.metafields.trip.hero_info (rich text). Format: 'Location:[text] Hero Text:[text] Hero Summary:[text]' (or 'Summary:[text]'). Section markers are case-insensitive."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Banner - Trip",
+      "settings": {
+        "location": "Anchorage, Alaska",
+        "title": "Kulik Lodge",
+        "description": "Alaska is a bucket list destination for nearly every angler and offers a little bit of everything. We'll to walk you through everything you need to know before you book your trip."
+      }
+    }
+  ]
+}
+{% endschema %}

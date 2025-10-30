@@ -1,0 +1,749 @@
+{% comment %}
+  Gallery Grid Section
+  3x3 grid with lightbox modal
+{% endcomment %}
+
+{% assign has_gallery_data = false %}
+{% if section.settings.use_product_media and product.media.size > 0 %}
+  {% assign has_gallery_data = true %}
+{% elsif section.settings.use_metafield and product.metafields.trip.gallery != blank %}
+  {% assign has_gallery_data = true %}
+{% elsif section.blocks.size > 0 %}
+  {% assign has_gallery_data = true %}
+{% endif %}
+
+{% if has_gallery_data %}
+<section id="trip-gallery-{{ section.id }}" class="trip-gallery">
+  <div id="gallery" style="position: absolute; top: -70px;"></div>
+  <div class="container">
+    {% if section.settings.title != blank %}
+      <h2 class="trip-gallery__title">{{ section.settings.title }}</h2>
+    {% endif %}
+
+    <div class="trip-gallery__grid">
+      {% if section.settings.use_product_media and product.media.size > 0 %}
+        {% comment %} Combine images and videos from product media {% endcomment %}
+        {% assign all_images = product.media | where: 'media_type', 'image' %}
+        {% assign all_videos = product.media | where: 'media_type', 'video' %}
+        {% assign all_external_videos = product.media | where: 'media_type', 'external_video' %}
+        {% assign total_media = all_images.size | plus: all_videos.size | plus: all_external_videos.size %}
+
+        {% comment %} Display all media types in order (VIDEOS FIRST, then images) {% endcomment %}
+        {% assign current_index = 0 %}
+
+        {% comment %} Display hosted videos FIRST {% endcomment %}
+        {% for media in all_videos limit: 6 %}
+          {% comment %} Get the first video source URL {% endcomment %}
+          {% assign video_url = '' %}
+          {% for source in media.sources %}
+            {% if source.url != blank and video_url == '' %}
+              {% assign video_url = source.url %}
+            {% endif %}
+          {% endfor %}
+          <div class="gallery-item gallery-item--video" data-index="{{ current_index }}" data-type="video" data-video-id="{{ media.id }}" data-video-src="{{ video_url }}">
+            <img
+              src="{{ media.preview_image | image_url: width: 600 }}"
+              data-full="{{ media.preview_image | image_url: width: 2000 }}"
+              alt="{{ media.alt | default: 'Video thumbnail' }}"
+              loading="lazy"
+            >
+            {% if forloop.index == 6 and total_media > 6 %}
+              <div class="gallery-count-overlay">
+                +{{ total_media | minus: 6 }}
+              </div>
+            {% else %}
+              <div class="gallery-overlay gallery-overlay--video">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="60" height="60" fill="white">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+              </div>
+            {% endif %}
+          </div>
+          {% assign current_index = current_index | plus: 1 %}
+        {% endfor %}
+
+        {% comment %} Display external videos {% endcomment %}
+        {% assign remaining_slots = 6 | minus: current_index %}
+        {% if remaining_slots > 0 %}
+          {% for media in all_external_videos limit: remaining_slots %}
+            <div class="gallery-item gallery-item--video" data-index="{{ current_index }}" data-type="external_video" data-video-url="{{ media.external_id }}">
+              <img
+                src="{{ media.preview_image | image_url: width: 600 }}"
+                data-full="{{ media.preview_image | image_url: width: 2000 }}"
+                alt="{{ media.alt | default: 'Video thumbnail' }}"
+                loading="lazy"
+              >
+              {% if forloop.index == remaining_slots and total_media > 6 %}
+                <div class="gallery-count-overlay">
+                  +{{ total_media | minus: 6 }}
+                </div>
+              {% else %}
+                <div class="gallery-overlay gallery-overlay--video">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="60" height="60" fill="white">
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
+                </div>
+              {% endif %}
+            </div>
+            {% assign current_index = current_index | plus: 1 %}
+          {% endfor %}
+        {% endif %}
+
+        {% comment %} Display images last {% endcomment %}
+        {% assign remaining_slots = 6 | minus: current_index %}
+        {% if remaining_slots > 0 %}
+          {% for media in all_images limit: remaining_slots %}
+            <div class="gallery-item" data-index="{{ current_index }}" data-type="image">
+              <img
+                src="{{ media | image_url: width: 600 }}"
+                data-full="{{ media | image_url: width: 2000 }}"
+                alt="{{ media.alt | default: 'Gallery image' }}"
+                loading="lazy"
+              >
+              {% if forloop.index == remaining_slots and total_media > 6 %}
+                <div class="gallery-count-overlay">
+                  +{{ total_media | minus: 6 }}
+                </div>
+              {% else %}
+                <div class="gallery-overlay">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="40" height="40" fill="white">
+                    <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/>
+                  </svg>
+                </div>
+              {% endif %}
+            </div>
+            {% assign current_index = current_index | plus: 1 %}
+          {% endfor %}
+        {% endif %}
+      {% elsif section.settings.use_metafield and product.metafields.trip.gallery != blank %}
+        {% assign gallery_images = product.metafields.trip.gallery.value %}
+        {% assign total_images = gallery_images.size %}
+        {% for image in gallery_images limit: 6 %}
+          <div class="gallery-item" data-index="{{ forloop.index0 }}">
+            <img
+              src="{{ image | image_url: width: 600 }}"
+              data-full="{{ image | image_url: width: 2000 }}"
+              alt="Gallery image {{ forloop.index }}"
+              loading="lazy"
+            >
+            {% if forloop.index == 6 and total_images > 6 %}
+              <div class="gallery-count-overlay">
+                +{{ total_images | minus: 6 }}
+              </div>
+            {% else %}
+              <div class="gallery-overlay">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="40" height="40" fill="white">
+                  <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/>
+                </svg>
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% else %}
+        {% for block in section.blocks %}
+          <div class="gallery-item" data-index="{{ forloop.index }}">
+            {% if block.settings.gallery_image != blank %}
+              <img
+                src="{{ block.settings.gallery_image | img_url: '400x400' }}"
+                data-full="{{ block.settings.gallery_image | img_url: 'master' }}"
+                alt="{{ block.settings.gallery_image.alt | escape }}"
+                loading="lazy"
+              >
+            {% else %}
+              {{ 'product-' | append: forloop.index | placeholder_svg_tag: 'placeholder-svg' }}
+            {% endif %}
+            <div class="gallery-overlay">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="40" height="40" fill="white">
+                <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/>
+              </svg>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- Lightbox Modal -->
+<div id="gallery-lightbox-{{ section.id }}" class="gallery-lightbox">
+  <span class="lightbox-close">&times;</span>
+  <img class="lightbox-image" src="" alt="">
+  <div class="lightbox-video-container" style="display: none;">
+    <video class="lightbox-video" controls></video>
+    <div class="lightbox-external-video"></div>
+  </div>
+  <div class="lightbox-nav">
+    <button class="lightbox-prev">&#8249;</button>
+    <button class="lightbox-next">&#8250;</button>
+  </div>
+</div>
+
+<style>
+  .trip-gallery {
+    padding: 100px 0;
+    background-color: #ffffff;
+  }
+
+  .trip-gallery__title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #111827;
+    text-align: center;
+    margin-bottom: 4rem;
+    padding-bottom: 2rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  .trip-gallery__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .gallery-item {
+    position: relative;
+    aspect-ratio: 1;
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+  }
+
+  .gallery-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+  }
+
+  .gallery-item img,
+  .gallery-item .placeholder-svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .gallery-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.6) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .gallery-item:hover .gallery-overlay {
+    opacity: 1;
+  }
+
+  .gallery-item:hover img {
+    transform: scale(1.05);
+  }
+
+  .gallery-count-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3rem;
+    font-weight: 700;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  .gallery-count-overlay:hover {
+    background: rgba(0, 0, 0, 0.8);
+  }
+
+  .gallery-overlay--video {
+    opacity: 1 !important;
+    background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.5) 100%);
+    pointer-events: none;
+  }
+
+  .gallery-overlay--video svg {
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  }
+
+  .gallery-item--video:hover .gallery-overlay--video {
+    background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.7) 100%);
+  }
+
+  /* Lightbox Styles */
+  .gallery-lightbox {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.95);
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+  }
+
+  .gallery-lightbox.active {
+    display: flex;
+  }
+
+  .lightbox-image {
+    max-width: 85%;
+    max-height: 85%;
+    object-fit: contain;
+    border-radius: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .lightbox-video-container {
+    width: 80vw;
+    max-width: 1200px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lightbox-video {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: contain;
+    border-radius: 0;
+    background: #000;
+  }
+
+  .lightbox-external-video {
+    width: 100%;
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+  }
+
+  .lightbox-external-video iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: 30px;
+    right: 50px;
+    color: white;
+    font-size: 36px;
+    font-weight: 300;
+    cursor: pointer;
+    z-index: 10000;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+  }
+
+  .lightbox-close:hover {
+    background: rgba(255,255,255,0.1);
+    transform: rotate(90deg);
+  }
+
+  .lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 50px;
+    pointer-events: none;
+  }
+
+  .lightbox-prev,
+  .lightbox-next {
+    background: rgba(255,255,255,0.9);
+    border: none;
+    color: #111827;
+    font-size: 28px;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 50%;
+    pointer-events: all;
+    transition: all 0.3s ease;
+  }
+
+  .lightbox-prev:hover,
+  .lightbox-next:hover {
+    background: rgba(255,255,255,1);
+    transform: scale(1.1);
+  }
+
+  @media screen and (max-width: 768px) {
+    .trip-gallery__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .trip-gallery__title {
+      font-size: 2rem;
+      margin-bottom: 3rem;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const section = document.getElementById('trip-gallery-{{ section.id }}');
+    const lightbox = document.getElementById('gallery-lightbox-{{ section.id }}');
+    const lightboxImage = lightbox.querySelector('.lightbox-image');
+    const lightboxVideoContainer = lightbox.querySelector('.lightbox-video-container');
+    const lightboxVideo = lightbox.querySelector('.lightbox-video');
+    const lightboxExternalVideo = lightbox.querySelector('.lightbox-external-video');
+    const closeBtn = lightbox.querySelector('.lightbox-close');
+    const prevBtn = lightbox.querySelector('.lightbox-prev');
+    const nextBtn = lightbox.querySelector('.lightbox-next');
+
+    // Collect all media (images and videos) from product media or metafield
+    let allMedia = [];
+    const galleryItems = section.querySelectorAll('.gallery-item');
+
+    galleryItems.forEach((item) => {
+      const img = item.querySelector('img');
+      const mediaType = item.dataset.type || 'image';
+      const videoId = item.dataset.videoId;
+      const videoUrl = item.dataset.videoUrl;
+      const videoSrc = item.dataset.videoSrc;
+
+      if (img) {
+        allMedia.push({
+          type: mediaType,
+          src: img.dataset.full || img.src,
+          alt: img.alt,
+          videoId: videoId,
+          videoUrl: videoUrl,
+          videoSrc: videoSrc
+        });
+      }
+    });
+
+    // Add ALL product media to lightbox (not just visible grid items)
+    {% if section.settings.use_product_media and product.media.size > 0 %}
+      // Clear allMedia and rebuild with ALL product media in order (VIDEOS FIRST)
+      allMedia = [];
+
+      {% comment %} Add ALL hosted videos from product media FIRST {% endcomment %}
+      {% assign all_videos = product.media | where: 'media_type', 'video' %}
+      {% for media in all_videos %}
+        {% assign video_url = '' %}
+        {% for source in media.sources %}
+          {% if source.url != blank and video_url == '' %}
+            {% assign video_url = source.url %}
+          {% endif %}
+        {% endfor %}
+        allMedia.push({
+          type: 'video',
+          src: "{{ media.preview_image | image_url: width: 2000 }}",
+          alt: "{{ media.alt | default: 'Video thumbnail' | escape }}",
+          videoSrc: "{{ video_url }}"
+        });
+      {% endfor %}
+
+      {% comment %} Add ALL external videos from product media {% endcomment %}
+      {% assign all_external_videos = product.media | where: 'media_type', 'external_video' %}
+      {% for media in all_external_videos %}
+        allMedia.push({
+          type: 'external_video',
+          src: "{{ media.preview_image | image_url: width: 2000 }}",
+          alt: "{{ media.alt | default: 'Video thumbnail' | escape }}",
+          videoUrl: "{{ media.external_id }}"
+        });
+      {% endfor %}
+
+      {% comment %} Add ALL images from product media LAST {% endcomment %}
+      {% assign all_images = product.media | where: 'media_type', 'image' %}
+      {% for media in all_images %}
+        allMedia.push({
+          type: 'image',
+          src: "{{ media | image_url: width: 2000 }}",
+          alt: "{{ media.alt | default: 'Gallery image' | escape }}"
+        });
+      {% endfor %}
+    {% elsif section.settings.use_metafield and product.metafields.trip.gallery != blank %}
+      {% assign all_gallery = product.metafields.trip.gallery.value %}
+      {% if all_gallery.size > 6 %}
+        const additionalImages = [
+          {% for image in all_gallery offset: 6 %}
+            {
+              type: 'image',
+              src: "{{ image | image_url: width: 2000 }}",
+              alt: "Gallery image {{ forloop.index | plus: 6 }}"
+            }{% unless forloop.last %},{% endunless %}
+          {% endfor %}
+        ];
+        allMedia = allMedia.concat(additionalImages);
+      {% endif %}
+    {% endif %}
+
+    // Preload all images for smooth navigation
+    allMedia.forEach((media) => {
+      if (media.type === 'image') {
+        const img = new Image();
+        img.src = media.src;
+      }
+    });
+
+    let currentIndex = 0;
+
+    function showMedia(index) {
+      console.log('=== showMedia called ===');
+      console.log('Index:', index);
+      console.log('Total media items:', allMedia.length);
+      console.log('Media at index:', allMedia[index]);
+
+      if (allMedia[index]) {
+        const media = allMedia[index];
+        currentIndex = index;
+
+        console.log('Media type:', media.type);
+        console.log('Video src:', media.videoSrc);
+        console.log('Video URL:', media.videoUrl);
+
+        // Hide video and pause it
+        lightboxVideo.pause();
+        lightboxVideo.src = '';
+        lightboxExternalVideo.innerHTML = '';
+        lightboxVideoContainer.style.display = 'none';
+
+        if (media.type === 'image') {
+          console.log('Displaying image');
+          // Show image (preloaded, so instant display)
+          lightboxImage.style.display = 'block';
+          lightboxImage.src = media.src;
+          lightboxImage.alt = media.alt;
+          lightboxImage.style.opacity = '1';
+        } else if (media.type === 'video') {
+          console.log('Displaying hosted video');
+          // Show hosted video
+          lightboxImage.style.display = 'none';
+          lightboxVideoContainer.style.display = 'flex';
+          lightboxExternalVideo.style.display = 'none';
+          lightboxVideo.style.display = 'block';
+
+          console.log('Video container display:', lightboxVideoContainer.style.display);
+          console.log('Video element display:', lightboxVideo.style.display);
+
+          // Set video source
+          if (media.videoSrc) {
+            console.log('Setting video source:', media.videoSrc);
+            lightboxVideo.src = media.videoSrc;
+            lightboxVideo.load();
+
+            // Don't autoplay - let user click play
+            console.log('Video loaded and ready to play');
+          } else {
+            console.warn('No video source available');
+          }
+        } else if (media.type === 'external_video') {
+          console.log('Displaying external video');
+          // Show external video (YouTube/Vimeo)
+          lightboxImage.style.display = 'none';
+          lightboxVideoContainer.style.display = 'flex';
+          lightboxVideo.style.display = 'none';
+          lightboxExternalVideo.style.display = 'block';
+
+          const videoUrl = media.videoUrl;
+          let embedUrl = '';
+
+          console.log('Raw video URL:', videoUrl);
+
+          // Check if it's already a YouTube ID (no URL format)
+          if (videoUrl && !videoUrl.includes('http') && !videoUrl.includes('/')) {
+            // It's just a video ID
+            console.log('Detected YouTube ID format');
+            embedUrl = `https://www.youtube.com/embed/${videoUrl}`;
+          } else if (videoUrl && (videoUrl.includes('youtube') || videoUrl.includes('youtu.be'))) {
+            // Extract ID from YouTube URL
+            console.log('Detected YouTube URL format');
+            let videoId = videoUrl;
+            if (videoUrl.includes('youtube.com/watch?v=')) {
+              videoId = videoUrl.split('v=')[1].split('&')[0];
+            } else if (videoUrl.includes('youtu.be/')) {
+              videoId = videoUrl.split('youtu.be/')[1].split('?')[0];
+            }
+            embedUrl = `https://www.youtube.com/embed/${videoId}`;
+          } else if (videoUrl && videoUrl.includes('vimeo')) {
+            // Extract ID from Vimeo URL
+            console.log('Detected Vimeo format');
+            const videoId = videoUrl.split('vimeo.com/')[1].split('/')[0];
+            embedUrl = `https://player.vimeo.com/video/${videoId}`;
+          }
+
+          console.log('External video embed URL:', embedUrl);
+
+          if (embedUrl) {
+            lightboxExternalVideo.innerHTML = `<iframe src="${embedUrl}" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+          }
+        }
+
+        console.log('=== showMedia complete ===');
+      } else {
+        console.error('No media at index:', index);
+      }
+    }
+
+    function nextMedia() {
+      currentIndex = (currentIndex + 1) % allMedia.length;
+      showMedia(currentIndex);
+    }
+
+    function prevMedia() {
+      currentIndex = (currentIndex - 1 + allMedia.length) % allMedia.length;
+      showMedia(currentIndex);
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('active');
+      lightboxVideo.pause();
+      lightboxVideo.src = '';
+      lightboxExternalVideo.innerHTML = '';
+      document.body.style.overflow = '';
+    }
+
+    function openLightbox(index) {
+      console.log('Opening lightbox at index:', index);
+      showMedia(index);
+      lightbox.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      console.log('Lightbox opened');
+    }
+
+    // Gallery item click handlers
+    galleryItems.forEach((item, index) => {
+      item.addEventListener('click', function() {
+        console.log('Gallery item clicked:', index);
+        console.log('Item data:', {
+          type: item.dataset.type,
+          videoId: item.dataset.videoId,
+          videoUrl: item.dataset.videoUrl,
+          videoSrc: item.dataset.videoSrc
+        });
+        openLightbox(index);
+      });
+    });
+
+    // Navigation button handlers
+    closeBtn.addEventListener('click', closeLightbox);
+    prevBtn.addEventListener('click', prevMedia);
+    nextBtn.addEventListener('click', nextMedia);
+
+    // Click outside to close
+    lightbox.addEventListener('click', function(e) {
+      if (e.target === lightbox) {
+        closeLightbox();
+      }
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+      if (!lightbox.classList.contains('active')) return;
+
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        nextImage();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevImage();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        closeLightbox();
+      }
+    });
+  });
+</script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Gallery Grid",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Gallery"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_product_media",
+      "label": "Use Product Media Gallery",
+      "default": true,
+      "info": "Pull images from product media gallery (recommended)"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_metafield",
+      "label": "Use Product Metafield",
+      "default": false,
+      "info": "Pull images from product.metafields.trip.gallery (fallback)"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Gallery Image",
+      "limit": 9,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "gallery_image",
+          "label": "Image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Gallery Grid",
+      "blocks": [
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" }
+      ]
+    }
+  ]
+}
+{% endschema %}

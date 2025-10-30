@@ -1,0 +1,148 @@
+{%- assign ns = section_id | default: section.id | default: 'bundle' -%}
+{%- comment -%}
+  Bundle Add Button (scoped to this section)
+  Usage: {% render 'bundle-add-button', section_id: section.id %}
+{%- endcomment -%}
+
+<div id="bb-add-wrap-{{ ns }}" class="bb-addall-wrap" data-root="#bundle-ui" data-list="#bb-list" data-subtotal=".bb-summary__price" data-footer=".bb-summary__right">
+  <button id="bb-add-btn-{{ ns }}" type="button" class="bb-addall-btn" style="display:none">
+    Add Entire Bundle to Cart
+    <span class="bb-total" aria-live="polite" style="margin-left:8px; font-weight:800;">– $0.00</span>
+  </button>
+  <span id="bb-add-msg-{{ ns }}" class="bb-addall-msg" aria-live="polite"></span>
+</div>
+
+<style>
+  #bb-add-wrap-{{ ns }} { margin-top: 1rem; }
+  #bb-add-wrap-{{ ns }} .bb-addall-btn{
+    appearance:none; border:1px solid #FF6B00; border-radius:6px;
+    padding:14px 18px; width:100%; background:#FF6B00; color:#fff;
+    font-weight:700; cursor:pointer; text-align:center; box-shadow:0 2px 0 rgba(0,0,0,.06);
+  }
+  #bb-add-wrap-{{ ns }} .bb-addall-btn:hover{ background:#e66000; border-color:#e66000; }
+  #bb-add-wrap-{{ ns }} .bb-addall-btn:disabled{ opacity:.6; cursor:not-allowed; }
+  #bb-add-wrap-{{ ns }} .bb-addall-msg{ display:block; margin-top:8px; font-size:13px; color:#46505f; }
+</style>
+
+<script>
+(function(){
+  const NS = {{ ns | json }};
+  const wrapSel = '#bb-add-wrap-' + NS;
+  const btnSel  = '#bb-add-btn-' + NS;
+  const msgSel  = '#bb-add-msg-' + NS;
+
+  const wrap = document.querySelector(wrapSel);
+  if(!wrap) return;
+
+  const ROOT_SEL     = wrap.dataset.root || '#bundle-ui';
+  const LIST_SEL     = wrap.dataset.list || '#bb-list';
+  const SUBTOTAL_SEL = wrap.dataset.subtotal || '.bb-summary__price';
+  const FOOTER_SEL   = wrap.dataset.footer || '.bb-summary__right';
+
+  const gidToNum = (gid) => { if(!gid) return NaN; const p=String(gid).split('/'); return Number(p[p.length-1]); };
+
+  function getUI(){
+    const root = document.querySelector(ROOT_SEL);
+    return root ? {
+      root,
+      list: root.querySelector(LIST_SEL),
+      subtotalEl: root.querySelector(SUBTOTAL_SEL),
+      footer: root.querySelector(FOOTER_SEL)
+    } : null;
+  }
+
+  function ensureButtonMounted(){
+    const ui = getUI(); if(!ui) return false;
+    const btn = document.querySelector(btnSel); if(!btn) return false;
+
+    // Prefer to live beside the native "Add All to Cart" button
+    if(ui.footer && !ui.footer.contains(btn)){
+      btn.style.marginLeft = '8px';
+      ui.footer.prepend(btn);         // put before green button; use append() if you want it after
+    }
+    btn.style.display = '';           // reveal once we’ve mounted
+    return true;
+  }
+
+  function readItems(){
+    const ui = getUI();
+    const out = { items: [], subtotalText: '$0.00' };
+    if(!ui || !ui.list) return out;
+
+    ui.list.querySelectorAll('input[type="number"][data-gid]').forEach(inp=>{
+      const qty = Math.max(0, parseInt(inp.value||'0',10));
+      const id  = gidToNum(inp.dataset.gid);
+      if(Number.isFinite(id) && qty>0) out.items.push({ id, quantity: qty });
+    });
+
+    try{
+      const txt = ui.subtotalEl && ui.subtotalEl.textContent.trim();
+      if(txt) out.subtotalText = txt;
+    }catch(_){}
+    return out;
+  }
+
+  function syncState(){
+    const btn = document.querySelector(btnSel);
+    const total = btn?.querySelector('.bb-total');
+    const { items, subtotalText } = readItems();
+    if(btn){
+      btn.disabled = items.length === 0;
+      if(total) total.textContent = '– ' + subtotalText;
+    }
+    const msg = document.querySelector(msgSel); if(msg) msg.textContent = '';
+  }
+
+  async function addAll(items){
+    // try fetch, then fallback to form POST (always works)
+    try{
+      const res = await fetch('/cart/add.js', {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', 'Accept':'application/json' },
+        body: JSON.stringify({ items })
+      });
+      if(!res.ok) throw new Error(await res.text());
+      window.location.href = '/cart';
+    }catch(_){
+      const form = document.createElement('form');
+      form.method = 'POST'; form.action = '/cart/add'; form.style.display='none';
+      const input = document.createElement('input');
+      input.type = 'hidden'; input.name = 'items'; input.value = JSON.stringify(items);
+      form.appendChild(input); document.body.appendChild(form); form.submit();
+    }
+  }
+
+  function wire(){
+    const ui = getUI(); if(!ui) return false;
+    ensureButtonMounted();
+    syncState();
+
+    // keep state in sync
+    ui.root.addEventListener('input',  (e)=>{ if(e.target.closest(LIST_SEL)) syncState(); }, true);
+    ui.root.addEventListener('change', (e)=>{ if(e.target.closest(LIST_SEL)) syncState(); }, true);
+    if(ui.subtotalEl){
+      const mo = new MutationObserver(syncState);
+      mo.observe(ui.subtotalEl, { childList:true, subtree:true, characterData:true });
+    }
+
+    // click handler (delegate to survive re-renders)
+    ui.root.addEventListener('click', (e)=>{
+      const btn = e.target.closest(btnSel);
+      if(!btn) return;
+      const { items } = readItems();
+      if(!items.length) return;
+      btn.disabled = true;
+      addAll(items);
+    });
+
+    return true;
+  }
+
+  // start when UI exists; poll briefly if it renders later
+  const start = () => { if(!wire()){
+    let tries=0; const iv=setInterval(()=>{ if(wire() || ++tries>40) clearInterval(iv); }, 250);
+  }};
+  (document.readyState!=='loading') ? start() : document.addEventListener('DOMContentLoaded', start, { once:true });
+  window.addEventListener('load', syncState, { once:true });
+})();
+</script>

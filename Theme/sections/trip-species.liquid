@@ -1,0 +1,424 @@
+{% comment %}
+  Target Species Carousel Section
+  Horizontal scrolling carousel with arrow navigation
+{% endcomment %}
+
+{% assign has_species_data = false %}
+{% if section.settings.use_metafield and product.metafields.trip.trip_target_species != blank %}
+  {% assign has_species_data = true %}
+{% elsif section.blocks.size > 0 %}
+  {% assign has_species_data = true %}
+{% endif %}
+
+{% if has_species_data %}
+<section id="trip-species-{{ section.id }}" class="trip-species">
+  <div id="species" style="position: absolute; top: -70px;"></div>
+  <div class="container">
+    {% if section.settings.title != blank %}
+      <h2 class="trip-species__title">{{ section.settings.title }}</h2>
+    {% endif %}
+
+    {% if section.settings.description != blank %}
+      <div class="trip-species__description">
+        {{ section.settings.description }}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="trip-species__carousel-wrapper">
+    <button class="trip-species__nav trip-species__nav--prev" aria-label="Previous species">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+
+    <div class="trip-species__grid">
+      {% if section.settings.use_metafield and product.metafields.trip.trip_target_species != blank %}
+        {% assign species_list = product.metafields.trip.trip_target_species.value %}
+        {% for species in species_list %}
+          <div class="species-card">
+            {% if species.species_image != blank %}
+              <div class="species-card__image">
+                <img
+                  src="{{ species.species_image | image_url: width: 800 }}"
+                  srcset="{{ species.species_image | image_url: width: 400 }} 400w,
+                          {{ species.species_image | image_url: width: 800 }} 800w"
+                  sizes="(max-width: 768px) 100vw, 400px"
+                  alt="{{ species.species_name }}"
+                  loading="lazy"
+                >
+              </div>
+            {% endif %}
+            <div class="species-card__content">
+              <h3 class="species-card__title">{{ species.species_name }}</h3>
+              {% if species.description != blank %}
+                <div class="species-card__description">{{ species.description }}</div>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        {% for block in section.blocks %}
+          <div class="species-card">
+            <div class="species-card__image">
+              {% if block.settings.species_image != blank %}
+                <img
+                  src="{{ block.settings.species_image | img_url: '400x300' }}"
+                  alt="{{ block.settings.species_name }}"
+                  loading="lazy"
+                >
+              {% else %}
+                {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+              {% endif %}
+            </div>
+            <div class="species-card__content">
+              <h3 class="species-card__title">{{ block.settings.species_name }}</h3>
+              {% if block.settings.species_season != blank %}
+                <p class="species-card__season">{{ block.settings.species_season }}</p>
+              {% endif %}
+              {% if block.settings.species_description != blank %}
+                <p class="species-card__description">{{ block.settings.species_description }}</p>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    <button class="trip-species__nav trip-species__nav--next" aria-label="Next species">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </button>
+  </div>
+</section>
+
+<script>
+  (function() {
+    const section = document.getElementById('trip-species-{{ section.id }}');
+    const carousel = section.querySelector('.trip-species__grid');
+    const prevBtn = section.querySelector('.trip-species__nav--prev');
+    const nextBtn = section.querySelector('.trip-species__nav--next');
+
+    if (!carousel || !prevBtn || !nextBtn) return;
+
+    const scrollAmount = 380; // Card width + gap
+
+    function updateButtons() {
+      const isAtStart = carousel.scrollLeft <= 10;
+      const isAtEnd = carousel.scrollLeft >= carousel.scrollWidth - carousel.clientWidth - 10;
+      const hasOverflow = carousel.scrollWidth > carousel.clientWidth;
+
+      if (!hasOverflow) {
+        prevBtn.style.opacity = '0';
+        prevBtn.style.pointerEvents = 'none';
+        nextBtn.style.opacity = '0';
+        nextBtn.style.pointerEvents = 'none';
+        return;
+      }
+
+      prevBtn.style.opacity = isAtStart ? '0' : '1';
+      prevBtn.style.pointerEvents = isAtStart ? 'none' : 'auto';
+
+      nextBtn.style.opacity = isAtEnd ? '0' : '1';
+      nextBtn.style.pointerEvents = isAtEnd ? 'none' : 'auto';
+    }
+
+    prevBtn.addEventListener('click', () => {
+      carousel.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    });
+
+    nextBtn.addEventListener('click', () => {
+      carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    });
+
+    carousel.addEventListener('scroll', updateButtons);
+    window.addEventListener('resize', updateButtons);
+
+    // Initial setup - scroll to show first card at left
+    setTimeout(() => {
+      carousel.scrollLeft = 760; // Two clicks worth (380px each)
+      updateButtons();
+    }, 100);
+  })();
+</script>
+{% endif %}
+
+<style>
+  .trip-species {
+    padding: 60px 0 40px 0;
+    background-color: #ffffff;
+  }
+
+  .trip-species__title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #111827;
+    text-align: center;
+    margin-bottom: 4rem;
+    padding-bottom: 2rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  .trip-species__description {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: #6b7280;
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto 3rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 300;
+  }
+
+  .trip-species__carousel-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 100vw;
+  }
+
+  .trip-species__grid {
+    display: flex;
+    gap: 30px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 20px 0;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-padding: 0 calc(50vw - 190px);
+  }
+
+  .trip-species__grid::before,
+  .trip-species__grid::after {
+    content: '';
+    flex: 0 0 auto;
+    width: calc(50vw - 190px);
+  }
+
+  .trip-species__grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .trip-species__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    color: #111827;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .trip-species__nav:hover {
+    background: #ffffff;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    transform: translateY(-50%) scale(1.05);
+  }
+
+  .trip-species__nav--prev {
+    left: 20px;
+  }
+
+  .trip-species__nav--next {
+    right: 20px;
+  }
+
+  .trip-species__nav svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .species-card {
+    flex: 0 0 350px;
+    background: #ffffff;
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    scroll-snap-align: start;
+  }
+
+  .species-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+
+  .species-card__image {
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+    background: #f3f4f6;
+  }
+
+  .species-card__image img,
+  .species-card__image .placeholder-svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .species-card:hover .species-card__image img {
+    transform: scale(1.05);
+  }
+
+  .species-card__content {
+    padding: 25px;
+    background: #f3f4f6;
+  }
+
+  .species-card__title {
+    font-size: 1.375rem;
+    font-weight: 400;
+    color: #111827;
+    margin-bottom: 10px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.3;
+  }
+
+  .species-card__season {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+    display: inline-block;
+    padding: 4px 12px;
+    background: #f9fafb;
+    border-radius: 6px;
+  }
+
+  .species-card__description {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #6b7280;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 300;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  @media screen and (max-width: 768px) {
+    .trip-species {
+      padding: 60px 20px;
+    }
+
+    .trip-species__title {
+      font-size: 2rem;
+    }
+
+    .species-card {
+      flex: 0 0 300px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Target Species",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Target Species"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_metafield",
+      "label": "Use Product Metafield",
+      "default": true,
+      "info": "Pull species from product.metafields.trip.trip_target_species"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "species",
+      "name": "Species",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "species_image",
+          "label": "Species Image"
+        },
+        {
+          "type": "text",
+          "id": "species_name",
+          "label": "Species Name",
+          "default": "Rainbow Trout"
+        },
+        {
+          "type": "text",
+          "id": "species_season",
+          "label": "Best Season",
+          "default": "June - September"
+        },
+        {
+          "type": "textarea",
+          "id": "species_description",
+          "label": "Description",
+          "default": "Alaska's premier gamefish, known for their acrobatic fights and stunning colors."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Target Species",
+      "blocks": [
+        {
+          "type": "species",
+          "settings": {
+            "species_name": "Rainbow Trout",
+            "species_season": "June - September",
+            "species_description": "Alaska's premier gamefish, known for their acrobatic fights and stunning colors."
+          }
+        },
+        {
+          "type": "species",
+          "settings": {
+            "species_name": "Arctic Char",
+            "species_season": "July - August",
+            "species_description": "Beautiful fish with vibrant colors, found in the pristine waters of Alaska."
+          }
+        },
+        {
+          "type": "species",
+          "settings": {
+            "species_name": "Silver Salmon",
+            "species_season": "August - September",
+            "species_description": "Hard-fighting salmon that provide exciting action on fly tackle."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

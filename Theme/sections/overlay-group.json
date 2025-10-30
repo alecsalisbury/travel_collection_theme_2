@@ -1,0 +1,1 @@
+{"type":"custom.overlay","name":"Overlay group","sections":{"popups":{"type":"popups","settings":{}},"privacy-banner":{"type":"privacy-banner","disabled":true,"settings":{"text":"<p>Use this bar to show information about your cookie policy.<\/p>"}}},"order":["popups","privacy-banner"]}

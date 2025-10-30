@@ -1,0 +1,144 @@
+{% comment %}
+  Photo Banner / Divider Image Section
+  Full-width image with optional parallax effect
+{% endcomment %}
+
+{% if product.metafields.trip.hero_image_2 != blank or section.settings.divider_image != blank %}
+<section id="trip-divider-{{ section.id }}" class="trip-divider" data-parallax="{{ section.settings.enable_parallax }}">
+  <div class="trip-divider__wrapper">
+    {% comment %} Use hero_image_2 metafield {% endcomment %}
+    {% if product.metafields.trip.hero_image_2 != blank %}
+      <div class="trip-divider__image">
+        <img
+          src="{{ product.metafields.trip.hero_image_2 | image_url: width: 1920 }}"
+          alt="{{ product.metafields.trip.hero_image_2.alt | default: 'Divider Image' }}"
+          loading="lazy"
+          width="1920"
+          height="600"
+        >
+      </div>
+    {% elsif section.settings.divider_image != blank %}
+      <div class="trip-divider__image">
+        <img
+          src="{{ section.settings.divider_image | img_url: 'master' }}"
+          alt="{{ section.settings.divider_image.alt | escape }}"
+          loading="lazy"
+          width="1920"
+          height="600"
+        >
+      </div>
+    {% else %}
+      <div class="trip-divider__placeholder">
+        {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg' }}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  .trip-divider {
+    position: relative;
+    width: 100%;
+    height: 700px;
+    overflow: hidden;
+    margin: 0;
+  }
+
+  .trip-divider__wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .trip-divider__image,
+  .trip-divider__placeholder {
+    width: 100%;
+    height: 100%;
+  }
+
+  .trip-divider__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .trip-divider__placeholder {
+    background: #f9fafb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .trip-divider[data-parallax="true"] .trip-divider__image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 120%;
+  }
+
+  .trip-divider[data-parallax="true"] .trip-divider__image img {
+    will-change: transform;
+  }
+
+  @media screen and (max-width: 768px) {
+    .trip-divider {
+      height: 500px;
+      margin: 0;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const divider = document.querySelector('#trip-divider-{{ section.id }}');
+    if (divider && divider.dataset.parallax === 'true') {
+      const image = divider.querySelector('.trip-divider__image img');
+      if (image) {
+        let ticking = false;
+        window.addEventListener('scroll', function() {
+          if (!ticking) {
+            window.requestAnimationFrame(function() {
+              const rect = divider.getBoundingClientRect();
+              const scrolled = window.pageYOffset;
+              const offset = rect.top + scrolled;
+              const parallaxSpeed = 0.3;
+              const yPos = -(scrolled - offset) * parallaxSpeed;
+              image.style.transform = `translateY(${yPos}px)`;
+              ticking = false;
+            });
+            ticking = true;
+          }
+        });
+      }
+    }
+  });
+</script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Photo Divider",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "divider_image",
+      "label": "Divider Image",
+      "info": "Fallback image. Primary source is product.metafields.trip.hero_image_2"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_parallax",
+      "label": "Enable Parallax Effect",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Photo Divider"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,135 @@
+{%- comment -%}
+  Snippet: image-with-richtext
+  Props:
+    image                (image object)   – foreground image (preferred)
+    image_url            (string)         – alternative to 'image'
+    image_width          (number)         – only used with image_url
+    image_height         (number)         – only used with image_url
+    background_image     (image object)   – optional full-bleed bg
+    kicker               (string)
+    title                (string)
+    text                 (html string)
+    button_text          (string)
+    button_link          (url)
+    align                (left|center|right)   default: left
+    overlay_opacity_pct  (0..100)              default: 35
+{%- endcomment -%}
+
+{%- assign align_val = align | default: 'left' -%}
+{%- assign overlay_ratio = overlay_opacity_pct | default: 35 | divided_by: 100.0 -%}
+
+{%- capture bg_style -%}
+  {%- if background_image -%}
+    background-image:url('{{ background_image | image_url: width: 1600 }}');
+  {%- endif -%}
+{%- endcapture -%}
+
+<div class="iwr-card" style="{{ bg_style | strip }}">
+  <div class="iwr-overlay" style="opacity: {{ overlay_ratio }}"></div>
+
+  <div class="iwr-inner iwr-{{ align_val }}">
+    {%- if kicker -%}
+      <span class="iwr-kicker">{{ kicker }}</span>
+    {%- endif %}
+    {%- if title %}
+      <h2 class="iwr-title">{{ title }}</h2>
+    {% endif %}
+    {%- if text %}
+      <div class="iwr-text rte">{{ text }}</div>
+    {% endif %}
+    {%- if button_text and button_link -%}
+      <a href="{{ button_link }}" class="iwr-btn">{{ button_text }}</a>
+    {%- endif -%}
+  </div>
+
+  {%- if image -%}
+    <img
+      class="iwr-image"
+      src="{{ image | image_url: width: 1400 }}"
+      alt="{{ title | escape }}"
+      width="{{ image.width | default: 1400 }}"
+      height="{{ image.height | default: 800 }}"
+      loading="lazy"
+    >
+  {%- elsif image_url -%}
+    {%- assign w = image_width | default: 1400 -%}
+    {%- assign h = image_height | default: 800 -%}
+    <img
+      class="iwr-image"
+      src="{{ image_url }}"
+      alt="{{ title | escape }}"
+      width="{{ w }}"
+      height="{{ h }}"
+      loading="lazy"
+    >
+  {%- endif -%}
+</div>
+
+<style>
+  .iwr-card {
+    position: relative;
+    margin: 26px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #000;
+    background-size: cover;
+    background-position: center;
+  }
+  .iwr-image {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .iwr-overlay {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    pointer-events: none;
+  }
+  .iwr-inner {
+    position: absolute;
+    left: 24px;
+    right: 24px;
+    bottom: 24px;
+    color: #fff;
+  }
+  .iwr-inner.iwr-center {
+    text-align: center;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    max-width: min(90%, 760px);
+  }
+  .iwr-inner.iwr-right {
+    text-align: right;
+    left: auto;
+    right: 24px;
+  }
+  .iwr-kicker {
+    display: inline-block;
+    padding: 4px 10px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    font-size: 0.8rem;
+    margin-bottom: 8px;
+  }
+  .iwr-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 4px 0 8px;
+  }
+  .iwr-text {
+    margin: 0 0 14px;
+  }
+  .iwr-btn {
+    display: inline-block;
+    padding: 10px 16px;
+    background: #3b82f6;
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+  }
+  .iwr-btn:hover {
+    background: #2563eb;
+  }
+</style>

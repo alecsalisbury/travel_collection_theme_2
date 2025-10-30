@@ -1,0 +1,1230 @@
+{% comment %}
+  Sticky Navigation Bar - Top Position
+  Appears after scrolling and shows current section with navigation controls
+  Click center to expand dropdown menu
+
+  Note: This navigation is hidden when using fallback trip summary (product.description)
+  to avoid conflicts with custom HTML navigation.
+{% endcomment %}
+
+{% comment %} Check if using fallback trip summary {% endcomment %}
+{% assign using_fallback_summary = false %}
+{% if product.metafields.trip.trip_summary == blank and product.description != blank %}
+  {% assign using_fallback_summary = true %}
+{% endif %}
+
+{% comment %} Check which sections have content {% endcomment %}
+{% assign has_video_features = false %}
+{% if product.metafields.trip.trip_features != blank %}
+  {% assign has_video_features = true %}
+{% endif %}
+
+{% assign has_packages = false %}
+{% if product.metafields.trip.starting_price != blank or product.metafields.trip.rates != blank %}
+  {% assign has_packages = true %}
+{% endif %}
+
+{% assign has_gallery = false %}
+{% if product.media.size > 0 or product.metafields.trip.gallery != blank %}
+  {% assign has_gallery = true %}
+{% endif %}
+
+{% assign has_calendar = false %}
+{% if product.metafields.trip.seasonal_calendar != blank %}
+  {% assign has_calendar = true %}
+{% endif %}
+
+{% assign has_map = false %}
+{% if product.metafields.trip.lodge_coordinates != blank %}
+  {% assign has_map = true %}
+{% endif %}
+
+{% assign has_lodging = false %}
+{% if product.metafields.trip.lodging_info != blank %}
+  {% assign has_lodging = true %}
+{% endif %}
+
+{% assign has_species = false %}
+{% if product.metafields.trip.trip_target_species != blank %}
+  {% assign has_species = true %}
+{% endif %}
+
+{% assign has_itinerary = false %}
+{% if product.metafields.trip.itinerary != blank %}
+  {% assign has_itinerary = true %}
+{% endif %}
+
+{% assign has_faq = false %}
+{% if product.metafields.trip.faq != blank %}
+  {% assign has_faq = true %}
+{% endif %}
+
+{% assign has_testimonial = false %}
+{% if product.metafields.trip.testimonial != blank %}
+  {% assign has_testimonial = true %}
+{% endif %}
+
+{% assign has_resources = false %}
+{% if product.metafields.trip.resources != blank %}
+  {% assign has_resources = true %}
+{% endif %}
+
+{% assign has_terms = false %}
+{% if product.metafields.trip.trip_terms != blank %}
+  {% assign has_terms = true %}
+{% endif %}
+
+{% assign has_related = false %}
+{% if product.metafields.trip.related_trips != blank %}
+  {% assign has_related = true %}
+{% endif %}
+
+{% comment %} Calculate total number of sections with content {% endcomment %}
+{% assign section_count = 1 %}
+{% comment %} Always start with 1 for Overview {% endcomment %}
+{% if has_video_features %}{% assign section_count = section_count | plus: 1 %}{% endif %}
+{% if has_packages %}{% assign section_count = section_count | plus: 1 %}{% endif %}
+{% if has_gallery %}{% assign section_count = section_count | plus: 1 %}{% endif %}
+{% if has_calendar %}{% assign section_count = section_count | plus: 1 %}{% endif %}
+{% if has_map %}{% assign section_count = section_count | plus: 1 %}{% endif %}
+{% if has_lodging %}{% assign section_count = section_count | plus: 1 %}{% endif %}
+{% if has_species %}{% assign section_count = section_count | plus: 1 %}{% endif %}
+{% if has_itinerary %}{% assign section_count = section_count | plus: 1 %}{% endif %}
+{% if has_faq %}{% assign section_count = section_count | plus: 1 %}{% endif %}
+{% if has_testimonial %}{% assign section_count = section_count | plus: 1 %}{% endif %}
+{% if has_resources %}{% assign section_count = section_count | plus: 1 %}{% endif %}
+{% if has_terms %}{% assign section_count = section_count | plus: 1 %}{% endif %}
+{% if has_related %}{% assign section_count = section_count | plus: 1 %}{% endif %}
+
+{% comment %} Only render sticky nav if NOT using fallback summary {% endcomment %}
+{% unless using_fallback_summary %}
+<div id="sticky-nav" class="sticky-nav-bar">
+  <!-- Top Navigation Bar -->
+  <div class="nav-bar">
+    <!-- Desktop: Folder Tabs (Hidden on Mobile) -->
+    <nav class="nav-bar__tabs">
+      <a href="#overview" class="nav-bar__tab" data-section="overview" data-index="0">Overview</a>
+      {% if has_video_features %}<a href="#video-features" class="nav-bar__tab" data-section="video-features" data-index="1">Features</a>{% endif %}
+      {% if has_packages %}<a href="#packages" class="nav-bar__tab" data-section="packages" data-index="2">Packages</a>{% endif %}
+      {% if has_gallery %}<a href="#gallery" class="nav-bar__tab" data-section="gallery" data-index="3">Gallery</a>{% endif %}
+      {% if has_calendar %}<a href="#calendar" class="nav-bar__tab" data-section="calendar" data-index="4">Calendar</a>{% endif %}
+      {% if has_map %}<a href="#map" class="nav-bar__tab" data-section="map" data-index="5">Location</a>{% endif %}
+      {% if has_lodging %}<a href="#lodging" class="nav-bar__tab" data-section="lodging" data-index="6">Lodging</a>{% endif %}
+      {% if has_species %}<a href="#species" class="nav-bar__tab" data-section="species" data-index="7">Species</a>{% endif %}
+      {% if has_itinerary %}<a href="#itinerary" class="nav-bar__tab" data-section="itinerary" data-index="8">Itinerary</a>{% endif %}
+      {% if has_faq %}<a href="#faq" class="nav-bar__tab" data-section="faq" data-index="9">FAQ</a>{% endif %}
+      {% if has_testimonial %}<a href="#testimonial" class="nav-bar__tab" data-section="testimonial" data-index="10">Reviews</a>{% endif %}
+      {% if has_resources %}<a href="#resources" class="nav-bar__tab" data-section="resources" data-index="11">Resources</a>{% endif %}
+      {% if has_terms %}<a href="#terms" class="nav-bar__tab" data-section="terms" data-index="12">Terms</a>{% endif %}
+      {% if has_related %}<a href="#related" class="nav-bar__tab" data-section="related" data-index="13">Related Trips</a>{% endif %}
+    </nav>
+
+    <!-- Mobile: Previous Button -->
+    <button class="nav-bar__prev nav-bar__mobile-only" aria-label="Previous section">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M12 15L7 10L12 5"/>
+      </svg>
+    </button>
+
+    <!-- Mobile: Current Section (Clickable with Caret) -->
+    <div class="nav-bar__current nav-bar__mobile-only">
+      <div class="nav-bar__section-info">
+        <span class="nav-bar__number">01</span>
+        <span class="nav-bar__divider">/</span>
+        <span class="nav-bar__total">{{ section_count | prepend: '0' | slice: -2, 2 }}</span>
+        <span class="nav-bar__title">Overview</span>
+        <svg class="nav-bar__caret" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 6L8 10L12 6"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Mobile: Next Button -->
+    <button class="nav-bar__next nav-bar__mobile-only" aria-label="Next section">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M8 5L13 10L8 15"/>
+      </svg>
+    </button>
+
+    <!-- Book Now Button (Top Right) -->
+    <button class="nav-bar__book-now" aria-label="Book now">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+      <span>Book Now</span>
+    </button>
+  </div>
+
+  <!-- Dropdown Menu (Mobile Only) -->
+  <nav class="nav-bar__dropdown">
+    <div class="nav-bar__dropdown-header">
+      <span class="nav-bar__dropdown-title">Jump to Section</span>
+      <button class="nav-bar__close" aria-label="Close menu">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M13 5L5 13M5 5L13 13"/>
+        </svg>
+      </button>
+    </div>
+
+    <ul class="nav-bar__list">
+      <li><a href="#overview" class="nav-bar__link" data-section="overview" data-index="0"><span class="link-number">01</span> Overview</a></li>
+      {% if has_video_features %}<li><a href="#video-features" class="nav-bar__link" data-section="video-features" data-index="1"><span class="link-number">02</span> Features</a></li>{% endif %}
+      {% if has_packages %}<li><a href="#packages" class="nav-bar__link" data-section="packages" data-index="2"><span class="link-number">03</span> Packages</a></li>{% endif %}
+      {% if has_gallery %}<li><a href="#gallery" class="nav-bar__link" data-section="gallery" data-index="3"><span class="link-number">04</span> Gallery</a></li>{% endif %}
+      {% if has_calendar %}<li><a href="#calendar" class="nav-bar__link" data-section="calendar" data-index="4"><span class="link-number">05</span> Calendar</a></li>{% endif %}
+      {% if has_map %}<li><a href="#map" class="nav-bar__link" data-section="map" data-index="5"><span class="link-number">06</span> Location</a></li>{% endif %}
+      {% if has_lodging %}<li><a href="#lodging" class="nav-bar__link" data-section="lodging" data-index="6"><span class="link-number">07</span> Lodging</a></li>{% endif %}
+      {% if has_species %}<li><a href="#species" class="nav-bar__link" data-section="species" data-index="7"><span class="link-number">08</span> Species</a></li>{% endif %}
+      {% if has_itinerary %}<li><a href="#itinerary" class="nav-bar__link" data-section="itinerary" data-index="8"><span class="link-number">09</span> Itinerary</a></li>{% endif %}
+      {% if has_faq %}<li><a href="#faq" class="nav-bar__link" data-section="faq" data-index="9"><span class="link-number">10</span> FAQ</a></li>{% endif %}
+      {% if has_testimonial %}<li><a href="#testimonial" class="nav-bar__link" data-section="testimonial" data-index="10"><span class="link-number">11</span> Reviews</a></li>{% endif %}
+      {% if has_resources %}<li><a href="#resources" class="nav-bar__link" data-section="resources" data-index="11"><span class="link-number">12</span> Resources</a></li>{% endif %}
+      {% if has_terms %}<li><a href="#terms" class="nav-bar__link" data-section="terms" data-index="12"><span class="link-number">13</span> Terms</a></li>{% endif %}
+      {% if has_related %}<li><a href="#related" class="nav-bar__link" data-section="related" data-index="13"><span class="link-number">14</span> Related Trips</a></li>{% endif %}
+    </ul>
+  </nav>
+
+  <!-- Overlay -->
+  <div class="nav-bar__overlay"></div>
+</div>
+
+<style>
+  /* Top Sticky Navigation Bar */
+  .sticky-nav-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 998;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-100%);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none; /* Prevent any interaction when hidden */
+  }
+
+  .sticky-nav-bar.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto; /* Re-enable interactions when visible */
+  }
+
+  /* Main Navigation Bar - Scoped to avoid conflicts */
+  .sticky-nav-bar .nav-bar {
+    background: #fff;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    position: relative;
+  }
+
+  /* Progress bar as bottom border */
+  .sticky-nav-bar .nav-bar::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #DAD9D6;
+  }
+
+  /* Desktop: Folder Tabs */
+  .sticky-nav-bar .nav-bar__tabs {
+    display: flex;
+    align-items: stretch;
+    gap: 4px;
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 0 20px;
+  }
+
+  .sticky-nav-bar .nav-bar__tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sticky-nav-bar .nav-bar__tab {
+    display: flex;
+    align-items: center;
+    padding: 12px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    position: relative;
+    background: transparent;
+  }
+
+  .sticky-nav-bar .nav-bar__tab:hover {
+    color: #4492C6;
+  }
+
+  .sticky-nav-bar .nav-bar__tab.active {
+    color: #4492C6;
+    border-bottom-color: #4492C6;
+  }
+
+  /* Book Now Button */
+  .sticky-nav-bar .nav-bar__book-now {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    margin: 8px 20px 8px 8px;
+    background: #4492C6;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .sticky-nav-bar .nav-bar__book-now:hover {
+    background: #357ab8;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(68, 146, 198, 0.3);
+  }
+
+  .sticky-nav-bar .nav-bar__book-now svg {
+    stroke: #fff;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Hide mobile elements on desktop */
+  .sticky-nav-bar .nav-bar__mobile-only {
+    display: none;
+  }
+
+  /* Previous/Next Buttons */
+  .sticky-nav-bar .nav-bar__prev,
+  .sticky-nav-bar .nav-bar__next {
+    background: #f8f9fa;
+    border: 2px solid #4492C6;
+    border-radius: 6px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .sticky-nav-bar .nav-bar__prev:hover,
+  .sticky-nav-bar .nav-bar__next:hover {
+    background: #4492C6;
+  }
+
+  .sticky-nav-bar .nav-bar__prev:hover svg,
+  .sticky-nav-bar .nav-bar__next:hover svg {
+    stroke: #fff;
+  }
+
+  .sticky-nav-bar .nav-bar__prev svg,
+  .sticky-nav-bar .nav-bar__next svg {
+    stroke: #4492C6;
+    transition: stroke 0.2s ease;
+  }
+
+  .sticky-nav-bar .nav-bar__prev:disabled,
+  .sticky-nav-bar .nav-bar__next:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    border-color: #DAD9D6;
+  }
+
+  .sticky-nav-bar .nav-bar__prev:disabled svg,
+  .sticky-nav-bar .nav-bar__next:disabled svg {
+    stroke: #DAD9D6;
+  }
+
+  .sticky-nav-bar .nav-bar__prev:disabled:hover,
+  .sticky-nav-bar .nav-bar__next:disabled:hover {
+    background: #f8f9fa;
+  }
+
+  /* Mobile: Current Section Display */
+  .sticky-nav-bar .nav-bar__current {
+    flex: 1;
+    cursor: pointer;
+    position: relative;
+  }
+
+  /* Progress fill overlay on bottom border */
+  .sticky-nav-bar .nav-bar__current::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: -12px;
+    height: 3px;
+    background: #4492C6;
+    transition: width 0.3s ease;
+    width: var(--progress-width, 0%);
+    z-index: 2;
+  }
+
+  .sticky-nav-bar .nav-bar__section-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    transition: all 0.2s ease;
+  }
+
+  .sticky-nav-bar .nav-bar__current:hover .nav-bar__section-info {
+    background: #e9ecef;
+  }
+
+  .sticky-nav-bar .nav-bar__caret {
+    margin-left: 4px;
+    stroke: #615D59;
+    transition: transform 0.2s ease;
+  }
+
+  .sticky-nav-bar.expanded .nav-bar__caret {
+    transform: rotate(180deg);
+  }
+
+  .sticky-nav-bar .nav-bar__number {
+    font-weight: 700;
+    font-size: 16px;
+    color: #4492C6;
+  }
+
+  .sticky-nav-bar .nav-bar__divider {
+    color: #DAD9D6;
+    font-weight: 400;
+  }
+
+  .sticky-nav-bar .nav-bar__total {
+    font-weight: 600;
+    font-size: 14px;
+    color: #615D59;
+  }
+
+  .sticky-nav-bar .nav-bar__title {
+    font-weight: 600;
+    font-size: 15px;
+    color: #615D59;
+    margin-left: 8px;
+  }
+
+
+  /* Dropdown Menu */
+  .sticky-nav-bar .nav-bar__dropdown {
+    background: #fff;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-bottom: 2px solid #4492C6;
+  }
+
+  .sticky-nav-bar.expanded .nav-bar__dropdown {
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  .sticky-nav-bar .nav-bar__dropdown-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px 12px;
+    border-bottom: 2px solid #DAD9D6;
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 10;
+  }
+
+  .sticky-nav-bar .nav-bar__dropdown-title {
+    font-weight: 700;
+    font-size: 16px;
+    color: #615D59;
+    letter-spacing: 0.5px;
+  }
+
+  .sticky-nav-bar .nav-bar__close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+  }
+
+  .sticky-nav-bar .nav-bar__close:hover {
+    background: #f5f5f5;
+  }
+
+  .sticky-nav-bar .nav-bar__close svg {
+    stroke: #615D59;
+    transition: stroke 0.2s ease;
+  }
+
+  .sticky-nav-bar .nav-bar__close:hover svg {
+    stroke: #4492C6;
+  }
+
+  /* Section List */
+  .sticky-nav-bar .nav-bar__list {
+    list-style: none;
+    padding: 16px;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+  }
+
+  .sticky-nav-bar .nav-bar__link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    color: #615D59;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    background: #f8f9fa;
+    border: 2px solid transparent;
+  }
+
+  .sticky-nav-bar .link-number {
+    font-weight: 700;
+    color: #4492C6;
+    font-size: 13px;
+    min-width: 24px;
+  }
+
+  .sticky-nav-bar .nav-bar__link:hover {
+    background: #fff;
+    border-color: #4492C6;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(68, 146, 198, 0.15);
+  }
+
+  .sticky-nav-bar .nav-bar__link:hover .link-number {
+    color: #00857D;
+  }
+
+  .sticky-nav-bar .nav-bar__link.active {
+    background: #4492C6;
+    color: #fff;
+    font-weight: 600;
+    border-color: #4492C6;
+  }
+
+  .sticky-nav-bar .nav-bar__link.active .link-number {
+    color: #fff;
+  }
+
+  /* Quicklink styles */
+  .sticky-nav-bar .nav-bar__link--quicklink {
+    background: #f0f8ff;
+    border-left: 3px solid #4492C6;
+  }
+
+  .sticky-nav-bar .nav-bar__link--quicklink:hover {
+    background: #e6f3ff;
+  }
+
+  /* Overlay */
+  .sticky-nav-bar .nav-bar__overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: -1;
+  }
+
+  .sticky-nav-bar.expanded .nav-bar__overlay {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* Custom scrollbar */
+  .sticky-nav-bar .nav-bar__dropdown::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .sticky-nav-bar .nav-bar__dropdown::-webkit-scrollbar-track {
+    background: #f5f5f5;
+  }
+
+  .sticky-nav-bar .nav-bar__dropdown::-webkit-scrollbar-thumb {
+    background: #4492C6;
+    border-radius: 3px;
+  }
+
+  /* Tablet and Mobile styles */
+  @media (max-width: 1024px) {
+    /* Hide desktop tabs on mobile/tablet */
+    .sticky-nav-bar .nav-bar__tabs {
+      display: none;
+    }
+
+    /* Show mobile controls */
+    .sticky-nav-bar .nav-bar__mobile-only {
+      display: flex;
+    }
+
+    .sticky-nav-bar .nav-bar {
+      padding: 10px 16px;
+      gap: 12px;
+    }
+
+    .sticky-nav-bar .nav-bar__prev,
+    .sticky-nav-bar .nav-bar__next {
+      width: 36px;
+      height: 36px;
+    }
+
+    .sticky-nav-bar .nav-bar__prev svg,
+    .sticky-nav-bar .nav-bar__next svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .sticky-nav-bar .nav-bar__title {
+      font-size: 14px;
+    }
+
+    .sticky-nav-bar .nav-bar__book-now span {
+      display: none;
+    }
+
+    .sticky-nav-bar .nav-bar__book-now {
+      padding: 10px 12px;
+    }
+
+    .sticky-nav-bar .nav-bar__list {
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 8px;
+    }
+  }
+
+  /* Mobile styles */
+  @media (max-width: 480px) {
+    .sticky-nav-bar .nav-bar {
+      padding: 8px 12px;
+      gap: 8px;
+    }
+
+    .sticky-nav-bar .nav-bar__prev,
+    .sticky-nav-bar .nav-bar__next {
+      width: 32px;
+      height: 32px;
+    }
+
+    .sticky-nav-bar .nav-bar__section-info {
+      padding: 8px 12px;
+    }
+
+    .sticky-nav-bar .nav-bar__number {
+      font-size: 14px;
+    }
+
+    .sticky-nav-bar .nav-bar__total {
+      font-size: 12px;
+    }
+
+    .sticky-nav-bar .nav-bar__title {
+      font-size: 13px;
+    }
+
+    .sticky-nav-bar .nav-bar__list {
+      grid-template-columns: 1fr;
+      padding: 12px;
+    }
+
+    .sticky-nav-bar .nav-bar__link {
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+  }
+
+  /* Fix for Shopify header spacing on mobile */
+  @media (max-width: 768px) {
+    /* Ensure sticky nav doesn't affect header layout when hidden */
+    .sticky-nav-bar:not(.visible) {
+      display: none !important;
+    }
+
+    /* Reset any potential body padding/margin that might affect header */
+    body {
+      padding-top: 0 !important;
+      margin-top: 0 !important;
+    }
+  }
+</style>
+
+<script>
+  // Initialize immediately if DOM is ready, otherwise wait
+  function initStickyNav() {
+    console.log('=== STICKY NAV: INITIALIZING ===');
+    const navBar = document.getElementById('sticky-nav');
+
+    if (!navBar) {
+      console.error('Sticky nav element not found!');
+      return;
+    }
+
+    console.log('Sticky nav element found');
+
+    // Ensure the nav bar is properly hidden on mobile initially
+    if (window.innerWidth <= 768 && navBar && !navBar.classList.contains('visible')) {
+      navBar.style.display = 'none';
+    }
+
+    const currentSection = navBar.querySelector('.nav-bar__current');
+    const currentNumber = navBar.querySelector('.nav-bar__number');
+    const currentTitle = navBar.querySelector('.nav-bar__title');
+    const prevBtn = navBar.querySelector('.nav-bar__prev');
+    const nextBtn = navBar.querySelector('.nav-bar__next');
+    const closeBtn = navBar.querySelector('.nav-bar__close');
+    const overlay = navBar.querySelector('.nav-bar__overlay');
+    const links = navBar.querySelectorAll('.nav-bar__link');
+    const tabs = navBar.querySelectorAll('.nav-bar__tab');
+    const bookNowBtn = navBar.querySelector('.nav-bar__book-now');
+
+    let scrollThreshold = 300;
+    let isExpanded = false;
+    let scrollTimeout = null;
+    let isScrollingProgrammatically = false;
+    let lastDetectedSection = null;
+
+    // Update active section in navigation
+    function updateActiveSection() {
+      const navBarElement = navBar.querySelector('.nav-bar');
+      const navHeight = navBarElement ? navBarElement.offsetHeight : 60;
+      const scrollPosition = window.pageYOffset + navHeight + 50; // Offset for better detection
+
+      // Get all known section IDs from the navigation (query fresh each time)
+      const currentTabs = navBar.querySelectorAll('.nav-bar__tab');
+      const currentLinks = navBar.querySelectorAll('.nav-bar__link');
+
+      const sectionIds = Array.from(currentTabs).map(tab => tab.getAttribute('data-section'));
+
+      let currentSection = null;
+      let closestDistance = Infinity;
+
+      // Check if we have any visible quicklinks (means regular sections are hidden)
+      const hasQuicklinks = Array.from(currentTabs).some(tab => {
+        const tabSection = tab.getAttribute('data-section');
+        const tabElement = document.getElementById(tabSection);
+        return tabElement && tabElement.hasAttribute('data-content-type') &&
+               tabElement.getAttribute('data-content-type') === 'tab-item';
+      });
+
+      // Check each section ID
+      sectionIds.forEach(sectionId => {
+        const anchor = document.getElementById(sectionId);
+        if (anchor) {
+          // Check if this is a quicklink (tab content) or a regular section
+          const isQuicklink = anchor.hasAttribute('data-content-type') &&
+                             anchor.getAttribute('data-content-type') === 'tab-item';
+
+          // If we have quicklinks active, skip regular section anchors that are hidden
+          if (hasQuicklinks && !isQuicklink) {
+            // Check if this tab/link is hidden
+            const correspondingTab = Array.from(currentTabs).find(tab =>
+              tab.getAttribute('data-section') === sectionId
+            );
+            if (correspondingTab && correspondingTab.style.display === 'none') {
+              return;
+            }
+          }
+
+          let elementTop, elementHeight;
+
+          if (isQuicklink) {
+            // For quicklinks, calculate absolute position
+            elementTop = anchor.offsetTop;
+            let offsetParent = anchor.offsetParent;
+            while (offsetParent) {
+              elementTop += offsetParent.offsetTop;
+              offsetParent = offsetParent.offsetParent;
+            }
+            elementHeight = anchor.offsetHeight;
+          } else {
+            // For regular sections, use parent section
+            const section = anchor.closest('section');
+            if (section) {
+              elementTop = section.offsetTop;
+              elementHeight = section.offsetHeight;
+            } else {
+              return;
+            }
+          }
+
+          const elementBottom = elementTop + elementHeight;
+          const elementMiddle = elementTop + (elementHeight / 2);
+          const distance = Math.abs(scrollPosition - elementMiddle);
+
+          // More lenient range detection - consider a section "in range" if we're anywhere near it
+          const rangeBuffer = isQuicklink ? 300 : 100;
+          const isInRange = scrollPosition >= elementTop - rangeBuffer && scrollPosition < elementBottom + rangeBuffer;
+
+          // Give current section extra stickiness - prefer it if we're still close to it
+          const isCurrentSection = lastDetectedSection === sectionId;
+          const stickyBonus = isCurrentSection ? -200 : 0; // Subtract from distance to prefer current section
+          const adjustedDistance = distance + stickyBonus;
+
+          // Find the element closest to current scroll position
+          if (isInRange) {
+            if (adjustedDistance < closestDistance) {
+              closestDistance = adjustedDistance;
+              currentSection = sectionId;
+            }
+          }
+        }
+      });
+
+      // Update last detected section
+      if (currentSection) {
+        lastDetectedSection = currentSection;
+      }
+
+      if (currentSection) {
+        // Update desktop tabs
+        currentTabs.forEach(tab => {
+          const sectionKey = tab.getAttribute('data-section');
+          if (sectionKey === currentSection) {
+            tab.classList.add('active');
+          } else {
+            tab.classList.remove('active');
+          }
+        });
+
+        // Update mobile dropdown links
+        currentLinks.forEach(link => {
+          const sectionKey = link.getAttribute('data-section');
+          if (sectionKey === currentSection) {
+            link.classList.add('active');
+          } else {
+            link.classList.remove('active');
+          }
+        });
+
+        // Update mobile current section display
+        const sectionIndex = Array.from(currentLinks).findIndex(link =>
+          link.getAttribute('data-section') === currentSection
+        );
+
+        if (sectionIndex !== -1 && currentTitle) {
+          // Update number if it exists (hidden when using quicklinks)
+          if (currentNumber && currentNumber.style.display !== 'none') {
+            const newNumber = String(sectionIndex + 1).padStart(2, '0');
+            currentNumber.textContent = newNumber;
+          }
+
+          const linkText = currentLinks[sectionIndex].textContent.trim();
+          // Remove the number prefix from the link text (e.g., "01 Overview" -> "Overview")
+          const titleText = linkText.replace(/^\d+\s*/, '');
+          currentTitle.textContent = titleText;
+        }
+      }
+    }
+
+    // Show/hide nav bar based on scroll
+    function handleScroll() {
+      const currentScroll = window.pageYOffset;
+
+      if (currentScroll > scrollThreshold) {
+        // On mobile, ensure display is set when showing
+        if (window.innerWidth <= 768) {
+          navBar.style.display = '';
+        }
+        navBar.classList.add('visible');
+      } else {
+        navBar.classList.remove('visible');
+        navBar.classList.remove('expanded');
+        isExpanded = false;
+        // On mobile, hide completely when not visible
+        if (window.innerWidth <= 768) {
+          navBar.style.display = 'none';
+        }
+      }
+
+      // Throttle active section updates during programmatic scrolling
+      if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
+      }
+
+      scrollTimeout = setTimeout(() => {
+        updateActiveSection();
+        scrollTimeout = null;
+      }, isScrollingProgrammatically ? 50 : 150);
+    }
+
+    // Toggle dropdown expansion
+    function toggleDropdown() {
+      isExpanded = !isExpanded;
+      if (isExpanded) {
+        navBar.classList.add('expanded');
+      } else {
+        navBar.classList.remove('expanded');
+      }
+    }
+
+    // Close dropdown
+    function closeDropdown() {
+      navBar.classList.remove('expanded');
+      isExpanded = false;
+    }
+
+    // Event listeners
+    if (currentSection) {
+      currentSection.addEventListener('click', toggleDropdown);
+    }
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closeDropdown);
+    }
+    if (overlay) {
+      overlay.addEventListener('click', closeDropdown);
+    }
+
+    // Smooth scroll helper that accounts for absolutely positioned anchors
+    function smoothScrollToSection(sectionId) {
+      const targetElement = document.getElementById(sectionId);
+
+      if (targetElement) {
+        // Check if this is a quicklink (tab content) or a regular section anchor
+        const isQuicklink = targetElement.hasAttribute('data-content-type') &&
+                           targetElement.getAttribute('data-content-type') === 'tab-item';
+
+        let targetTop;
+
+        if (isQuicklink) {
+          // For quicklinks, scroll to the element itself
+          targetTop = targetElement.offsetTop;
+
+          // Need to account for parent offsets if nested
+          let offsetParent = targetElement.offsetParent;
+          while (offsetParent) {
+            targetTop += offsetParent.offsetTop;
+            offsetParent = offsetParent.offsetParent;
+          }
+        } else {
+          // For regular sections, get the parent section element
+          const parentSection = targetElement.closest('section');
+
+          if (parentSection) {
+            targetTop = parentSection.offsetTop;
+          } else {
+            return;
+          }
+        }
+
+        // Account for sticky nav height (only the nav bar, not dropdown)
+        const navBarElement = navBar.querySelector('.nav-bar');
+        const navHeight = navBarElement ? navBarElement.offsetHeight : 60;
+        const targetPosition = targetTop - navHeight - 10;
+
+        // Set flag to indicate programmatic scrolling
+        isScrollingProgrammatically = true;
+
+        // Perform the scroll
+        window.scrollTo({
+          top: targetPosition,
+          behavior: 'smooth'
+        });
+
+        // Force update after scroll animation completes
+        setTimeout(() => {
+          updateActiveSection();
+          isScrollingProgrammatically = false;
+        }, 600);
+      }
+    }
+
+    // Desktop tabs click handlers
+    tabs.forEach(tab => {
+      tab.addEventListener('click', function(e) {
+        console.log('Tab clicked, preventing default');
+        e.preventDefault();
+        e.stopPropagation();
+        const targetKey = this.getAttribute('data-section');
+        smoothScrollToSection(targetKey);
+        return false;
+      });
+    });
+
+    // Mobile dropdown links click handlers
+    links.forEach(link => {
+      link.addEventListener('click', function(e) {
+        console.log('Link clicked, preventing default');
+        e.preventDefault();
+        e.stopPropagation();
+        const targetKey = this.getAttribute('data-section');
+        smoothScrollToSection(targetKey);
+        closeDropdown();
+        return false;
+      });
+    });
+
+    // Book Now button - scrolls to inquiry section
+    if (bookNowBtn) {
+      bookNowBtn.addEventListener('click', function() {
+        // Try to find inquiry section by class or ID
+        const inquirySection = document.querySelector('.trip-inquiry') || document.getElementById('trip-inquiry');
+        if (inquirySection) {
+          const sectionTop = inquirySection.offsetTop;
+          const navBarElement = navBar.querySelector('.nav-bar');
+          const navHeight = navBarElement ? navBarElement.offsetHeight : 60;
+          const targetPosition = sectionTop - navHeight - 10;
+
+          window.scrollTo({
+            top: targetPosition,
+            behavior: 'smooth'
+          });
+        } else {
+          console.error('Inquiry section not found');
+        }
+      });
+    }
+
+    // Previous/Next navigation buttons
+    if (prevBtn) {
+      prevBtn.addEventListener('click', function() {
+        console.log('Previous button clicked');
+        const currentIndex = Array.from(tabs).findIndex(tab => tab.classList.contains('active'));
+        console.log('Current index:', currentIndex);
+        if (currentIndex > 0) {
+          const prevTab = tabs[currentIndex - 1];
+          const targetSection = prevTab.getAttribute('data-section');
+          console.log('Going to previous section:', targetSection);
+          smoothScrollToSection(targetSection);
+        }
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', function() {
+        console.log('Next button clicked');
+        const currentIndex = Array.from(tabs).findIndex(tab => tab.classList.contains('active'));
+        console.log('Current index:', currentIndex);
+        if (currentIndex < tabs.length - 1) {
+          const nextTab = tabs[currentIndex + 1];
+          const targetSection = nextTab.getAttribute('data-section');
+          console.log('Going to next section:', targetSection);
+          smoothScrollToSection(targetSection);
+        }
+      });
+    }
+
+    // Scroll event
+    window.addEventListener('scroll', handleScroll);
+
+    // Check if quicklinks already exist (in case event fired before we initialized)
+    console.log('Checking for existing quicklinks...');
+    if (window.productDescriptionQuicklinks && window.productDescriptionQuicklinks.length > 0) {
+      console.log('Found existing quicklinks, processing immediately...');
+      processQuicklinks(window.productDescriptionQuicklinks);
+    }
+
+    // Function to process quicklinks
+    function processQuicklinks(quicklinks) {
+      console.log('=== STICKY NAV: PROCESSING QUICKLINKS ===');
+      console.log('Quicklinks received:', quicklinks);
+
+      if (!quicklinks || quicklinks.length === 0) {
+        console.log('No quicklinks to process');
+        return;
+      }
+
+      console.log('Processing', quicklinks.length, 'quicklinks');
+
+      // Hide all regular section links and tabs
+      console.log('Hiding regular links and tabs');
+      links.forEach(link => {
+        const listItem = link.parentElement;
+        if (listItem) {
+          listItem.style.display = 'none';
+        }
+      });
+
+      tabs.forEach(tab => {
+        tab.style.display = 'none';
+      });
+
+      // Hide prev/next arrow buttons
+      if (prevBtn) {
+        prevBtn.style.display = 'none';
+        console.log('Hid prev button');
+      }
+      if (nextBtn) {
+        nextBtn.style.display = 'none';
+        console.log('Hid next button');
+      }
+
+      // Hide the number counter on mobile
+      if (currentNumber) {
+        currentNumber.style.display = 'none';
+        console.log('Hid number counter');
+      }
+      const divider = navBar.querySelector('.nav-bar__divider');
+      if (divider) {
+        divider.style.display = 'none';
+        console.log('Hid divider');
+      }
+      const total = navBar.querySelector('.nav-bar__total');
+      if (total) {
+        total.style.display = 'none';
+        console.log('Hid total');
+      }
+
+      const dropdownList = navBar.querySelector('.nav-bar__list');
+      const tabsContainer = navBar.querySelector('.nav-bar__tabs');
+      if (!dropdownList) {
+        console.log('No dropdown list found!');
+        return;
+      }
+
+      console.log('Creating quicklink elements...');
+      quicklinks.forEach((quicklink, index) => {
+        console.log(`Creating quicklink ${index + 1}:`, quicklink.title, '(ID:', quicklink.id + ')');
+
+        // Create dropdown list item
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = `#${quicklink.id}`;
+        a.className = 'nav-bar__link nav-bar__link--quicklink';
+        a.setAttribute('data-section', quicklink.id);
+
+        a.textContent = quicklink.title;
+        li.appendChild(a);
+        dropdownList.appendChild(li);
+
+        a.addEventListener('click', function(e) {
+          console.log('Quicklink clicked (dropdown):', quicklink.id);
+          e.preventDefault();
+          smoothScrollToSection(quicklink.id);
+          closeDropdown();
+        });
+
+        // Create desktop tab
+        if (tabsContainer) {
+          const tabLink = document.createElement('a');
+          tabLink.href = `#${quicklink.id}`;
+          tabLink.className = 'nav-bar__tab';
+          tabLink.setAttribute('data-section', quicklink.id);
+          tabLink.textContent = quicklink.title;
+          tabsContainer.appendChild(tabLink);
+
+          tabLink.addEventListener('click', function(e) {
+            console.log('Quicklink clicked (tab):', quicklink.id);
+            e.preventDefault();
+            smoothScrollToSection(quicklink.id);
+          });
+        }
+      });
+
+      console.log('All quicklinks created. Forcing initial update...');
+      // Force an immediate update to set the correct initial state
+      updateActiveSection();
+      console.log('=== END STICKY NAV QUICKLINKS PROCESSING ===\n');
+    }
+
+    // Listen for quicklinks from product description
+    document.addEventListener('quicklinksExtracted', function(e) {
+      console.log('=== STICKY NAV: QUICKLINKS EVENT RECEIVED ===');
+      const quicklinks = e.detail.quicklinks;
+      processQuicklinks(quicklinks);
+    });
+
+    // Also listen on window
+    window.addEventListener('quicklinksExtracted', function(e) {
+      console.log('=== STICKY NAV: QUICKLINKS EVENT RECEIVED (WINDOW) ===');
+      const quicklinks = e.detail.quicklinks;
+      processQuicklinks(quicklinks);
+    });
+
+    console.log('=== STICKY NAV: INITIALIZATION COMPLETE ===');
+  }
+
+  // Initialize on DOMContentLoaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initStickyNav);
+  } else {
+    // DOM already loaded, initialize immediately
+    initStickyNav();
+  }
+
+  // Also handle Turbo navigation (Shopify uses this)
+  document.addEventListener('turbo:load', initStickyNav);
+  document.addEventListener('shopify:section:load', initStickyNav);
+</script>
+{% endunless %}
+
+{% schema %}
+{
+  "name": "Sticky Navigation",
+  "settings": [
+    {
+      "type": "range",
+      "id": "scroll_threshold",
+      "min": 200,
+      "max": 1000,
+      "step": 50,
+      "unit": "px",
+      "label": "Show after scrolling",
+      "default": 500
+    },
+    {
+      "type": "color",
+      "id": "nav_bg_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "nav_text_color",
+      "label": "Text Color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "nav_active_color",
+      "label": "Active Section Color",
+      "default": "#333333"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Sticky Navigation"
+    }
+  ]
+}
+{% endschema %}

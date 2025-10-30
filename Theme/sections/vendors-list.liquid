@@ -1,0 +1,428 @@
+{% comment %}
+  Vendors / Brands A–Z index (Modern design with proper z-index and 4-column layout)
+  Features: All Brands header, underlined links, proper z-index for menus
+{% endcomment %}
+
+{% assign vendors = shop.vendors | sort_natural %}
+{% assign alphabet = '#,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z' | split: ',' %}
+{% assign digits = '0,1,2,3,4,5,6,7,8,9' | split: ',' %}
+
+<!-- Main container wrapper -->
+<div class="vendors-container">
+  <div class="page-width vendors-index" id="vendors-index-{{ section.id }}">
+    
+    <!-- Header Section -->
+    <div class="vendors-header">
+      <h1 class="vendors-title">All Brands</h1>
+    </div>
+
+    <!-- Sentinel for sticky detection -->
+    <div class="vendors-sentinel" aria-hidden="true"></div>
+
+    <!-- A–Z jump navigation (Sticky with lower z-index) -->
+    <nav class="vendors-nav" aria-label="Brand index">
+      <div class="vendors-nav-inner">
+        {% for letter in alphabet %}
+          {%- assign has_letter = false -%}
+          {%- for v in vendors -%}
+            {%- assign first = v | slice: 0 | upcase -%}
+            {% assign is_digit = false %}
+            {% for d in digits %}
+              {% if first == d %}{% assign is_digit = true %}{% break %}{% endif %}
+            {% endfor %}
+
+            {% if letter == '#' and is_digit %}
+              {% assign has_letter = true %}{% break %}
+            {% elsif letter != '#' and first == letter %}
+              {% assign has_letter = true %}{% break %}
+            {% endif %}
+          {%- endfor -%}
+
+          {% if has_letter %}
+            <a class="vendors-chip vendors-chip--active" href="#letter-{{ letter | replace:'#','num' }}">{{ letter }}</a>
+          {% else %}
+            <span class="vendors-chip vendors-chip--disabled" aria-disabled="true">{{ letter }}</span>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </nav>
+
+    <!-- Grouped vendor columns -->
+    <div class="vendors-content">
+      {% for letter in alphabet %}
+        {%- assign has_any = false -%}
+        {% capture group %}
+          <div class="vendors-cols" role="list">
+            {% for v in vendors %}
+              {% assign first = v | slice: 0 | upcase %}
+              {% assign is_digit = false %}
+              {% for d in digits %}
+                {% if first == d %}{% assign is_digit = true %}{% break %}{% endif %}
+              {% endfor %}
+
+              {% if letter == '#' and is_digit %}
+                {% assign has_any = true %}
+                <a class="vendor-link" role="listitem" href="{{ routes.collections_url }}/vendors?q={{ v | url_encode }}">
+                  <span class="vendor-text">{{ v }}</span>
+                </a>
+              {% elsif letter != '#' and first == letter %}
+                {% assign has_any = true %}
+                <a class="vendor-link" role="listitem" href="{{ routes.collections_url }}/vendors?q={{ v | url_encode }}">
+                  <span class="vendor-text">{{ v }}</span>
+                </a>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endcapture %}
+
+        {% if has_any %}
+          <section id="letter-{{ letter | replace:'#','num' }}" class="vendors-group">
+            <h2 class="vendors-heading">{{ letter }}</h2>
+            {{ group }}
+          </section>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<style>
+/* ===== Modern Color Scheme ===== */
+:root {
+  --vendors-bg: #ffffff;
+  --vendors-text: #1a1a1a;
+  --vendors-border: #e8e8e8;
+  --vendors-accent: #0066ff;
+  --vendors-hover: #0052cc;
+  --vendors-muted: #6b7280;
+  --vendors-chip-bg: #f3f4f6;
+}
+
+/* ===== Container wrapper ===== */
+.vendors-container {
+  width: 100%;
+  background: var(--vendors-bg);
+  min-height: 100vh;
+}
+
+/* ===== Main container ===== */
+#vendors-index-{{ section.id }} { 
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+/* ===== Header Section ===== */
+#vendors-index-{{ section.id }} .vendors-header {
+  text-align: left;
+  margin-bottom: 48px;
+}
+
+#vendors-index-{{ section.id }} .vendors-title {
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--vendors-text);
+  margin: 0 0 12px;
+}
+
+/* ===== Sticky A–Z Navigation Bar (LOW Z-INDEX) ===== */
+#vendors-index-{{ section.id }} .vendors-sentinel {
+  height: 1px;
+  margin-top: -1px;
+}
+
+#vendors-index-{{ section.id }} .vendors-nav {
+  position: sticky;
+  top: {{ section.settings.sticky_offset | default: 0 }}px;
+  z-index: 1;  /* VERY LOW z-index to stay behind nav menus */
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  margin: 0 -24px;
+  padding: 0 24px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#vendors-index-{{ section.id }} .vendors-nav.is-stuck {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+#vendors-index-{{ section.id }} .vendors-nav-inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 16px 0;
+  justify-content: center;
+}
+
+/* ===== A-Z Chips (BLACK text) ===== */
+#vendors-index-{{ section.id }} .vendors-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 12px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 18px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+#vendors-index-{{ section.id }} .vendors-chip--active {
+  background: var(--vendors-chip-bg);
+  color: var(--vendors-text);  /* BLACK text */
+  border: 1.5px solid transparent;
+}
+
+#vendors-index-{{ section.id }} .vendors-chip--active:hover {
+  background: var(--vendors-text);  /* BLACK background on hover */
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+#vendors-index-{{ section.id }} .vendors-chip--disabled {
+  background: transparent;
+  color: var(--vendors-muted);
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ===== Content Area ===== */
+#vendors-index-{{ section.id }} .vendors-content {
+  margin-top: 32px;
+}
+
+/* ===== Letter Groups (BLACK letters, with divider line) ===== */
+#vendors-index-{{ section.id }} .vendors-group { 
+  margin: 48px 0;
+  padding-bottom: 48px;
+  border-bottom: 1px solid var(--vendors-border);
+  scroll-margin-top: {{ section.settings.sticky_offset | default: 0 | plus: 80 }}px;
+}
+
+#vendors-index-{{ section.id }} .vendors-group:last-child {
+  border-bottom: none;
+}
+
+#vendors-index-{{ section.id }} .vendors-heading {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--vendors-text);  /* BLACK letter headings */
+  margin: 0 0 24px;
+  padding-bottom: 12px;
+}
+
+/* ===== FIXED 4-COLUMN Layout ===== */
+#vendors-index-{{ section.id }} .vendors-cols {
+  display: block !important;
+  margin: 0;
+  padding: 0;
+  column-count: 4;  /* EXACTLY 4 columns */
+  column-gap: 32px;
+  column-fill: balance;
+}
+
+/* ===== Vendor Links with Underline ===== */
+#vendors-index-{{ section.id }} .vendor-link {
+  display: inline-block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 0;
+  margin: 0;
+  color: var(--vendors-text);
+  break-inside: avoid;
+  page-break-inside: avoid;
+  position: relative;
+  transition: all 0.2s ease;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--vendors-border);
+}
+
+#vendors-index-{{ section.id }} .vendor-link:hover {
+  color: var(--vendors-accent);
+  text-decoration-color: var(--vendors-accent);
+}
+
+#vendors-index-{{ section.id }} .vendor-text {
+  display: block;
+  font-size: 15px;
+  line-height: 1.5;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  white-space: normal;
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 1200px) {
+  #vendors-index-{{ section.id }} .vendors-cols {
+    column-count: 4;  /* Keep 4 columns */
+    column-gap: 28px;
+  }
+  
+  #vendors-index-{{ section.id }} {
+    padding: 32px 20px;
+  }
+}
+
+@media (max-width: 992px) {
+  #vendors-index-{{ section.id }} .vendors-cols {
+    column-count: 3;  /* 3 columns on tablets */
+    column-gap: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  #vendors-index-{{ section.id }} .vendors-title {
+    font-size: 36px;
+  }
+  
+  #vendors-index-{{ section.id }} .vendors-cols {
+    column-count: 2;  /* 2 columns on mobile */
+    column-gap: 24px;
+  }
+  
+  #vendors-index-{{ section.id }} .vendors-nav {
+    margin: 0 -20px;
+    padding: 0 20px;
+  }
+  
+  #vendors-index-{{ section.id }} .vendors-chip {
+    min-width: 32px;
+    height: 32px;
+    font-size: 13px;
+    padding: 0 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  #vendors-index-{{ section.id }} .vendors-cols {
+    column-count: 2;  /* Still 2 columns on small mobile */
+  }
+  
+  #vendors-index-{{ section.id }} {
+    padding: 24px 16px;
+  }
+  
+  #vendors-index-{{ section.id }} .vendors-title {
+    font-size: 28px;
+  }
+  
+  #vendors-index-{{ section.id }} .vendors-nav {
+    margin: 0 -16px;
+    padding: 0 16px;
+  }
+}
+
+@media (max-width: 360px) {
+  #vendors-index-{{ section.id }} .vendors-cols {
+    column-count: 1;  /* Single column on very small screens */
+  }
+}
+
+/* ===== Smooth Scrolling ===== */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ===== Loading Animation ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#vendors-index-{{ section.id }} .vendors-group {
+  animation: fadeIn 0.5s ease-out;
+}
+</style>
+
+<script>
+/* Enhanced sticky navigation with smooth transitions */
+(function() {
+  var root = document.getElementById('vendors-index-{{ section.id }}');
+  if (!root) return;
+  
+  var nav = root.querySelector('.vendors-nav');
+  var sentinel = root.querySelector('.vendors-sentinel');
+  
+  if (!nav || !sentinel || !('IntersectionObserver' in window)) return;
+
+  // Create intersection observer for sticky detection
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        nav.classList.remove('is-stuck');
+      } else {
+        nav.classList.add('is-stuck');
+      }
+    });
+  }, {
+    rootMargin: '-' + ({{ section.settings.sticky_offset | default: 0 }}) + 'px 0px 0px 0px',
+    threshold: [0, 1]
+  });
+
+  io.observe(sentinel);
+
+  // Add active state to current section
+  var sections = root.querySelectorAll('.vendors-group');
+  var chips = root.querySelectorAll('.vendors-chip--active');
+  
+  if (sections.length && chips.length) {
+    var sectionObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          var id = entry.target.id;
+          chips.forEach(function(chip) {
+            if (chip.getAttribute('href') === '#' + id) {
+              chip.style.background = 'var(--vendors-text)';
+              chip.style.color = 'white';
+            } else {
+              chip.style.background = '';
+              chip.style.color = '';
+            }
+          });
+        }
+      });
+    }, {
+      rootMargin: '-20% 0px -60% 0px',
+      threshold: 0
+    });
+
+    sections.forEach(function(section) {
+      sectionObserver.observe(section);
+    });
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Vendors list (A–Z)",
+  "settings": [
+    {
+      "type": "range",
+      "id": "sticky_offset",
+      "label": "Sticky offset (px)",
+      "info": "Distance from top when navigation becomes sticky",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "default": 0
+    }
+  ]
+}
+{% endschema %}

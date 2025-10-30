@@ -1,0 +1,232 @@
+{%- assign tabs = tabs -%}
+{%- if tabs == blank
+  and collection
+  and collection.metafields.custom.category_tabs
+  and collection.metafields.custom.category_tabs.value
+-%}
+  {%- assign tabs = collection.metafields.custom.category_tabs.value -%}
+{%- endif -%}
+
+{%- if tabs -%}
+  {%- assign desc_title = tabs.tab1_title.value | default: tabs.tab1_title | default: 'Description' -%}
+  {%- assign videos_title = tabs.tab2_title.value | default: tabs.tab2_title | default: 'Videos' -%}
+  {%- assign video_entries = tabs.videos.value | default: tabs.videos -%}
+
+  <style>
+    .cattabs {
+      margin: 2rem 20px;
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .cattabs__nav {
+      display: flex;
+      gap: 1px;
+      border-bottom: 1px solid #e5e5e5;
+      background: #f6f6f6;
+    }
+    .cattabs__btn {
+      flex: 1;
+      padding: 12px 16px;
+      background: #f6f6f6;
+      border: 0;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .cattabs__btn[aria-selected='true'] {
+      background: #fff;
+    }
+    .cattabs__panel {
+      display: none;
+      padding: 16px;
+      background: #fff;
+    }
+    .cattabs__panel.is-active {
+      display: block;
+    }
+    .cattabs__videos {
+      display: grid;
+      gap: 16px;
+    }
+    .cattabs__card {
+      position: relative;
+      display: block;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+      text-decoration: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .cattabs__card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    }
+    .cattabs__thumb {
+      width: 100%;
+      display: block;
+    }
+    .cattabs__play {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cattabs__play svg {
+      fill: #fff;
+    }
+    .cattabs__title {
+      padding: 10px 12px;
+      font-size: 14px;
+      color: #222;
+    }
+    @media (max-width: 640px) {
+      .cattabs {
+        border-radius: 6px;
+      }
+      .cattabs__title {
+        font-size: 13px;
+      }
+    }
+  </style>
+
+  <div class="category-description cattabs" role="tablist" aria-label="Category tabs">
+    <div class="cattabs__nav">
+      <button
+        class="cattabs__btn"
+        id="tab-desc-btn"
+        role="tab"
+        aria-controls="tab-desc"
+        aria-selected="true"
+        data-tab="desc"
+      >
+        {{ desc_title }}
+      </button>
+      <button
+        class="cattabs__btn"
+        id="tab-videos-btn"
+        role="tab"
+        aria-controls="tab-videos"
+        aria-selected="false"
+        data-tab="videos"
+      >
+        {{ videos_title }}
+      </button>
+    </div>
+
+    <div
+      id="tab-desc"
+      class="cattabs__panel is-active"
+      role="tabpanel"
+      aria-labelledby="tab-desc-btn"
+      data-panel="desc"
+    >
+      {%- if tabs.tab1_body != blank -%}
+        {{ tabs.tab1_body | metafield_tag }}
+      {%- endif -%}
+    </div>
+
+    <div id="tab-videos" class="cattabs__panel" role="tabpanel" aria-labelledby="tab-videos-btn" data-panel="videos">
+      {%- assign shown = 0 -%}
+      <div class="cattabs__videos">
+        {%- for v in video_entries -%}
+          <p style="display: none;">{{ v.youtube_url }}</p>
+          {%- assign url = v.youtube_url.value | default: v.youtube_url | strip -%}
+          {%- assign title = v.title.value | default: v.title | default: 'Watch video' -%}
+          {%- assign id = '' -%}
+          {%- assign lower = url | downcase -%}
+          {%- if lower contains 'youtu.be/' -%}
+            {%- assign id = url | split: 'youtu.be/' | last | split: '?' | first -%}
+          {%- elsif lower contains 'watch?v=' -%}
+            {%- assign id = url | split: 'v=' | last | split: '&' | first -%}
+          {%- elsif lower contains '/shorts/' -%}
+            {%- assign id = url | split: '/shorts/' | last | split: '?' | first | split: '/' | first -%}
+          {%- elsif lower contains '/embed/' -%}
+            {%- assign id = url | split: '/embed/' | last | split: '?' | first | split: '/' | first -%}
+          {%- endif -%}
+
+          {%- if id != blank and url != blank -%}
+            {%- assign shown = shown | plus: 1 -%}
+            <a class="cattabs__card" href="{{ url }}" target="_blank" rel="noopener noreferrer">
+              <img
+                class="cattabs__thumb"
+                src="https://i.ytimg.com/vi/{{ id }}/hq720.jpg"
+                alt="{{ title | escape }}"
+                width="1280"
+                height="720"
+                loading="lazy"
+                decoding="async"
+                srcset="
+                  https://i.ytimg.com/vi/{{ id }}/mqdefault.jpg 320w,
+                  https://i.ytimg.com/vi/{{ id }}/hqdefault.jpg 480w,
+                  https://i.ytimg.com/vi/{{ id }}/hq720.jpg 720w,
+                  https://i.ytimg.com/vi/{{ id }}/maxresdefault.jpg 1280w
+                "
+                sizes="(max-width:640px) 100vw, 320px"
+              >
+              <span class="cattabs__play" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+              </span>
+              <div class="cattabs__title">{{ title }}</div>
+            </a>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+      {%- if shown == 0 -%}
+        <p>No videos yet.</p>
+      {%- endif -%}
+    </div>
+  </div>
+
+  <script>
+      (function () {
+        var btnDesc = document.getElementById('tab-desc-btn');
+        var btnVideos = document.getElementById('tab-videos-btn');
+        var panelDesc = document.getElementById('tab-desc');
+        var panelVideos = document.getElementById('tab-videos');
+        if (!btnDesc || !btnVideos) return;
+        if (window.__cattabsBound) return;
+        window.__cattabsBound = true;
+        function activate(container, which) {
+          var isDesc = which === 'desc';
+          var btnDesc    = container.querySelector('.cattabs__btn[data-tab="desc"]');
+          var btnVideos  = container.querySelector('.cattabs__btn[data-tab="videos"]');
+          var panelDesc  = container.querySelector('.cattabs__panel[data-panel="desc"]');
+          var panelVideo = container.querySelector('.cattabs__panel[data-panel="videos"]');
+
+          if (btnDesc)   btnDesc.setAttribute('aria-selected', isDesc ? 'true' : 'false');
+          if (btnVideos) btnVideos.setAttribute('aria-selected', !isDesc ? 'true' : 'false');
+          if (panelDesc) panelDesc.classList.toggle('is-active', isDesc);
+          if (panelVideo) panelVideo.classList.toggle('is-active', !isDesc);
+        }
+        document.addEventListener('click', function(e){
+            var btn = e.target.closest('.cattabs__btn');
+            if (!btn) return;
+            var wrap = btn.closest('.cattabs');
+            if (!wrap) return;
+
+            var tab = btn.getAttribute('data-tab');
+            if (tab === 'desc' || tab === 'videos') {
+                e.preventDefault();
+                activate(wrap, tab);
+            }
+        });
+        btnDesc.addEventListener('click', function () {
+          activate('desc');
+        });
+        btnVideos.addEventListener('click', function () {
+          activate('videos');
+        });
+        document.addEventListener('shopify:section:load', function(){});
+      })();
+  </script>
+{%- endif -%}

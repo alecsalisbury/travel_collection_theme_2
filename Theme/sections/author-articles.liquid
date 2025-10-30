@@ -1,0 +1,661 @@
+{%- assign blog = section.settings.blog -%}
+{{ 'author-articles.css' | asset_url | stylesheet_tag }}
+
+<section class="section author-articles" data-section-id="{{ section.id }}" data-section-type="author-articles">
+  <div class="container">
+    {%- if section.settings.title != blank -%}
+      <header class="section__header">
+        <h2 class="author-articles__title section__title heading h2">{{ section.settings.title | escape }}</h2>
+
+        {%- unless section.settings.link_title == blank -%}
+          <a href="{{ blog.url }}" class="section__action-link link">{{ section.settings.link_title }} {% render 'icon', icon: 'tail-right' %}</a>
+        {%- endunless -%}
+      </header>
+    {%- endif -%}
+
+    {%- capture block_list -%}
+      <div class="block-list block-list--loose" 
+           data-author-articles-author="{{ section.settings.author }}"
+           data-author-articles-count="{{ section.settings.blog_posts_count }}"
+           data-author-articles-show-category="{{ section.settings.show_category }}"
+           data-author-articles-show-author="{{ section.settings.show_author }}"
+           data-author-articles-show-date="{{ section.settings.show_date }}"
+           data-author-articles-show-excerpt="{{ section.settings.show_excerpt }}"
+           data-author-articles-background-color="{{ section.settings.background_color | default: '#ffffff' }}"
+           data-author-articles-exclude-first="{{ section.settings.first_articles_to_exclude }}">
+        <!-- Skeleton loading cards -->
+        {%- for i in (1..section.settings.blog_posts_count) -%}
+          <div class="block-list__item 1/2--tablet 1/3--lap-and-up">
+            <div class="article-list__item">
+              <div class="skeleton-card">
+                <div class="skeleton-card__image"></div>
+                <div class="skeleton-card__content">
+                  <div class="skeleton-card__title"></div>
+                  <div class="skeleton-card__meta"></div>
+                  <div class="skeleton-card__excerpt"></div>
+                  <div class="skeleton-card__excerpt"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endcapture -%}
+
+    {%- if section.settings.stack_mobile -%}
+      {{ block_list }}
+    {%- else -%}
+      <div class="scroller">
+        <div class="scroller__inner">
+          {{ block_list }}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+<script>
+// Storefront API GraphQL query with pagination support
+const AUTHOR_ARTICLES_QUERY = `
+  query getArticles($first: Int!, $query: String, $after: String) {
+    articles(first: $first, query: $query, sortKey: PUBLISHED_AT, reverse: true, after: $after) {
+      nodes {
+        id
+        title
+        handle
+        excerpt(truncateAt: 150)
+        content(truncateAt: 300)
+        publishedAt
+        tags
+        image {
+          url
+          altText
+          width
+          height
+        }
+        authorV2 {
+          name
+          firstName
+          lastName
+        }
+        onlineStoreUrl
+        blog {
+          handle
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+`;
+
+// Function to make tokenless Storefront API call with pagination support
+async function fetchAuthorArticles(blogHandle = 'Trident Fly Fishing', author = null, maxArticles = 500, after = null, excludeFirst = 0) {
+  try {
+    // Build query filter for specific blog and optionally author
+    let queryFilter = `blog_title:"${blogHandle}"`;
+    if (author && author.trim() !== '') {
+      queryFilter += ` AND author:"${author}"`;
+    }
+    const apiUrl = `https://{{ shop.permanent_domain }}/api/2025-10/graphql.json`;
+    
+    // console.log('🔍 Author Articles API Request Details:');
+    // console.log('- URL:', apiUrl);
+    // console.log('- Blog Handle:', blogHandle);
+    // console.log('- Author Filter:', author || 'none (all articles)');
+    // console.log('- Query Filter:', queryFilter);
+    // console.log('- Max Articles:', maxArticles);
+    // console.log('- After Cursor:', after || 'none (first page)');
+    // console.log('- Exclude First:', excludeFirst);
+    
+    // If we need to exclude articles, fetch more than needed
+    const fetchCount = excludeFirst > 0 ? maxArticles + excludeFirst : maxArticles;
+    
+    const requestBody = {
+      query: AUTHOR_ARTICLES_QUERY,
+      variables: {
+        first: fetchCount,
+        query: queryFilter,
+        after: after
+      }
+    };
+    
+    // console.log('📤 Request Body:', JSON.stringify(requestBody, null, 2));
+    
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestBody)
+    });
+
+    // console.log('📥 Response Status:', response.status, response.statusText);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      // console.error('❌ HTTP Error Response Body:', errorText);
+      throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+    }
+
+    const data = await response.json();
+    // console.log('📊 Full API Response:', JSON.stringify(data, null, 2));
+    
+    if (data.errors) {
+      // console.error('❌ GraphQL errors:', data.errors);
+      data.errors.forEach((error, index) => {
+        // console.error(`Error ${index + 1}:`, error.message);
+        // if (error.locations) console.error('Locations:', error.locations);
+        // if (error.path) console.error('Path:', error.path);
+        // if (error.extensions) console.error('Extensions:', error.extensions);
+      });
+      return null;
+    }
+
+    const allArticles = data.data?.articles?.nodes || [];
+    const pageInfo = data.data?.articles?.pageInfo || {};
+    
+    // Exclude the first X articles if specified
+    const articles = excludeFirst > 0 ? allArticles.slice(excludeFirst) : allArticles;
+    
+    // console.log(`✅ Successfully fetched ${allArticles.length} articles for author articles collection`);
+    // console.log(`📋 Excluded first ${excludeFirst} articles, returning ${articles.length} articles`);
+    // console.log('📄 Page Info:', pageInfo);
+    
+    if (articles.length > 0) {
+      // console.log('📝 Sample article:', {
+      //   title: articles[0].title,
+      //   handle: articles[0].handle,
+      //   blog: articles[0].blog?.handle,
+      //   tags: articles[0].tags,
+      //   publishedAt: articles[0].publishedAt
+      // });
+    } else {
+      // console.warn('⚠️ No articles found for author articles collection. Possible reasons:');
+      // console.warn('- Blog handle "' + blogHandle + '" might not exist');
+      // console.warn('- Blog might have no published articles');
+      // console.warn('- Blog might not be accessible via Storefront API');
+      // console.warn('- Query filter might be incorrect');
+      // console.warn(`- Excluded first ${excludeFirst} articles, leaving ${articles.length} remaining`);
+    }
+
+    return {
+      articles: articles,
+      pageInfo: pageInfo
+    };
+  } catch (error) {
+    // console.error('💥 Error fetching articles for author articles collection:', error);
+    // console.error('Error details:', {
+    //   name: error.name,
+    //   message: error.message,
+    //   stack: error.stack
+    // });
+    return null;
+  }
+}
+
+// Function to mimic Shopify's handleize filter
+function handleize(str) {
+  if (!str || typeof str !== 'string') {
+    return '';
+  }
+  
+  return str
+    .toLowerCase()                    // Convert to lowercase
+    .replace(/[^a-z0-9\s-]/g, '')     // Remove special characters except spaces and hyphens
+    .replace(/\s+/g, '-')             // Replace spaces with hyphens
+    .replace(/-+/g, '-')             // Replace multiple consecutive hyphens with single hyphen
+    .replace(/^-+|-+$/g, '');        // Remove leading and trailing hyphens
+}
+
+// Function to create article HTML matching the existing article-item structure
+function createAuthorArticlesHTML(article, sectionSettings, backgroundColor = '#ffffff') {
+  const publishedDate = new Date(article.publishedAt).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+  const author = article.authorV2?.name || 'Anonymous';
+  const authorHandle = handleize(author);
+  const excerpt = article.excerpt || article.content || '';
+  const imageUrl = article.image?.url || '';
+  const imageAlt = article.image?.altText || article.title;
+  const category = article.tags.length > 0 ? article.tags[0] : '';
+
+  // Build meta items based on section settings
+  let metaItems = [];
+  if (sectionSettings.show_category && category) {
+    metaItems.push(`<span class="article-item__meta-item">${category}</span>`);
+  }
+  if (sectionSettings.show_author) {
+    metaItems.push(`<a href="/pages/authors/${authorHandle}" class="article-item__meta-item">By ${author}</a>`);
+  }
+  if (sectionSettings.show_date) {
+    metaItems.push(`<time class="article-item__meta-item">${publishedDate}</time>`);
+  }
+
+  // Return the block-list__item structure for grid layout
+  return `
+    <div class="block-list__item 1/2--tablet 1/3--lap-and-up">
+      <div class="article-list__item">
+        <div class="article-item" style="background-color: ${backgroundColor};">
+          ${imageUrl ? `
+            <a href="${article.onlineStoreUrl}" class="article-item__image-container">
+              <img src="${imageUrl}" alt="${imageAlt}" loading="lazy" class="article-item__image">
+            </a>
+          ` : ''}
+          <h3 class="article-item__title heading h4">
+            <a href="${article.onlineStoreUrl}" class="link">${article.title}</a>
+          </h3>
+          ${metaItems.length > 0 ? `
+            <div class="article-item__meta">
+              ${metaItems.join('')}
+            </div>
+          ` : ''}
+          ${sectionSettings.show_excerpt && excerpt ? `
+            <div class="article-item__excerpt rte">
+              ${excerpt.length > 80 ? excerpt.substring(0, 80) + '...' : excerpt}
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Infinite scroll state management
+const infiniteScrollState = new Map();
+
+// Function to create loading indicator HTML
+function createLoadingIndicator() {
+  return `
+    <div class="block-list__item" style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+      <div class="infinite-scroll-loading">
+        <div class="loading-spinner"></div>
+        <p style="color: #666; font-size: 1rem; margin-top: 1rem;">Loading more articles...</p>
+      </div>
+    </div>
+  `;
+}
+
+// Function to create end-of-content indicator HTML
+/*
+function createEndOfContentIndicator() {
+  return `
+    <div class="block-list__item" style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+      <p style="color: #666; font-size: 1rem;">You've reached the end of the articles.</p>
+    </div>
+  `;
+}
+*/
+// Function to setup infinite scroll for a section
+function setupInfiniteScroll(sectionElement, sectionId, sectionSettings, author, backgroundColor, excludeFirst = 0) {
+  const blockListElement = sectionElement.querySelector('.block-list');
+  
+  // Initialize state for this section
+  infiniteScrollState.set(sectionId, {
+    loadedArticles: [],
+    pageInfo: { hasNextPage: true, endCursor: null },
+    isLoading: false,
+    isEndReached: false,
+    sectionSettings: sectionSettings,
+    author: author,
+    backgroundColor: backgroundColor,
+    excludeFirst: excludeFirst,
+    sentinel: null,
+    observer: null
+  });
+
+  // Create intersection observer for scroll detection
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const state = infiniteScrollState.get(sectionId);
+      // console.log(`🔍 Sentinel intersection for section ${sectionId}:`, {
+      //   isIntersecting: entry.isIntersecting,
+      //   isLoading: state.isLoading,
+      //   hasNextPage: state.pageInfo.hasNextPage,
+      //   isEndReached: state.isEndReached
+      // });
+      
+      if (entry.isIntersecting && !state.isLoading && state.pageInfo.hasNextPage && !state.isEndReached) {
+        // console.log(`🚀 Triggering loadMoreArticles for section ${sectionId}`);
+        loadMoreArticles(sectionId);
+      }
+    });
+  }, {
+    rootMargin: '200px', // Start loading 200px before reaching the bottom
+    threshold: 0.1
+  });
+
+  // Add a sentinel element at the bottom for scroll detection
+  const sentinel = document.createElement('div');
+  sentinel.className = 'infinite-scroll-sentinel';
+  sentinel.style.height = '20px';
+  sentinel.style.width = '100%';
+  sentinel.style.background = 'transparent';
+  sentinel.setAttribute('data-section-id', sectionId);
+  
+  blockListElement.appendChild(sentinel);
+  observer.observe(sentinel);
+
+  // Store observer and sentinel for cleanup
+  const state = infiniteScrollState.get(sectionId);
+  state.observer = observer;
+  state.sentinel = sentinel;
+  
+  // console.log(`✅ Infinite scroll setup complete for section ${sectionId}`);
+}
+
+// Function to load more articles for infinite scroll
+async function loadMoreArticles(sectionId) {
+  const state = infiniteScrollState.get(sectionId);
+  if (!state || state.isLoading || state.isEndReached) {
+    // console.log(`⏸️ Skipping loadMoreArticles for section ${sectionId}:`, {
+    //   hasState: !!state,
+    //   isLoading: state?.isLoading,
+    //   isEndReached: state?.isEndReached
+    // });
+    return;
+  }
+
+  state.isLoading = true;
+  // console.log(`🔄 Loading more articles for section ${sectionId}`);
+
+  const sectionElement = document.querySelector(`[data-section-id="${sectionId}"]`);
+  const blockListElement = sectionElement.querySelector('.block-list');
+  
+  // Remove any existing loading indicator
+  const existingLoading = blockListElement.querySelector('.infinite-scroll-loading');
+  if (existingLoading) {
+    existingLoading.parentElement.remove();
+  }
+
+  // Temporarily remove sentinel to prevent multiple triggers
+  if (state.sentinel && state.observer) {
+    state.observer.unobserve(state.sentinel);
+  }
+
+  // Add loading indicator
+  blockListElement.insertAdjacentHTML('beforeend', createLoadingIndicator());
+
+  try {
+    // Fetch next page of articles
+    const result = await fetchAuthorArticles('Trident Fly Fishing', state.author, 9, state.pageInfo.endCursor, state.excludeFirst);
+    
+    if (result && result.articles.length > 0) {
+      // console.log(`✅ Loaded ${result.articles.length} more articles for section ${sectionId}`);
+      
+      // Remove loading indicator
+      const loadingElement = blockListElement.querySelector('.infinite-scroll-loading');
+      if (loadingElement) {
+        loadingElement.parentElement.remove();
+      }
+
+      // Create HTML for new articles
+      const newArticlesHTML = result.articles.map(article => 
+        createAuthorArticlesHTML(article, state.sectionSettings, state.backgroundColor)
+      ).join('');
+
+      // Add new articles to the list
+      blockListElement.insertAdjacentHTML('beforeend', newArticlesHTML);
+
+      // Update state
+      state.loadedArticles.push(...result.articles);
+      state.pageInfo = result.pageInfo;
+
+      // Check if we've reached the end
+      if (!result.pageInfo.hasNextPage) {
+        state.isEndReached = true;
+        // blockListElement.insertAdjacentHTML('beforeend', createEndOfContentIndicator());
+        // console.log(`🏁 Reached end of articles for section ${sectionId}`);
+      } else {
+        // Re-add sentinel for next load if there are more pages
+        if (state.sentinel) {
+          blockListElement.appendChild(state.sentinel);
+          state.observer.observe(state.sentinel);
+          // console.log(`🔄 Re-added sentinel for section ${sectionId}`);
+        }
+      }
+    } else {
+      // console.log(`⚠️ No more articles found for section ${sectionId}`);
+      state.isEndReached = true;
+      
+      // Remove loading indicator and add end message
+      const loadingElement = blockListElement.querySelector('.infinite-scroll-loading');
+      if (loadingElement) {
+        loadingElement.parentElement.remove();
+      }
+      // blockListElement.insertAdjacentHTML('beforeend', createEndOfContentIndicator());
+    }
+  } catch (error) {
+    // console.error(`💥 Error loading more articles for section ${sectionId}:`, error);
+    
+    // Remove loading indicator on error
+    const loadingElement = blockListElement.querySelector('.infinite-scroll-loading');
+    if (loadingElement) {
+      loadingElement.parentElement.remove();
+    }
+    
+    // Re-add sentinel on error so user can try again
+    if (state.sentinel && state.observer) {
+      blockListElement.appendChild(state.sentinel);
+      state.observer.observe(state.sentinel);
+    }
+  } finally {
+    state.isLoading = false;
+  }
+}
+
+// Function to update author articles collection with API data and infinite scroll
+async function updateAuthorArticlesWithAPI() {
+  // console.log('🚀 Starting updateAuthorArticlesWithAPI...');
+  
+  // Check if we should use API data
+  const urlParams = new URLSearchParams(window.location.search);
+  const forceAPI = urlParams.get('use_api') === 'true';
+  
+  // console.log('🔍 Environment Check:');
+  // console.log('- Current URL:', window.location.href);
+  // console.log('- URL Params:', Object.fromEntries(urlParams.entries()));
+  // console.log('- Force API:', forceAPI);
+  
+  // Run API call on any page that has author-articles sections
+  // console.log('📋 Running API call on current page');
+
+  // Process ALL author-articles sections on the page
+  const authorArticlesSections = document.querySelectorAll('[data-section-type="author-articles"]');
+  // console.log('🎯 Author articles collection sections found:', authorArticlesSections.length);
+  
+  if (authorArticlesSections.length === 0) {
+    // console.log('❌ No author-articles collection sections found, skipping API call');
+    return;
+  }
+
+  // console.log('🌐 Fetching articles from Trident Fly Fishing blog via Storefront API...');
+
+  // Process each author-articles section individually
+  for (let sectionIndex = 0; sectionIndex < authorArticlesSections.length; sectionIndex++) {
+    const authorArticlesSection = authorArticlesSections[sectionIndex];
+    const sectionId = authorArticlesSection.getAttribute('data-section-id');
+    
+    // console.log(`\n📑 Processing author articles collection section ${sectionIndex + 1} (ID: ${sectionId})`);
+
+    // Get section-specific settings from data attributes
+    const blockListElement = authorArticlesSection.querySelector('.block-list');
+    const sectionSettings = {
+      show_category: blockListElement.getAttribute('data-author-articles-show-category') === 'true',
+      show_author: blockListElement.getAttribute('data-author-articles-show-author') === 'true',
+      show_date: blockListElement.getAttribute('data-author-articles-show-date') === 'true',
+      show_excerpt: blockListElement.getAttribute('data-author-articles-show-excerpt') === 'true'
+    };
+
+    // Extract author and other settings from the section's data attributes
+    const author = blockListElement.getAttribute('data-author-articles-author') || '';
+    const articlesCount = parseInt(blockListElement.getAttribute('data-author-articles-count')) || 3;
+    const backgroundColor = blockListElement.getAttribute('data-author-articles-background-color') || '#ffffff';
+    const excludeFirst = parseInt(blockListElement.getAttribute('data-author-articles-exclude-first')) || 0;
+    
+    // console.log(`- Author: "${author || 'none'}"`);
+    // console.log(`- Articles count: ${articlesCount}`);
+    // console.log(`- Exclude first: ${excludeFirst}`);
+    
+    // Make initial API call for this specific section with its author filter
+    const result = await fetchAuthorArticles('Trident Fly Fishing', author, articlesCount, null, excludeFirst);
+    
+    if (result && result.articles.length > 0) {
+      // console.log(`✅ Author Articles Collection ${sectionIndex + 1}: Found ${result.articles.length} articles`);
+      
+      // Create article HTML
+      const articlesHTML = result.articles.map(article => createAuthorArticlesHTML(article, sectionSettings, backgroundColor)).join('');
+      
+      // Update the collection content
+      if (blockListElement) {
+        // console.log(`🎨 Updating article list for author articles collection ${sectionIndex + 1}`);
+        // console.log('- Block list classes before:', blockListElement.className);
+        // console.log('- Articles HTML length:', articlesHTML.length);
+        
+        // Add a small delay to show skeleton loading
+        setTimeout(() => {
+          blockListElement.innerHTML = articlesHTML;
+          
+          // console.log('- Block list classes after:', blockListElement.className);
+          // console.log('- Number of article items:', blockListElement.querySelectorAll('.block-list__item').length);
+          
+          // Setup infinite scroll for this section
+          setupInfiniteScroll(authorArticlesSection, sectionId, sectionSettings, author, backgroundColor, excludeFirst);
+          
+          // Store initial state
+          const state = infiniteScrollState.get(sectionId);
+          if (state) {
+            state.loadedArticles = result.articles;
+            state.pageInfo = result.pageInfo;
+          }
+        }, 200); // 200ms delay to show skeleton loading
+      }
+    } else {
+      // console.log(`⚠️ Author Articles Collection ${sectionIndex + 1}: No articles found`);
+      
+      // Show empty state if no articles found
+      if (blockListElement) {
+        setTimeout(() => {
+          blockListElement.innerHTML = `
+            <div class="block-list__item" style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+              <p style="color: #666; font-size: 1rem;">No articles found for this author.</p>
+            </div>
+          `;
+        }, 200);
+      }
+    }
+  }
+
+  // console.log('\n🎉 Finished processing all author articles collection sections');
+}
+
+// Initialize when DOM is loaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    updateAuthorArticlesWithAPI();
+  });
+} else {
+  updateAuthorArticlesWithAPI();
+}
+</script>
+
+{% schema %}
+{
+  "name": "Author articles",
+  "settings": [
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "Blog"
+    },
+    {
+      "type": "range",
+      "id": "blog_posts_count",
+      "label": "Blog posts to show",
+      "min": 3,
+      "max": 9,
+      "step": 3,
+      "default": 3
+	  },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Author articles"
+    },
+    {
+      "type": "text",
+      "id": "link_title",
+      "label": "Link title",
+      "default": "View all"
+    },
+    {
+      "type": "text",
+      "id": "author",
+      "label": "Author",
+      "info": "Enter the exact author name to filter articles by. Leave empty to show all articles. Case sensitive.",
+      "placeholder": "e.g. John Smith"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_category",
+      "label": "Show category",
+      "info": "The first article's tag will be shown as category.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "Show author",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "Show date",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_excerpt",
+      "label": "Show excerpt",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Articles Background Color",
+      "default": "#ffffff",
+      "info": "Background color for article cards"
+    },
+    {
+      "type": "checkbox",
+      "id": "stack_mobile",
+      "label": "Stack on mobile",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "first_articles_to_exclude",
+      "label": "First articles to exclude",
+      "min": 3,
+      "max": 9,
+      "step": 3,
+      "default": 3
+	  }
+  ],
+  "presets": [
+    {
+      "category": "Blog",
+      "name": "Author articles",
+      "settings": {
+        "blog": "news"
+      }
+    }
+  ]
+}
+{% endschema %}

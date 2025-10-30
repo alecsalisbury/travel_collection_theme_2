@@ -1,0 +1,362 @@
+{% comment %}
+  Travel Collection Hero Section
+  Displays a full-width hero banner with background image and CTAs
+{% endcomment %}
+
+{%- liquid
+  # Try to get metafield values (with .value for newer metafield types)
+  assign hero_image = collection.metafields.travel.hero_image.value | default: collection.metafields.travel.hero_image
+  assign hero_text = collection.metafields.travel.hero_text.value | default: collection.metafields.travel.hero_text
+
+  # Fallback to collection title if no hero text
+  if hero_text == blank
+    assign hero_text = collection.title
+  endif
+
+  # Parse hero text (format: "Heading | Subheading")
+  if hero_text contains '|'
+    assign hero_parts = hero_text | split: '|'
+    assign hero_heading = hero_parts[0] | strip
+    assign hero_subheading = hero_parts[1] | strip
+  else
+    assign hero_heading = hero_text
+    assign hero_subheading = ''
+  endif
+-%}
+
+<style>
+  html {
+    scroll-behavior: smooth;
+  }
+
+  .travel-hero {
+    position: relative;
+    width: 100%;
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+  }
+
+  .travel-hero__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, {{ section.settings.overlay_opacity | divided_by: 100.0 }});
+    z-index: 1;
+  }
+
+  .travel-hero__content {
+    position: relative;
+    z-index: 2;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 20px;
+    width: 100%;
+    color: #FFFFFF;
+    text-align: {{ section.settings.text_alignment }};
+  }
+
+  .travel-hero__label {
+    display: none;
+  }
+
+  .travel-hero__heading {
+    font-size: 72px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+
+  .travel-hero__subheading {
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 1.4;
+    margin-bottom: 24px;
+  }
+
+  .travel-hero__description {
+    font-size: 24px;
+    line-height: 1.6;
+    margin-bottom: 32px;
+    max-width: 600px;
+    {% if section.settings.text_alignment == 'center' %}
+      margin-left: auto;
+      margin-right: auto;
+    {% elsif section.settings.text_alignment == 'right' %}
+      margin-left: auto;
+    {% endif %}
+  }
+
+  .travel-hero__buttons {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    {% if section.settings.text_alignment == 'center' %}
+      justify-content: center;
+    {% elsif section.settings.text_alignment == 'right' %}
+      justify-content: flex-end;
+    {% endif %}
+  }
+
+  .travel-hero__button {
+    display: inline-block;
+    padding: 14px 32px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 0;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .travel-hero__button--primary {
+    background-color: #3E90C5;
+    color: #FFFFFF;
+    border: 2px solid #3E90C5;
+  }
+
+  .travel-hero__button--primary:hover {
+    background-color: #2E7AAC;
+    border-color: #2E7AAC;
+  }
+
+  .travel-hero__button--secondary {
+    background-color: transparent;
+    color: #FFFFFF;
+    border: 2px solid #FFFFFF;
+  }
+
+  .travel-hero__button--secondary:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  @media (max-width: 768px) {
+    .travel-hero {
+      min-height: 400px;
+    }
+
+    .travel-hero__heading {
+      font-size: 48px;
+    }
+
+    .travel-hero__subheading {
+      font-size: 27px;
+    }
+
+    .travel-hero__description {
+      font-size: 18px;
+    }
+
+    .travel-hero__buttons {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .travel-hero__button {
+      text-align: center;
+    }
+  }
+</style>
+
+<section class="travel-hero"
+  {% if hero_image %}
+    style="background-image: url('{{ hero_image | image_url: width: 2000 }}');"
+  {% endif %}>
+
+  <div class="travel-hero__overlay"></div>
+
+  <div class="travel-hero__content">
+    {% if section.settings.show_label and section.settings.label_text != blank %}
+      <div class="travel-hero__label">{{ section.settings.label_text }}</div>
+    {% endif %}
+
+    {% if hero_heading != blank %}
+      <h1 class="travel-hero__heading">{{ hero_heading }}</h1>
+    {% endif %}
+
+    {% if hero_subheading != blank %}
+      <p class="travel-hero__subheading">{{ hero_subheading }}</p>
+    {% endif %}
+
+    {% if section.settings.description_text != blank %}
+      <div class="travel-hero__description">
+        {{ section.settings.description_text }}
+      </div>
+    {% endif %}
+
+    <div class="travel-hero__buttons">
+      {% if section.settings.show_primary_button %}
+        <a href="{{ section.settings.primary_button_url }}" class="travel-hero__button travel-hero__button--primary">
+          {{ section.settings.primary_button_text }}
+        </a>
+      {% endif %}
+
+      {% if section.settings.show_secondary_button %}
+        <a href="tel:{{ section.settings.secondary_button_phone }}" class="travel-hero__button travel-hero__button--secondary">
+          {{ section.settings.secondary_button_text }}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const primaryButton = document.querySelector('.travel-hero__button--primary');
+
+    if (primaryButton) {
+      primaryButton.addEventListener('click', function(e) {
+        const href = this.getAttribute('href');
+
+        // Check if it's an anchor link (starts with #)
+        if (href && href.startsWith('#')) {
+          e.preventDefault();
+          const targetId = href.substring(1);
+          const targetElement = document.getElementById(targetId);
+
+          if (targetElement) {
+            targetElement.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        }
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Travel Hero",
+  "class": "travel-collection-hero-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Hero Image & Text"
+    },
+    {
+      "type": "paragraph",
+      "content": "Hero image and heading text are pulled from collection metafields: collection.metafields.travel.hero_image and collection.metafields.travel.hero_text"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "label": "Overlay opacity",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_label",
+      "label": "Show label",
+      "default": false,
+      "info": "Display a small label above the hero heading"
+    },
+    {
+      "type": "text",
+      "id": "label_text",
+      "label": "Label text",
+      "default": "FISHING PACKAGE"
+    },
+    {
+      "type": "header",
+      "content": "Description"
+    },
+    {
+      "type": "richtext",
+      "id": "description_text",
+      "label": "Description text",
+      "default": "<p>Add a description to provide more context about this collection.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Primary Button"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_primary_button",
+      "label": "Show primary button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "primary_button_text",
+      "label": "Primary button text",
+      "default": "PLAN MY TRIP"
+    },
+    {
+      "type": "url",
+      "id": "primary_button_url",
+      "label": "Primary button URL"
+    },
+    {
+      "type": "header",
+      "content": "Secondary Button"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_secondary_button",
+      "label": "Show secondary button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "secondary_button_text",
+      "label": "Secondary button text",
+      "default": "CALL (888)-413-5211"
+    },
+    {
+      "type": "text",
+      "id": "secondary_button_phone",
+      "label": "Phone number",
+      "default": "+18884135211"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Travel Collection Hero"
+    }
+  ]
+}
+{% endschema %}

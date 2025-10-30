@@ -1,0 +1,383 @@
+{% comment %}
+  Travel Collection Filters Section
+  Displays filter options for the product grid
+  Includes: Price Range, Species, Wading/Boating, Who It's For, Family Friendly
+{% endcomment %}
+
+{%- liquid
+  # Build unique lists from all products in collection
+  assign all_species = ''
+  assign all_who_its_for = ''
+  assign all_wading_boating = ''
+  assign product_prices = ''
+
+  for product in collection.products
+    # Collect species (list.metaobject_reference)
+    assign species_metafield = product.metafields.trip.trip_target_species.value
+    if species_metafield != blank
+      for species_obj in species_metafield
+        # Access the species_name field from the metaobject
+        assign species_name = species_obj.species_name
+        if species_name != blank
+          unless all_species contains species_name
+            if all_species != ''
+              assign all_species = all_species | append: '|'
+            endif
+            assign all_species = all_species | append: species_name
+          endunless
+        endif
+      endfor
+    endif
+
+    # Collect who it's for (simple list)
+    assign who_its_for_metafield = product.metafields.trip.who_its_for.value
+    if who_its_for_metafield != blank
+      for item in who_its_for_metafield
+        unless all_who_its_for contains item
+          if all_who_its_for != ''
+            assign all_who_its_for = all_who_its_for | append: '|'
+          endif
+          assign all_who_its_for = all_who_its_for | append: item
+        endunless
+      endfor
+    endif
+
+    # Collect wading/boating
+    assign wb = product.metafields.trip.wading_boating
+    if wb != blank
+      unless all_wading_boating contains wb
+        if all_wading_boating != ''
+          assign all_wading_boating = all_wading_boating | append: '|'
+        endif
+        assign all_wading_boating = all_wading_boating | append: wb
+      endunless
+    endif
+
+    # Collect prices for percentile calculation
+    assign price = product.metafields.trip.starting_price | default: product.price
+    if price != blank
+      if product_prices != ''
+        assign product_prices = product_prices | append: ','
+      endif
+      assign product_prices = product_prices | append: price
+    endif
+  endfor
+
+  assign species_list = all_species | split: '|'
+  assign who_its_for_list = all_who_its_for | split: '|'
+  assign wading_boating_list = all_wading_boating | split: '|'
+
+  # Debug: Check if we found any data
+  assign has_species = false
+  if species_list.size > 0 and species_list[0] != ''
+    assign has_species = true
+  endif
+-%}
+
+<style>
+  .travel-filters {
+    background-color: #FFFFFF;
+    padding: 24px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .travel-filters__main-title {
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0 0 20px 0;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #E7E9EB;
+  }
+
+  .travel-filters__group {
+    border-bottom: 1px solid #E7E9EB;
+    padding: 20px 0;
+  }
+
+  .travel-filters__group:last-of-type {
+    border-bottom: none;
+  }
+
+  .travel-filters__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .travel-filters__title {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+  }
+
+  .travel-filters__toggle {
+    font-size: 14px;
+    transition: transform 0.3s ease;
+    color: #666666;
+  }
+
+  .travel-filters__toggle.active {
+    transform: rotate(90deg);
+  }
+
+  .travel-filters__content {
+    padding-top: 16px;
+    display: none;
+  }
+
+  .travel-filters__content.active {
+    display: block;
+  }
+
+  .travel-filters__option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .travel-filters__option:last-child {
+    margin-bottom: 0;
+  }
+
+  .travel-filters__checkbox {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+    cursor: pointer;
+  }
+
+  .travel-filters__label {
+    font-size: 14px;
+    color: #000000;
+    cursor: pointer;
+  }
+
+  .travel-filters__clear {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px;
+    margin-top: 24px;
+    background-color: transparent;
+    border: none;
+    color: #999999;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+
+  .travel-filters__clear:hover {
+    color: #666666;
+  }
+
+  .travel-filters__count {
+    display: inline-block;
+    background-color: #3E90C5;
+    color: #FFFFFF;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 8px;
+  }
+
+  @media (max-width: 1024px) {
+    .travel-filters {
+      margin-bottom: 20px;
+    }
+  }
+</style>
+
+<div class="travel-filters" id="travel-filters">
+
+  <h2 class="travel-filters__main-title">Filters</h2>
+
+  <!-- Active Filter Count -->
+  <div id="filter-count-container" style="display: none; margin-bottom: 16px;">
+    <span style="font-size: 13px; color: #666;">Active Filters:</span>
+    <span class="travel-filters__count" id="active-filter-count">0</span>
+  </div>
+
+  <!-- Price Range Filter -->
+  <div class="travel-filters__group">
+    <div class="travel-filters__header" data-filter-toggle="price">
+      <h3 class="travel-filters__title">Price Range</h3>
+      <span class="travel-filters__toggle">›</span>
+    </div>
+    <div class="travel-filters__content" data-filter-content="price">
+      <div class="travel-filters__option">
+        <input type="checkbox" class="travel-filters__checkbox filter-checkbox" id="price-1" name="price" value="1" data-filter-type="price">
+        <label for="price-1" class="travel-filters__label">$</label>
+      </div>
+      <div class="travel-filters__option">
+        <input type="checkbox" class="travel-filters__checkbox filter-checkbox" id="price-2" name="price" value="2" data-filter-type="price">
+        <label for="price-2" class="travel-filters__label">$$</label>
+      </div>
+      <div class="travel-filters__option">
+        <input type="checkbox" class="travel-filters__checkbox filter-checkbox" id="price-3" name="price" value="3" data-filter-type="price">
+        <label for="price-3" class="travel-filters__label">$$$</label>
+      </div>
+    </div>
+  </div>
+
+  {% if species_list.size > 0 %}
+  <!-- Species Filter -->
+  <div class="travel-filters__group">
+    <div class="travel-filters__header" data-filter-toggle="species">
+      <h3 class="travel-filters__title">Species</h3>
+      <span class="travel-filters__toggle">›</span>
+    </div>
+    <div class="travel-filters__content" data-filter-content="species">
+      {% for species in species_list %}
+        <div class="travel-filters__option">
+          <input type="checkbox" class="travel-filters__checkbox filter-checkbox" id="species-{{ forloop.index }}" name="species" value="{{ species }}" data-filter-type="species">
+          <label for="species-{{ forloop.index }}" class="travel-filters__label">{{ species }}</label>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if wading_boating_list.size > 0 %}
+  <!-- Wading/Boating Filter -->
+  <div class="travel-filters__group">
+    <div class="travel-filters__header" data-filter-toggle="wading-boating">
+      <h3 class="travel-filters__title">Wading/Boating</h3>
+      <span class="travel-filters__toggle">›</span>
+    </div>
+    <div class="travel-filters__content" data-filter-content="wading-boating">
+      {% for option in wading_boating_list %}
+        <div class="travel-filters__option">
+          <input type="checkbox" class="travel-filters__checkbox filter-checkbox" id="wb-{{ forloop.index }}" name="wading-boating" value="{{ option }}" data-filter-type="wading-boating">
+          <label for="wb-{{ forloop.index }}" class="travel-filters__label">{{ option }}</label>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if who_its_for_list.size > 0 %}
+  <!-- Who It's For Filter -->
+  <div class="travel-filters__group">
+    <div class="travel-filters__header" data-filter-toggle="who-its-for">
+      <h3 class="travel-filters__title">Who It's For</h3>
+      <span class="travel-filters__toggle">›</span>
+    </div>
+    <div class="travel-filters__content" data-filter-content="who-its-for">
+      {% for item in who_its_for_list %}
+        <div class="travel-filters__option">
+          <input type="checkbox" class="travel-filters__checkbox filter-checkbox" id="who-{{ forloop.index }}" name="who-its-for" value="{{ item }}" data-filter-type="who-its-for">
+          <label for="who-{{ forloop.index }}" class="travel-filters__label">{{ item }}</label>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Family Friendly Filter -->
+  <div class="travel-filters__group">
+    <div class="travel-filters__header" data-filter-toggle="family-friendly">
+      <h3 class="travel-filters__title">Family Friendly</h3>
+      <span class="travel-filters__toggle">›</span>
+    </div>
+    <div class="travel-filters__content" data-filter-content="family-friendly">
+      <div class="travel-filters__option">
+        <input type="checkbox" class="travel-filters__checkbox filter-checkbox" id="family-yes" name="family-friendly" value="true" data-filter-type="family-friendly">
+        <label for="family-yes" class="travel-filters__label">Yes</label>
+      </div>
+      <div class="travel-filters__option">
+        <input type="checkbox" class="travel-filters__checkbox filter-checkbox" id="family-no" name="family-friendly" value="false" data-filter-type="family-friendly">
+        <label for="family-no" class="travel-filters__label">No</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Clear Selections Button -->
+  <button class="travel-filters__clear" id="clear-filters">
+    <span>✕</span>
+    <span>CLEAR SELECTIONS</span>
+  </button>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Toggle filter groups
+  const filterToggles = document.querySelectorAll('[data-filter-toggle]');
+  filterToggles.forEach((toggle, index) => {
+    toggle.addEventListener('click', function() {
+      const filterName = this.getAttribute('data-filter-toggle');
+      const content = document.querySelector(`[data-filter-content="${filterName}"]`);
+      const toggleIcon = this.querySelector('.travel-filters__toggle');
+
+      content.classList.toggle('active');
+      toggleIcon.classList.toggle('active');
+    });
+
+    // Open first filter group by default
+    if (index === 0) {
+      toggle.click();
+    }
+  });
+
+  // Filter functionality
+  const filterCheckboxes = document.querySelectorAll('.filter-checkbox');
+  const activeFilterCount = document.getElementById('active-filter-count');
+  const filterCountContainer = document.getElementById('filter-count-container');
+
+  function updateFilterCount() {
+    const checkedCount = document.querySelectorAll('.filter-checkbox:checked').length;
+    activeFilterCount.textContent = checkedCount;
+    filterCountContainer.style.display = checkedCount > 0 ? 'block' : 'none';
+  }
+
+  filterCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+      updateFilterCount();
+      // Trigger custom event for product grid to listen to
+      document.dispatchEvent(new CustomEvent('travelFiltersChanged'));
+    });
+  });
+
+  // Clear filters
+  document.getElementById('clear-filters').addEventListener('click', function() {
+    filterCheckboxes.forEach(checkbox => {
+      checkbox.checked = false;
+    });
+    updateFilterCount();
+    document.dispatchEvent(new CustomEvent('travelFiltersChanged'));
+  });
+
+  // Export filter state for product grid
+  window.getTravelFilters = function() {
+    const filters = {
+      price: [],
+      species: [],
+      'wading-boating': [],
+      'who-its-for': [],
+      'family-friendly': []
+    };
+
+    filterCheckboxes.forEach(checkbox => {
+      if (checkbox.checked) {
+        const filterType = checkbox.getAttribute('data-filter-type');
+        filters[filterType].push(checkbox.value);
+      }
+    });
+
+    return filters;
+  };
+});
+</script>

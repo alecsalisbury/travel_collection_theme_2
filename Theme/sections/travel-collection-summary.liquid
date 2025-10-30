@@ -1,0 +1,202 @@
+{% comment %}
+  Travel Collection Summary Section
+  Displays an intro/summary section with heading and body text
+{% endcomment %}
+
+{%- liquid
+  assign summary_content = collection.metafields.travel.summary
+
+  # Convert rich text to plain text for parsing
+  assign summary_text = summary_content | metafield_text
+
+  # Parse summary metafield if it contains "Heading:" and "Summary:" markers
+  if summary_text contains 'Heading:' and summary_text contains 'Summary:'
+    assign heading_split = summary_text | split: 'Summary:'
+    assign heading_part = heading_split[0] | remove: 'Heading:' | strip
+    assign summary_part = heading_split[1] | strip
+  else
+    assign heading_part = section.settings.default_heading
+    assign summary_part = summary_text
+  endif
+-%}
+
+<style>
+  .travel-summary {
+    background-color: #E7E9EB;
+    padding: 60px 20px;
+  }
+
+  .travel-summary__container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .travel-summary__header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .travel-summary__accent {
+    width: 8px;
+    height: 8px;
+    background-color: #3E90C5;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+
+  .travel-summary__heading {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #000000;
+    margin: 0;
+  }
+
+  .travel-summary__content {
+    font-size: 20px;
+    line-height: 1.6;
+    color: #000000;
+    margin-bottom: 32px;
+  }
+
+  .travel-summary__content p {
+    margin-bottom: 24px;
+  }
+
+  .travel-summary__content p:last-child {
+    margin-bottom: 0;
+  }
+
+  .travel-summary__callout {
+    background-color: #3E90C5;
+    color: #FFFFFF;
+    padding: 16px 24px;
+    display: inline-block;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  @media (max-width: 768px) {
+    .travel-summary {
+      padding: 40px 20px;
+    }
+
+    .travel-summary__content {
+      font-size: 18px;
+    }
+
+    .travel-summary__callout {
+      display: block;
+      text-align: center;
+    }
+  }
+</style>
+
+<section class="travel-summary">
+  <div class="travel-summary__container">
+
+    <div class="travel-summary__header">
+      <div class="travel-summary__accent"></div>
+      <h2 class="travel-summary__heading">
+        {% if heading_part != blank %}
+          {{ heading_part }}
+        {% else %}
+          {{ section.settings.default_heading }}
+        {% endif %}
+      </h2>
+    </div>
+
+    {% if summary_part != blank %}
+      <div class="travel-summary__content">
+        {{ summary_part }}
+      </div>
+    {% elsif section.settings.default_content != blank %}
+      <div class="travel-summary__content">
+        {{ section.settings.default_content }}
+      </div>
+    {% endif %}
+
+    {% if section.settings.show_callout %}
+      <div class="travel-summary__callout">
+        {{ section.settings.callout_text }}
+      </div>
+    {% endif %}
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Travel Summary",
+  "class": "travel-collection-summary-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "paragraph",
+      "content": "Summary content is pulled from collection.metafields.travel.summary (rich text). Format: 'Heading: [content] Summary: [content]'"
+    },
+    {
+      "type": "text",
+      "id": "default_heading",
+      "label": "Default heading",
+      "default": "INTRO HEADLINE"
+    },
+    {
+      "type": "richtext",
+      "id": "default_content",
+      "label": "Default content",
+      "default": "<p>Add your collection summary content here.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Callout Box"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_callout",
+      "label": "Show callout box",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "callout_text",
+      "label": "Callout text",
+      "default": "Trip planning is free. Price-match guaranteed."
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 60
+    }
+  ],
+  "presets": [
+    {
+      "name": "Travel Collection Summary"
+    }
+  ]
+}
+{% endschema %}

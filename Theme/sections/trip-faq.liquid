@@ -1,0 +1,325 @@
+{% comment %}
+  FAQ Section with Collapsible Blocks
+{% endcomment %}
+
+{% assign has_faq_data = false %}
+{% if section.settings.use_metafield and product.metafields.trip.faq != blank %}
+  {% assign has_faq_data = true %}
+{% elsif section.blocks.size > 0 %}
+  {% assign has_faq_data = true %}
+{% endif %}
+
+{% if has_faq_data %}
+<section id="trip-faq-{{ section.id }}" class="trip-faq">
+  <div id="faq" style="position: absolute; top: -70px;"></div>
+  <div class="container">
+    <div class="trip-faq__header">
+      {% if section.settings.title != blank %}
+        <h2 class="trip-faq__title">{{ section.settings.title }}</h2>
+      {% endif %}
+      {% if section.settings.cta_text != blank %}
+        <a href="{% if section.settings.cta_url != blank %}{{ section.settings.cta_url }}{% else %}#trip-inquiry{% endif %}" class="trip-faq__cta">{{ section.settings.cta_text }}</a>
+      {% endif %}
+    </div>
+
+    <div class="trip-faq__wrapper">
+      {% if section.settings.use_metafield and product.metafields.trip.faq != blank %}
+        {% assign faq_items = product.metafields.trip.faq.value %}
+        {% for item in faq_items %}
+          {% assign parts = item | split: '|' %}
+          {% if parts.size >= 2 %}
+            {% assign question = parts[0] | strip %}
+            {% assign answer = parts[1] | strip %}
+            <div class="faq-item" data-faq>
+              <button class="faq-item__question">
+                {{ question }}
+                <svg class="faq-item__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                  <path d="M12 4v16m8-8H4" stroke="currentColor" stroke-width="2" fill="none"/>
+                </svg>
+              </button>
+              <div class="faq-item__answer">
+                <div class="faq-item__inner">
+                  <p>{{ answer }}</p>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        {% for block in section.blocks %}
+          <div class="faq-item" data-faq>
+            <button class="faq-item__question">
+              {{ block.settings.question }}
+              <svg class="faq-item__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                <path d="M12 4v16m8-8H4" stroke="currentColor" stroke-width="2" fill="none"/>
+              </svg>
+            </button>
+            <div class="faq-item__answer">
+              <div class="faq-item__inner">
+                {{ block.settings.answer }}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .trip-faq {
+    padding: 80px 0;
+    background-color: #ffffff;
+  }
+
+  .trip-faq__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 3rem;
+    gap: 2rem;
+  }
+
+  .trip-faq__title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #000000;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    flex: 1;
+  }
+
+  .trip-faq__cta {
+    background: #4a9fd8;
+    color: #ffffff;
+    padding: 16px 40px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    display: inline-block;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .trip-faq__cta:hover {
+    background: #3a8fc8;
+  }
+
+  .trip-faq__wrapper {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .faq-item {
+    background: #f5f5f5;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .faq-item:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .faq-item__question {
+    width: 100%;
+    padding: 24px 28px;
+    background: #f5f5f5;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    text-align: left;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #000000;
+    transition: all 0.3s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    gap: 15px;
+  }
+
+  .faq-item__question:hover {
+    background: #eeeeee;
+  }
+
+  .faq-item.active .faq-item__question {
+    background: #f5f5f5;
+  }
+
+  .faq-item__icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    transition: transform 0.3s ease;
+    color: #000000;
+  }
+
+  .faq-item.active .faq-item__icon {
+    transform: rotate(45deg);
+  }
+
+  .faq-item__answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+
+  .faq-item.active .faq-item__answer {
+    max-height: 600px;
+  }
+
+  .faq-item__inner {
+    padding: 0 28px 28px 28px;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #000000;
+    background: #f5f5f5;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .faq-item__inner p {
+    margin: 0;
+  }
+
+  @media screen and (max-width: 968px) {
+    .trip-faq__wrapper {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .trip-faq {
+      padding: 60px 0;
+    }
+
+    .trip-faq__header {
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .trip-faq__title {
+      font-size: 2.5rem;
+    }
+
+    .trip-faq__cta {
+      align-self: flex-start;
+    }
+
+    .faq-item__question {
+      padding: 18px 22px;
+      font-size: 1.1rem;
+    }
+
+    .faq-item__inner {
+      padding: 0 22px 22px 22px;
+      font-size: 0.95rem;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const faqItems = document.querySelectorAll('#trip-faq-{{ section.id }} [data-faq]');
+
+    faqItems.forEach(item => {
+      const question = item.querySelector('.faq-item__question');
+
+      question.addEventListener('click', function() {
+        item.classList.toggle('active');
+      });
+    });
+  });
+</script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "FAQ Section",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Frequently Asked Questions"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "CTA Button Text",
+      "default": "GET IN TOUCH"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "CTA Button URL"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_metafield",
+      "label": "Use Product Metafield",
+      "default": true,
+      "info": "Pull FAQ from product.metafields.trip.faq. Format: [question]|[answer]"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq",
+      "name": "FAQ Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "What is included in the trip package?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>Your trip includes accommodations, all meals, guided fishing, equipment, and round-trip floatplane transfers from Dillingham.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ Section",
+      "blocks": [
+        {
+          "type": "faq",
+          "settings": {
+            "question": "What is the best time to visit?",
+            "answer": "<p>The prime fishing season runs from June through September, with each month offering unique opportunities for different species.</p>"
+          }
+        },
+        {
+          "type": "faq",
+          "settings": {
+            "question": "Do I need to bring my own gear?",
+            "answer": "<p>While all necessary fishing equipment is provided, many anglers prefer to bring their own rods and reels. We'll send you a detailed gear list upon booking.</p>"
+          }
+        },
+        {
+          "type": "faq",
+          "settings": {
+            "question": "What is the cancellation policy?",
+            "answer": "<p>We require a 50% deposit to secure your reservation. Cancellations made 90 days or more before your trip receive a full refund. Please see our full terms for details.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

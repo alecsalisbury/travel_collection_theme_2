@@ -1,0 +1,98 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "product_meta": {
+          "type": "product_meta",
+          "settings": {
+            "show_vendor": false,
+            "show_sku": false,
+            "show_reviews_badge": false,
+            "show_share_buttons": true
+          }
+        },
+        "yotpo_product_reviews_star_rating_wmm9Cd": {
+          "type": "shopify://apps/yotpo-product-reviews/blocks/star-rating/eb7dfd7d-db44-4334-bc49-c893b51b36cf",
+          "settings": {
+            "product": "{{product}}"
+          }
+        },
+        "variant_selector_mDh3z3": {
+          "type": "variant_selector",
+          "settings": {
+            "selector_mode": "block",
+            "color_mode": "swatch",
+            "variant_image_options": ""
+          }
+        },
+        "powerful_form_builder_app_block_6t4eAw": {
+          "type": "shopify://apps/powerful-form-builder/blocks/app-block/e4bcb1eb-35b2-42e6-bc37-bfe0e1542c9d",
+          "settings": {
+            "shortcode": "<div style=\"margin-top: 20px;\">\n  <button type=\"button\" onclick=\"toggleReservationForm()\" style=\"\n      background-color: #ff6a00;\n      color: white;\n      border: none;\n      padding: 12px 24px;\n      font-size: 16px;\n      cursor: pointer;\n      border-radius: 4px;\n      width: 100%;\n      text-align: center;\n    \">\n    Request a Reservation\n  </button>\n\n  <div id=\"reservationFormContainer\" style=\"display: none; margin-top: 20px;\">\n    <div class=\"globo-formbuilder\" data-id=\"MTAxNTk3\"></div>\n  </div>\n</div>\n\n<script>\n  function toggleReservationForm() {\n    const container = document.getElementById('reservationFormContainer');\n    container.style.display = container.style.display === 'none' ? 'block' : 'none';\n  }\n</script>"
+          }
+        },
+        "description": {
+          "type": "description",
+          "settings": {
+            "display_mode": "show_all"
+          }
+        },
+        "affirm_pay_over_time_messaging_product_block_hdP8mr": {
+          "type": "shopify://apps/affirm-pay-over-time-messaging/blocks/product-block/6dce54be-130d-4d13-9636-1e8f611b3071",
+          "settings": {
+            "logo_align": "left",
+            "font_size": 16,
+            "logo_color": "blue",
+            "logo_type": "logo",
+            "public_api_key": "",
+            "price_selector": ""
+          }
+        }
+      },
+      "block_order": [
+        "product_meta",
+        "yotpo_product_reviews_star_rating_wmm9Cd",
+        "variant_selector_mDh3z3",
+        "powerful_form_builder_app_block_6t4eAw",
+        "description",
+        "affirm_pay_over_time_messaging_product_block_hdP8mr"
+      ],
+      "settings": {
+        "image_size": "large",
+        "enable_video_looping": false,
+        "enable_image_zoom": true,
+        "zoom_effect": "popup",
+        "carousel_effect": "fade"
+      }
+    },
+    "product-recommendations": {
+      "type": "product-recommendations",
+      "settings": {
+        "heading": "You may also like",
+        "show_quick_buy": false
+      }
+    },
+    "recently-viewed-products": {
+      "type": "recently-viewed-products",
+      "settings": {
+        "title": "Recently viewed",
+        "show_quick_buy": false
+      }
+    }
+  },
+  "order": [
+    "main",
+    "product-recommendations",
+    "recently-viewed-products"
+  ]
+}

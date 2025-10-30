@@ -1,0 +1,720 @@
+{%- assign blog = section.settings.blog -%}
+{{ 'posts-collection.css' | asset_url | stylesheet_tag }}
+
+<style>
+  {%- if section.settings.padding_top > 0 -%}
+    #shopify-section-{{ section.id }} section.tab-articles {
+      padding-top: {{ section.settings.padding_top }}px;
+    }
+  {%- endif -%}
+  {%- if section.settings.padding_bottom > 0 -%}
+    #shopify-section-{{ section.id }} section.tab-articles {
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  {%- endif -%}
+
+  .section__title-link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .section__title-link:hover {
+    text-decoration: underline;
+  }
+</style>
+
+{% unless section.settings.hide_on_url_contains != blank and request.path contains section.settings.hide_on_url_contains %}
+<section class="section tab-articles" data-section-id="{{ section.id }}" data-section-type="posts-collection" style="background-color: {{ section.settings.section_background_color }};">
+  <div class="container">
+    {%- if section.settings.title != blank -%}
+      <header class="section__header section__header--with-link">
+        <h2 class="section__title section__title--posts-collection heading h3">
+          {%- if section.settings.tag == blank -%}
+            <a href="{{ blog.url }}" class="section__title-link">{{ section.settings.title | escape }}</a>
+          {%- else -%}
+            <a href="{{ section.settings.view_all_link | default: blog.url }}" class="section__title-link">{{ section.settings.title | escape }}</a>
+          {%- endif -%}
+        </h2>
+        {%- if section.settings.view_all_text != blank -%}
+          <div class="section__header-link section__header-link--posts-collection">
+            {%- if section.settings.tag == blank -%}
+              <a href="{{ blog.url }}" class="link link--accented">
+                {{ section.settings.view_all_text }}
+                <svg class="icon icon--arrow-right" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="m5 1 2 2-2 2M1 3h6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            {%- else -%}
+              <a href="{{ section.settings.view_all_link | default: blog.url }}" class="link link--accented">
+                {{ section.settings.view_all_text }}
+                <svg style="padding-bottom: 1px;" class="icon icon--arrow-right" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="m5 1 2 2-2 2M1 3h6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </header>
+    {%- endif -%}
+
+    {%- if section.settings.content_title != blank -%}
+      <header class="tab-articles__tab-header">
+        <h2 class="tab-articles__tab-title heading h2">{{ section.settings.content_title | escape }}</h2>
+      </header>
+    {%- endif -%}
+
+    <!-- Posts Content -->
+    <div class="tab-articles__content">
+      <div class="tab-articles__panel is-active"
+           data-background-color="{{ section.settings.background_color }}"
+           data-posts-tag="{{ section.settings.tag }}"
+           data-articles-per-collection="{{ section.settings.articles_per_collection | default: 6 }}"
+           data-show-category="{{ section.settings.show_category }}"
+           data-show-author="{{ section.settings.show_author }}"
+           data-show-date="{{ section.settings.show_date }}"
+           data-show-excerpt="{{ section.settings.show_excerpt }}"
+           style="--tab-bg-color: {{ section.settings.background_color }};"
+      >
+        {%- capture article_list -%}
+          {%- assign articles_to_show = section.settings.articles_per_collection | default: 6 -%}
+          {%- assign articles_count = 0 -%}
+          {%- assign has_articles = false -%}
+          {%- assign displayed_articles = 0 -%}
+
+          {%- if section.settings.tag == blank -%}
+            {%- assign displayed_articles = blog.articles.size | at_most: articles_to_show -%}
+            {%- assign articles_count = blog.articles.size -%}
+          {%- else -%}
+            {%- for article in blog.articles -%}
+              {%- if article.tags contains section.settings.tag -%}
+                {%- assign articles_count = articles_count | plus: 1 -%}
+                {%- if displayed_articles < articles_to_show -%}
+                  {%- assign displayed_articles = displayed_articles | plus: 1 -%}
+                {%- endif -%}
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endif -%}
+
+          <div class="article-slider-container">
+            <button class="article-slider__nav article-slider__nav--prev" aria-label="Previous articles">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+
+            <div class="article-slider">
+              <div class="article-list">
+                {%- if section.settings.tag == blank -%}
+                  {%- comment -%} Show all articles if no tag is specified {%- endcomment -%}
+                  {%- for article in blog.articles limit: articles_to_show -%}
+                    {%- assign has_articles = true -%}
+                    <div class="article-list__item">
+                      {%- render 'article-item', article: article, featured: false, background_color: section.settings.background_color -%}
+                    </div>
+                  {%- endfor -%}
+                {%- else -%}
+                  {%- comment -%} Filter by specific tag using contains {%- endcomment -%}
+                  {%- assign displayed_count = 0 -%}
+                  {%- for article in blog.articles -%}
+                    {%- if article.tags contains section.settings.tag -%}
+                      {%- if displayed_count < articles_to_show -%}
+                        {%- assign has_articles = true -%}
+                        <div class="article-list__item">
+                          {%- render 'article-item', article: article, featured: false, background_color: section.settings.background_color -%}
+                        </div>
+                        {%- assign displayed_count = displayed_count | plus: 1 -%}
+                      {%- endif -%}
+                    {%- endif -%}
+                  {%- endfor -%}
+                {%- endif -%}
+
+                {%- unless has_articles -%}
+                  <div class="tab-articles__empty">
+                    <p class="text--subdued">{{ 'blog.general.empty' | t }}</p>
+                  </div>
+                {%- endunless -%}
+              </div>
+            </div>
+
+            <button class="article-slider__nav article-slider__nav--next" aria-label="Next articles">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        {%- endcapture -%}
+
+        {{ article_list }}
+
+        {%- if articles_count > articles_to_show and section.settings.view_more_text != blank -%}
+          <div class="tab-articles__view-more">
+            {%- if section.settings.tag == blank -%}
+              <a href="{{ blog.url }}" class="tab-articles__view-more-button" style="background-color: {{ section.settings.view_more_bg_color }}; color: {{ section.settings.view_more_text_color }}; border-color: {{ section.settings.view_more_bg_color }};">
+                {{ section.settings.view_more_text }}
+              </a>
+            {%- else -%}
+              <a href="{{ blog.url }}/tagged/{{ section.settings.tag | handle }}" class="tab-articles__view-more-button" style="background-color: {{ section.settings.view_more_bg_color }}; color: {{ section.settings.view_more_text_color }}; border-color: {{ section.settings.view_more_bg_color }};">
+                {{ section.settings.view_more_text }}
+              </a>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{{ 'tab-articles.css' | asset_url | stylesheet_tag }}
+
+<script>
+// Simplified Storefront API GraphQL query using direct articles query
+const POSTS_ARTICLES_QUERY = `
+  query getArticles($first: Int!, $query: String) {
+    articles(first: $first, query: $query, sortKey: PUBLISHED_AT, reverse: true) {
+      nodes {
+        id
+        title
+        handle
+        excerpt(truncateAt: 150)
+        content(truncateAt: 300)
+        publishedAt
+        tags
+        image {
+          url
+          altText
+          width
+          height
+        }
+        authorV2 {
+          name
+          firstName
+          lastName
+        }
+        onlineStoreUrl
+        blog {
+          handle
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+`;
+
+// Function to make tokenless Storefront API call using direct articles query
+async function fetchPostsCollection(blogHandle = 'Trident Fly Fishing', tag = null, maxArticles = 500) {
+  try {
+    // Build query filter for specific blog and optionally tag
+    let queryFilter = `blog_title:"${blogHandle}"`;
+    if (tag && tag.trim() !== '') {
+      queryFilter += ` AND tag:"${tag}"`;
+    }
+    const apiUrl = `https://{{ shop.permanent_domain }}/api/2025-10/graphql.json`;
+
+    // console.log('🔍 Posts Collection API Request Details:');
+    // console.log('- URL:', apiUrl);
+    // console.log('- Blog Handle:', blogHandle);
+    // console.log('- Tag Filter:', tag || 'none (all articles)');
+    // console.log('- Query Filter:', queryFilter);
+    // console.log('- Max Articles:', maxArticles);
+
+    const requestBody = {
+      query: POSTS_ARTICLES_QUERY,
+      variables: {
+        first: maxArticles,
+        query: queryFilter
+      }
+    };
+
+    // console.log('📤 Request Body:', JSON.stringify(requestBody, null, 2));
+
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestBody)
+    });
+
+    // console.log('📥 Response Status:', response.status, response.statusText);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      // console.error('❌ HTTP Error Response Body:', errorText);
+      throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+    }
+
+    const data = await response.json();
+    // console.log('📊 Full API Response:', JSON.stringify(data, null, 2));
+
+    if (data.errors) {
+      // console.error('❌ GraphQL errors:', data.errors);
+      data.errors.forEach((error, index) => {
+        // console.error(`Error ${index + 1}:`, error.message);
+        // if (error.locations) console.error('Locations:', error.locations);
+        // if (error.path) console.error('Path:', error.path);
+        // if (error.extensions) console.error('Extensions:', error.extensions);
+      });
+      return null;
+    }
+
+    const articles = data.data?.articles?.nodes || [];
+    // console.log(`✅ Successfully fetched ${articles.length} articles for posts collection`);
+
+    if (articles.length > 0) {
+      // console.log('📝 Sample article:', {
+      //   title: articles[0].title,
+      //   handle: articles[0].handle,
+      //   blog: articles[0].blog?.handle,
+      //   tags: articles[0].tags,
+      //   publishedAt: articles[0].publishedAt
+      // });
+    } else {
+      // console.warn('⚠️ No articles found for posts collection. Possible reasons:');
+      // console.warn('- Blog handle "' + blogHandle + '" might not exist');
+      // console.warn('- Blog might have no published articles');
+      // console.warn('- Blog might not be accessible via Storefront API');
+      // console.warn('- Query filter might be incorrect');
+    }
+
+    return articles;
+  } catch (error) {
+    // console.error('💥 Error fetching articles for posts collection:', error);
+    // console.error('Error details:', {
+    //   name: error.name,
+    //   message: error.message,
+    //   stack: error.stack
+    // });
+    return null;
+  }
+}
+
+// Function to mimic Shopify's handleize filter
+function handleize(str) {
+  if (!str || typeof str !== 'string') {
+    return '';
+  }
+  
+  return str
+    .toLowerCase()                    // Convert to lowercase
+    .replace(/[^a-z0-9\s-]/g, '')     // Remove special characters except spaces and hyphens
+    .replace(/\s+/g, '-')             // Replace spaces with hyphens
+    .replace(/-+/g, '-')             // Replace multiple consecutive hyphens with single hyphen
+    .replace(/^-+|-+$/g, '');        // Remove leading and trailing hyphens
+}
+
+// Function to create article HTML matching the existing article-item structure
+function createPostsCollectionHTML(article, sectionSettings, backgroundColor = '#ffffff') {
+  const publishedDate = new Date(article.publishedAt).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+  const author = article.authorV2?.name || 'Anonymous';
+  const authorHandle = handleize(author);
+  const excerpt = article.excerpt || article.content || '';
+  const imageUrl = article.image?.url || '';
+  const imageAlt = article.image?.altText || article.title;
+  const category = article.tags.length > 0 ? article.tags[0] : '';
+
+  // Build meta items based on section settings
+  let metaItems = [];
+  if (sectionSettings.show_category && category) {
+    metaItems.push(`<span class="article-item__meta-item">${category}</span>`);
+  }
+  if (sectionSettings.show_author) {
+    metaItems.push(`<a href="/pages/authors/${authorHandle}" class="article-item__meta-item">By ${author}</a>`);
+  }
+  if (sectionSettings.show_date) {
+    metaItems.push(`<time class="article-item__meta-item">${publishedDate}</time>`);
+  }
+
+  // Return just the article-list__item structure for slider
+  return `
+    <div class="article-list__item">
+      <div class="article-item" style="background-color: ${backgroundColor};">
+        ${imageUrl ? `
+          <a href="${article.onlineStoreUrl}" class="article-item__image-container">
+            <img src="${imageUrl}" alt="${imageAlt}" loading="lazy" class="article-item__image">
+          </a>
+        ` : ''}
+        <h3 class="article-item__title heading h4">
+          <a href="${article.onlineStoreUrl}" class="link">${article.title}</a>
+        </h3>
+        ${metaItems.length > 0 ? `
+          <div class="article-item__meta">
+            ${metaItems.join('')}
+          </div>
+        ` : ''}
+        ${sectionSettings.show_excerpt && excerpt ? `
+          <div class="article-item__excerpt rte">
+            ${excerpt.length > 80 ? excerpt.substring(0, 80) + '...' : excerpt}
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
+}
+
+// Slider functionality for posts collection
+function initializePostsSlider(section) {
+  const sliderContainer = section.querySelector('.article-slider-container');
+  if (!sliderContainer) return;
+
+  const slider = sliderContainer.querySelector('.article-slider');
+  const articleList = slider.querySelector('.article-list');
+  const prevBtn = sliderContainer.querySelector('.article-slider__nav--prev');
+  const nextBtn = sliderContainer.querySelector('.article-slider__nav--next');
+  const articles = articleList.querySelectorAll('.article-list__item');
+
+  if (articles.length === 0) return;
+
+  let currentIndex = 0;
+
+  // Responsive items to show (how many to slide by)
+  function getItemsToShow() {
+    if (window.innerWidth <= 640) return 1; // Mobile: slide 1
+    if (window.innerWidth <= 999) return 2; // Tablet: slide 2
+    return 3; // Desktop: slide 3 (but show 3.2)
+  }
+
+  let itemsToShow = getItemsToShow();
+  let maxIndex = Math.max(0, articles.length - itemsToShow);
+
+  // Set initial state
+  updateSliderPosition();
+  updateNavigationButtons();
+
+  // Add event listeners
+  prevBtn.addEventListener('click', () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updateSliderPosition();
+      updateNavigationButtons();
+    }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (currentIndex < maxIndex) {
+      currentIndex++;
+      updateSliderPosition();
+      updateNavigationButtons();
+    }
+  });
+
+  // Handle window resize
+  const handleResize = () => {
+    const newItemsToShow = getItemsToShow();
+    if (newItemsToShow !== itemsToShow) {
+      itemsToShow = newItemsToShow;
+      maxIndex = Math.max(0, articles.length - itemsToShow);
+      currentIndex = Math.min(currentIndex, maxIndex);
+      updateSliderPosition();
+      updateNavigationButtons();
+    }
+  };
+
+  window.addEventListener('resize', handleResize);
+
+  function updateSliderPosition() {
+    // Calculate the percentage to move based on how many items we want to skip
+    // For desktop (25% per item), mobile (100% per item), tablet (50% per item)
+    let itemWidth;
+    if (window.innerWidth <= 640) {
+      itemWidth = 100; // Mobile: 100% per item
+    } else if (window.innerWidth <= 999) {
+      itemWidth = 50; // Tablet: 50% per item
+    } else {
+      itemWidth = 25; // Desktop: 25% per item (showing 3.2 items)
+    }
+
+    const translateX = -(currentIndex * itemWidth);
+    articleList.style.transform = `translateX(${translateX}%)`;
+  }
+
+  function updateNavigationButtons() {
+    prevBtn.disabled = currentIndex === 0;
+    nextBtn.disabled = currentIndex >= maxIndex;
+
+    // Add visual feedback for disabled state
+    prevBtn.style.opacity = currentIndex === 0 ? '0.5' : '1';
+    nextBtn.style.opacity = currentIndex >= maxIndex ? '0.5' : '1';
+  }
+}
+
+// Function to update posts collection with API data
+async function updatePostsCollectionWithAPI() {
+  // console.log('🚀 Starting updatePostsCollectionWithAPI...');
+
+  // Check if we should use API data
+  const urlParams = new URLSearchParams(window.location.search);
+  const forceAPI = urlParams.get('use_api') === 'true';
+
+  // console.log('🔍 Environment Check:');
+  // console.log('- Current URL:', window.location.href);
+  // console.log('- URL Params:', Object.fromEntries(urlParams.entries()));
+  // console.log('- Force API:', forceAPI);
+  // console.log('- Body classes:', document.body.className);
+  // console.log('- Path includes /blogs/:', window.location.pathname.includes('/blogs/'));
+  // console.log('- Bloggle layout exists:', !!document.querySelector('#bloggle--blog_layout'));
+
+  // Run API call on any page that has posts-collection sections
+  // console.log('📋 Running API call on current page');
+
+  // Process ALL posts-collection sections on the page
+  const postsCollectionSections = document.querySelectorAll('[data-section-type="posts-collection"]');
+  // console.log('🎯 Posts collection sections found:', postsCollectionSections.length);
+
+  if (postsCollectionSections.length === 0) {
+    // console.log('❌ No posts-collection sections found, skipping API call');
+    return;
+  }
+
+  // console.log('🌐 Fetching articles from Trident Fly Fishing blog via Storefront API...');
+
+  // Process each posts-collection section individually
+  for (let sectionIndex = 0; sectionIndex < postsCollectionSections.length; sectionIndex++) {
+    const postsCollectionSection = postsCollectionSections[sectionIndex];
+    const sectionId = postsCollectionSection.getAttribute('data-section-id');
+
+    // console.log(`\n📑 Processing posts collection section ${sectionIndex + 1} (ID: ${sectionId})`);
+
+    // Get section-specific settings from data attributes
+    const panelElement = postsCollectionSection.querySelector('.tab-articles__panel');
+    const sectionSettings = {
+      show_category: panelElement.getAttribute('data-show-category') === 'true',
+      show_author: panelElement.getAttribute('data-show-author') === 'true',
+      show_date: panelElement.getAttribute('data-show-date') === 'true',
+      show_excerpt: panelElement.getAttribute('data-show-excerpt') === 'true'
+    };
+
+    // Extract tag and other settings from the section's data attributes
+    const tag = panelElement.getAttribute('data-posts-tag') || '';
+    const articlesPerCollection = parseInt(panelElement.getAttribute('data-articles-per-collection')) || 6;
+    const backgroundColor = panelElement.getAttribute('data-background-color') || '#ffffff';
+
+    // console.log(`- Tag: "${tag || 'none'}"`);
+    // console.log(`- Articles per collection: ${articlesPerCollection}`);
+
+    // Make API call for this specific section with its tag filter
+    const articles = await fetchPostsCollection('Trident Fly Fishing', tag, articlesPerCollection);
+
+    if (articles && articles.length > 0) {
+      // console.log(`✅ Posts Collection ${sectionIndex + 1}: Found ${articles.length} articles`);
+
+      // Create article HTML
+      const articlesHTML = articles.map(article => createPostsCollectionHTML(article, sectionSettings, backgroundColor)).join('');
+
+      // Update the collection content
+      const articleList = postsCollectionSection.querySelector('.article-list');
+      if (articleList) {
+        // console.log(`🎨 Updating article list for posts collection ${sectionIndex + 1}`);
+        // console.log('- Article list classes before:', articleList.className);
+        // console.log('- Articles HTML length:', articlesHTML.length);
+
+        articleList.innerHTML = articlesHTML;
+
+        // Ensure proper classes are set
+        articleList.classList.add('article-list');
+
+        // console.log('- Article list classes after:', articleList.className);
+        // console.log('- Number of article items:', articleList.querySelectorAll('.article-list__item').length);
+
+        // Initialize slider for this specific section
+        initializePostsSlider(postsCollectionSection);
+      }
+    } else {
+      // console.log(`⚠️ Posts Collection ${sectionIndex + 1}: No articles found`);
+    }
+  }
+
+  // console.log('\n🎉 Finished processing all posts collection sections');
+}
+
+// Initialize when DOM is loaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    // Initialize sliders for all posts-collection sections
+    const allPostsSections = document.querySelectorAll('[data-section-type="posts-collection"]');
+    allPostsSections.forEach(section => {
+      initializePostsSlider(section);
+    });
+    updatePostsCollectionWithAPI();
+  });
+} else {
+  // Initialize sliders for all posts-collection sections
+  const allPostsSections = document.querySelectorAll('[data-section-type="posts-collection"]');
+  allPostsSections.forEach(section => {
+    initializePostsSlider(section);
+  });
+  updatePostsCollectionWithAPI();
+}
+
+</script>
+
+{% endunless %}
+
+{% schema %}
+{
+  "name": "Posts Collection",
+  "tag": "section",
+  "class": "this-section",
+  "settings": [
+    {
+      "type": "color",
+      "id": "section_background_color",
+      "label": "Section Background Color",
+      "default": "#ffffff",
+      "info": "Background color for the entire section"
+    },
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "Blog",
+      "info": "Select the blog to display articles from"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Heading",
+      "default": "Fly Fishing Travel"
+    },
+    {
+      "type": "text",
+      "id": "content_title",
+      "label": "Content Title",
+      "info": "Large title displayed above the articles. Leave blank to hide.",
+      "placeholder": "e.g. Latest Posts"
+    },
+    {
+      "type": "text",
+      "id": "tag",
+      "label": "Tag",
+      "info": "Enter the exact tag name to filter articles by. Leave empty to show all articles. Case sensitive.",
+      "placeholder": "e.g. Fly Fishing Travel"
+    },
+    {
+      "type": "range",
+      "id": "articles_per_collection",
+      "label": "Articles to show",
+      "min": 3,
+      "max": 100,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Articles Background Color",
+      "default": "#ffffff",
+      "info": "Background color for article cards"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_category",
+      "label": "Show category",
+      "info": "The first article's tag will be shown as category.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "Show author",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "Show date",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_excerpt",
+      "label": "Show excerpt",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "View All Link"
+    },
+    {
+      "type": "text",
+      "id": "view_all_text",
+      "label": "View all link text",
+      "default": "VIEW ALL",
+      "info": "Leave empty to hide the link"
+    },
+    {
+      "type": "url",
+      "id": "view_all_link",
+      "label": "View all link url"
+    },
+    {
+      "type": "header",
+      "content": "View More Button"
+    },
+    {
+      "type": "text",
+      "id": "view_more_text",
+      "label": "Button text",
+      "default": "View more",
+      "info": "Leave empty to hide the button"
+    },
+    {
+      "type": "color",
+      "id": "view_more_bg_color",
+      "label": "Button background color",
+      "default": "#007acc"
+    },
+    {
+      "type": "color",
+      "id": "view_more_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "text",
+      "id": "hide_on_url_contains",
+      "label": "Hide when URL contains",
+      "info": "Enter text to hide this section when the URL contains that text. Leave blank to disable."
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 160,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 160,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Posts Collection",
+      "category": "Blog",
+      "settings": {
+        "blog": "news",
+        "title": "Fly Fishing Travel",
+        "content_title": "Latest Posts",
+        "tag": "Fly Fishing Travel",
+        "section_background_color": "#f8f9fa",
+        "background_color": "#ffffff"
+      }
+    }
+  ]
+}
+{% endschema %}

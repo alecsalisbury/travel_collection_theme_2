@@ -1,0 +1,368 @@
+{% comment %}
+  Related Trips Section
+{% endcomment %}
+
+{% assign has_related_data = false %}
+{% if section.settings.use_metafield and product.metafields.trip.related_trips != blank %}
+  {% assign has_related_data = true %}
+{% elsif section.blocks.size > 0 %}
+  {% assign has_related_data = true %}
+{% endif %}
+
+{% if has_related_data %}
+<section id="trip-related-{{ section.id }}" class="trip-related">
+  <div id="related" style="position: absolute; top: -70px;"></div>
+  <div class="container">
+    <div class="trip-related__header">
+      <div class="trip-related__header-content">
+        {% if section.settings.title != blank %}
+          <h2 class="trip-related__title">{{ section.settings.title }}</h2>
+        {% endif %}
+        {% if section.settings.subtitle != blank %}
+          <p class="trip-related__subtitle">{{ section.settings.subtitle }}</p>
+        {% endif %}
+      </div>
+      {% if section.settings.cta_text != blank %}
+        <a href="{{ section.settings.cta_url }}" class="trip-related__cta">{{ section.settings.cta_text }}</a>
+      {% endif %}
+    </div>
+
+    <div class="trip-related__grid">
+      {% if section.settings.use_metafield and product.metafields.trip.related_trips != blank %}
+        {% assign related = product.metafields.trip.related_trips.value %}
+        {% for related_product in related limit: 3 %}
+          <div class="related-card">
+            <a href="{{ related_product.url }}" class="related-card__link">
+              <div class="related-card__image">
+                {% if related_product.featured_image %}
+                  <img
+                    src="{{ related_product.featured_image | img_url: '600x400', crop: 'center' }}"
+                    alt="{{ related_product.title }}"
+                    loading="lazy"
+                  >
+                {% else %}
+                  {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                {% endif %}
+              </div>
+              <div class="related-card__content">
+                <h3 class="related-card__title">{{ related_product.title }}</h3>
+                {% if related_product.metafields.trip.short_description %}
+                  <p class="related-card__description">{{ related_product.metafields.trip.short_description }}</p>
+                {% endif %}
+                <span class="related-card__cta">LEARN MORE</span>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      {% else %}
+        {% for block in section.blocks limit: 3 %}
+          <div class="related-card">
+            <a href="{{ block.settings.trip_url }}" class="related-card__link">
+              <div class="related-card__image">
+                {% if block.settings.trip_image != blank %}
+                  <img
+                    src="{{ block.settings.trip_image | img_url: '600x400', crop: 'center' }}"
+                    alt="{{ block.settings.trip_title }}"
+                    loading="lazy"
+                  >
+                {% else %}
+                  {{ 'product-' | append: forloop.index | placeholder_svg_tag: 'placeholder-svg' }}
+                {% endif %}
+              </div>
+              <div class="related-card__content">
+                <h3 class="related-card__title">{{ block.settings.trip_title }}</h3>
+                {% if block.settings.trip_description != blank %}
+                  <p class="related-card__description">{{ block.settings.trip_description }}</p>
+                {% endif %}
+                <span class="related-card__cta">LEARN MORE</span>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .trip-related {
+    padding: 50px 0 80px 0;
+    background-color: #ffffff;
+  }
+
+  .trip-related__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 3rem;
+    gap: 2rem;
+  }
+
+  .trip-related__header-content {
+    flex: 1;
+  }
+
+  .trip-related__title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #000000;
+    margin: 0 0 1rem 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+  }
+
+  .trip-related__subtitle {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #000000;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .trip-related__cta {
+    background: #4a9fd8;
+    color: #ffffff;
+    padding: 16px 40px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    display: inline-block;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .trip-related__cta:hover {
+    background: #3a8fc8;
+  }
+
+  .trip-related__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    max-width: 100%;
+  }
+
+  .related-card {
+    background: #f5f5f5;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .related-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .related-card__link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .related-card__image {
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+    background: #e8e8e8;
+  }
+
+  .related-card__image img,
+  .related-card__image .placeholder-svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .related-card:hover .related-card__image img {
+    transform: scale(1.05);
+  }
+
+  .related-card__content {
+    padding: 32px 28px;
+    background: #f5f5f5;
+  }
+
+  .related-card__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #000000;
+    margin-bottom: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.3;
+  }
+
+  .related-card__description {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #000000;
+    margin-bottom: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .related-card__cta {
+    font-size: 0.875rem;
+    color: #000000;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: inline-block;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  @media screen and (max-width: 1024px) {
+    .trip-related__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .trip-related {
+      padding: 60px 0;
+    }
+
+    .trip-related__header {
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .trip-related__title {
+      font-size: 2.5rem;
+    }
+
+    .trip-related__cta {
+      align-self: flex-start;
+    }
+
+    .trip-related__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .related-card__image {
+      height: 250px;
+    }
+  }
+</style>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Related Trips",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Related Trips"
+    },
+    {
+      "type": "richtext",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "<p>Explore our other world-class fly fishing adventures around the globe.</p>"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "CTA Button Text",
+      "default": "SEE ALL TRIPS"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "CTA Button URL"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_metafield",
+      "label": "Use Product Metafield",
+      "default": true,
+      "info": "Pull related trips from product.metafields.trip.related_trips (list of products). Shows up to 3 trips."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "trip",
+      "name": "Related Trip",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "trip_image",
+          "label": "Trip Image"
+        },
+        {
+          "type": "text",
+          "id": "trip_title",
+          "label": "Trip Title",
+          "default": "Bristol Bay Lodge"
+        },
+        {
+          "type": "text",
+          "id": "trip_location",
+          "label": "Location",
+          "default": "Alaska"
+        },
+        {
+          "type": "textarea",
+          "id": "trip_description",
+          "label": "Description",
+          "default": "Experience world-class salmon fishing in Bristol Bay."
+        },
+        {
+          "type": "url",
+          "id": "trip_url",
+          "label": "Trip URL"
+        },
+        {
+          "type": "text",
+          "id": "cta_text",
+          "label": "CTA Text",
+          "default": "Learn More →"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Related Trips",
+      "blocks": [
+        {
+          "type": "trip",
+          "settings": {
+            "trip_title": "Bristol Bay Lodge",
+            "trip_location": "Alaska",
+            "trip_description": "World-class salmon fishing in pristine waters.",
+            "cta_text": "Learn More →"
+          }
+        },
+        {
+          "type": "trip",
+          "settings": {
+            "trip_title": "Kenai River Lodge",
+            "trip_location": "Alaska",
+            "trip_description": "Trophy rainbow trout and salmon on the legendary Kenai.",
+            "cta_text": "Learn More →"
+          }
+        },
+        {
+          "type": "trip",
+          "settings": {
+            "trip_title": "Kodiak Island Lodge",
+            "trip_location": "Alaska",
+            "trip_description": "Remote island adventure with incredible fishing diversity.",
+            "cta_text": "Learn More →"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

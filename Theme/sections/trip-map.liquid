@@ -1,0 +1,89 @@
+{% comment %}
+  Map / Location Section
+  Interactive map using Leaflet.js with coordinates from product.metafields.trip.lodge_coordinates
+  Expected format: "latitude,longitude" (e.g., "59.0000,-156.0000")
+{% endcomment %}
+
+{% if product.metafields.trip.lodge_coordinates != blank %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<section id="trip-map-{{ section.id }}" class="trip-map">
+  <div id="map" style="position: absolute; top: -70px;"></div>
+    {% assign coords = product.metafields.trip.lodge_coordinates | split: ',' %}
+    {% assign latitude = coords[0] | strip %}
+    {% assign longitude = coords[1] | strip %}
+
+    <div id="map-{{ section.id }}" class="trip-map__interactive"
+         data-lat="{{ latitude }}"
+         data-lng="{{ longitude }}">
+    </div>
+
+    <script>
+      (function() {
+        const mapElement = document.getElementById('map-{{ section.id }}');
+        const lat = parseFloat(mapElement.dataset.lat);
+        const lng = parseFloat(mapElement.dataset.lng);
+
+        // Initialize map
+        const map = L.map('map-{{ section.id }}').setView([lat, lng], 10);
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          maxZoom: 18
+        }).addTo(map);
+
+        // Add marker without popup
+        const marker = L.marker([lat, lng]).addTo(map);
+
+        // Fix tile loading issue
+        setTimeout(function() {
+          map.invalidateSize();
+        }, 100);
+      })();
+    </script>
+</section>
+
+<style>
+  .trip-map {
+    padding: 0;
+    margin: 0;
+    background-color: #ffffff;
+    display: block;
+  }
+
+  .trip-map__interactive {
+    width: 100%;
+    height: 600px;
+    display: block;
+    margin: 0;
+  }
+
+  @media screen and (max-width: 768px) {
+    .trip-map__interactive {
+      height: 400px;
+    }
+  }
+</style>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Map Location",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Location"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Map Location"
+    }
+  ]
+}
+{% endschema %}

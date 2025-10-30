@@ -1,0 +1,228 @@
+{% comment %}
+  Seasonal Fishing Calendar Section
+  Displays monthly fishing data from product.metafields.trip.seasonal_calendar
+  Format: Month|temp-range|species1,species2|note
+{% endcomment %}
+
+{% if product.metafields.trip.seasonal_calendar != blank %}
+<section id="trip-calendar-{{ section.id }}" class="trip-calendar">
+  <div id="calendar" style="position: absolute; top: -70px;"></div>
+  <div class="container">
+    <div class="trip-calendar__header">
+      <h2 class="trip-calendar__title">Seasonal Fishing<br>Calendar</h2>
+    </div>
+
+    <div class="trip-calendar__content">
+      {% if product.metafields.trip.seasonal_calendar != blank %}
+        {% for calendar_entry in product.metafields.trip.seasonal_calendar.value %}
+          {% assign entry_parts = calendar_entry | split: '|' %}
+          {% assign month = entry_parts[0] %}
+          {% assign temp = entry_parts[1] %}
+          {% assign species_string = entry_parts[2] %}
+          {% assign note = entry_parts[3] %}
+          {% assign species_list = species_string | split: ',' %}
+
+          <div class="calendar-row">
+            <div class="calendar-row__left">
+              <div class="calendar-month">{{ month }}</div>
+              <div class="calendar-temp">{{ temp }}°F</div>
+            </div>
+
+            <div class="calendar-row__middle">
+              {% for species in species_list %}
+                <span class="species-badge">{{ species | strip }}</span>
+              {% endfor %}
+            </div>
+
+            <div class="calendar-row__right">
+              <p class="calendar-note">{{ note }}</p>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .trip-calendar {
+    padding: 80px 0 60px 0;
+    background-color: #ffffff;
+  }
+
+  .trip-calendar .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  .trip-calendar__header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    margin-bottom: 60px;
+    align-items: start;
+  }
+
+  .trip-calendar__title {
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: #000000;
+    text-align: left;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+  }
+
+  .trip-calendar__description {
+    font-size: 1.125rem;
+    line-height: 1.7;
+    color: #374151;
+    text-align: left;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 400;
+  }
+
+  .trip-calendar__content {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .calendar-row {
+    display: grid;
+    grid-template-columns: 200px 1fr 1fr;
+    gap: 40px;
+    padding: 30px 0;
+    border-bottom: 2px solid #d1d5db;
+    align-items: center;
+  }
+
+  .calendar-row:last-child {
+    border-bottom: none;
+  }
+
+  .calendar-row__left {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .calendar-month {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #000000;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1;
+  }
+
+  .calendar-temp {
+    font-size: 1.125rem;
+    color: #4b5563;
+    font-weight: 400;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .calendar-row__middle {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .species-badge {
+    display: inline-block;
+    background: #4A9FD8;
+    color: #ffffff;
+    padding: 6px 14px;
+    border-radius: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    white-space: nowrap;
+  }
+
+  .calendar-row__right {
+    display: flex;
+    align-items: center;
+  }
+
+  .calendar-note {
+    font-size: 1.125rem;
+    line-height: 1.6;
+    color: #374151;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 400;
+  }
+
+  @media screen and (max-width: 968px) {
+    .trip-calendar__header {
+      grid-template-columns: 1fr;
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    .trip-calendar__title {
+      font-size: 2.5rem;
+    }
+
+    .calendar-row {
+      grid-template-columns: 1fr;
+      gap: 20px;
+      padding: 25px 0;
+    }
+
+    .calendar-row__left {
+      gap: 5px;
+    }
+
+    .calendar-month {
+      font-size: 1.5rem;
+    }
+  }
+
+  @media screen and (max-width: 640px) {
+    .trip-calendar {
+      padding: 60px 0;
+    }
+
+    .trip-calendar .container {
+      padding: 0 20px;
+    }
+
+    .trip-calendar__title {
+      font-size: 2rem;
+    }
+
+    .trip-calendar__description {
+      font-size: 0.9375rem;
+    }
+
+    .species-badge {
+      font-size: 0.8125rem;
+      padding: 5px 12px;
+    }
+
+    .calendar-note {
+      font-size: 0.9375rem;
+    }
+  }
+</style>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Seasonal Calendar",
+  "tag": "section",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Seasonal Calendar"
+    }
+  ]
+}
+{% endschema %}

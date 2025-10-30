@@ -1,0 +1,249 @@
+{% comment %}
+  Travel Collection CTA Section
+  Full-width call-to-action section with background image and buttons
+  Similar styling to hero section
+{% endcomment %}
+
+<style>
+  .travel-cta {
+    position: relative;
+    width: 100%;
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #E7E9EB;
+    overflow: hidden;
+  }
+
+  .travel-cta__overlay {
+    display: none;
+  }
+
+  .travel-cta__content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 60px 20px;
+    text-align: center;
+    color: #000000;
+  }
+
+  .travel-cta__heading {
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    color: #000000;
+  }
+
+  .travel-cta__subheading {
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.5;
+    margin-bottom: 32px;
+    color: #000000;
+  }
+
+  .travel-cta__buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .travel-cta__button {
+    display: inline-block;
+    padding: 14px 32px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 0;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .travel-cta__button--primary {
+    background-color: #3E90C5;
+    color: #FFFFFF;
+    border: 2px solid #3E90C5;
+  }
+
+  .travel-cta__button--primary:hover {
+    background-color: #2E7AAC;
+    border-color: #2E7AAC;
+  }
+
+  .travel-cta__button--secondary {
+    background-color: transparent;
+    color: #000000;
+    border: 2px solid #000000;
+  }
+
+  .travel-cta__button--secondary:hover {
+    background-color: #F5F5F5;
+  }
+
+  @media (max-width: 768px) {
+    .travel-cta {
+      min-height: 300px;
+    }
+
+    .travel-cta__content {
+      padding: 40px 20px;
+    }
+
+    .travel-cta__heading {
+      font-size: 32px;
+    }
+
+    .travel-cta__subheading {
+      font-size: 16px;
+    }
+
+    .travel-cta__buttons {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .travel-cta__button {
+      text-align: center;
+    }
+  }
+</style>
+
+<section class="travel-cta"
+  {% if section.settings.background_image %}
+    style="background-image: url('{{ section.settings.background_image | image_url: width: 2000 }}'); background-color: #E7E9EB;"
+  {% endif %}>
+
+  <div class="travel-cta__overlay"></div>
+
+  <div class="travel-cta__content">
+
+    {% if section.settings.heading != blank %}
+      <h2 class="travel-cta__heading">{{ section.settings.heading }}</h2>
+    {% endif %}
+
+    {% if section.settings.subheading != blank %}
+      <p class="travel-cta__subheading">{{ section.settings.subheading }}</p>
+    {% endif %}
+
+    <div class="travel-cta__buttons">
+      {% if section.settings.show_primary_button %}
+        <a href="{{ section.settings.primary_button_url }}" class="travel-cta__button travel-cta__button--primary">
+          {{ section.settings.primary_button_text }}
+        </a>
+      {% endif %}
+
+      {% if section.settings.show_secondary_button %}
+        <a href="tel:{{ section.settings.secondary_button_phone }}" class="travel-cta__button travel-cta__button--secondary">
+          {{ section.settings.secondary_button_text }}
+        </a>
+      {% endif %}
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Travel CTA",
+  "class": "travel-collection-cta-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color (if no image)",
+      "default": "#E7E9EB"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "label": "Overlay opacity",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "WHAT ARE YOU WAITING FOR?"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Start planning your dream fishing adventure today"
+    },
+    {
+      "type": "header",
+      "content": "Primary Button"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_primary_button",
+      "label": "Show primary button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "primary_button_text",
+      "label": "Primary button text",
+      "default": "PLAN MY TRIP"
+    },
+    {
+      "type": "url",
+      "id": "primary_button_url",
+      "label": "Primary button URL"
+    },
+    {
+      "type": "header",
+      "content": "Secondary Button"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_secondary_button",
+      "label": "Show secondary button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "secondary_button_text",
+      "label": "Secondary button text",
+      "default": "CALL (888)-413-5211"
+    },
+    {
+      "type": "text",
+      "id": "secondary_button_phone",
+      "label": "Phone number",
+      "default": "+18884135211"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Travel Collection CTA"
+    }
+  ]
+}
+{% endschema %}

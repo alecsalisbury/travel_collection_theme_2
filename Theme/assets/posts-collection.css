@@ -1,0 +1,10 @@
+.section__title--posts-collection {
+  font-family: "Roboto Condensed", sans-serif;
+  font-size: 24px;
+}
+
+.section__header-link--posts-collection .link {
+  font-family: "Roboto Condensed", sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+}

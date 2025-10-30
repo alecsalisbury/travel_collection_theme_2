@@ -1,0 +1,2676 @@
+{%- assign selected_variant = product.selected_or_first_available_variant -%}
+
+{%- assign color_label = 'color,colour,couleur,cor,colore,farbe,색,色,カラー,färg,farve,szín,barva' | split: ',' -%}
+
+{%- unless product.has_only_default_variant -%}
+  <variant-picker
+    handle="{{ product.handle }}"
+    section-id="{{ section.id }}"
+    form-id="{{ product_form_id }}"
+    {% if update_url %}
+      update-url
+    {% endif %}
+    {% if block.settings.hide_sold_out_variants %}
+      hide-sold-out-variants
+    {% endif %}
+    class="product-form__variants"
+    {{ block.shopify_attributes }}
+  >
+    {%- comment -%}
+      The variant data is outputted as a JSON, which allows the theme to emit an event with the data when the variant changes. This must not be removed.
+    {%- endcomment -%}
+    <script data-variant type="application/json">
+      {{- product.selected_or_first_available_variant | json -}}
+    </script>
+
+    {%- for option in product.options_with_values -%}
+      {%- assign downcase_option = option.name | downcase -%}
+      {%- capture option_name -%}option{{ option.position }}{%- endcapture -%}
+
+      {%- assign option_selector_type = block.settings.selector_mode -%}
+      {%- assign variant_image_options = block.settings.variant_image_options
+        | replace: ', ', ','
+        | downcase
+        | split: ','
+      -%}
+
+      {%- assign swatch_count = option.values | map: 'swatch' | compact | size -%}
+
+      {%- if swatch_count > 0 and block.settings.color_mode == 'swatch' %}
+        {%- assign option_selector_type = 'swatch' -%}
+      {%- endif -%}
+
+      {% if swatch_count == 0 and color_label contains downcase_option and block.settings.color_mode != 'none' %}
+        {%- assign option_selector_type = 'swatch' -%}
+      {%- endif -%}
+
+      {%- if variant_image_options contains downcase_option -%}
+        {%- assign option_selector_type = 'variant' -%}
+      {%- endif -%}
+
+      <div class="product-form__option">
+        {%- case option_selector_type -%}
+          {%- when 'swatch' -%}
+            <span class="product-form__option-name text--strong">
+              {{- option.name }}: <span class="product-form__selected-value">{{ option.selected_value }}</span></span
+            >
+
+            <div class="color-swatch-list color-swatch-list--large">
+              {%- assign color_swatch_config = settings.color_swatch_config | newline_to_br | split: '<br />' -%}
+
+              {%- for value in option.values -%}
+                {%- assign downcased_value = value | downcase -%}
+                {%- capture color_id -%}{{ product_form_id }}-{{ option_name }}-{{ forloop.index }}{%- endcapture -%}
+
+                <div class="color-swatch {% if downcased_value == 'white' or downcased_value == 'blanc' %}color-swatch--white{% endif %} {% unless value.available %}color-swatch--disabled{% endunless %}">
+                  {%- if value.product_url != blank -%}
+                    {%- if value == option.selected_value -%}
+                      <input
+                        type="hidden"
+                        name="{{ option_name }}"
+                        form="{{ product_form_id }}"
+                        value="{{ value.id }}"
+                        data-option-position="{{ option.position }}"
+                      >
+                    {%- endif -%}
+
+                    <a
+                      href="{{ value.product_url }}"
+                      class="color-swatch__item {% if value == option.selected_value %}is-selected{% endif %}"
+                      style="{% render 'color-swatch-style', swatch: value.swatch, color_swatch_config: color_swatch_config, value: downcased_value %}"
+                      title="{{ value | escape }}"
+                    >
+                      <span class="visually-hidden">{{ value }}</span>
+                      {%- render 'icon', icon: 'cross-sold-out' -%}
+                    </a>
+                  {%- else -%}
+                    <input
+                      class="color-swatch__radio product-form__single-selector"
+                      type="radio"
+                      name="{{ option_name }}"
+                      id="{{ color_id }}"
+                      value="{{ value.id }}"
+                      data-value="{{ value | escape }}"
+                      {% if option.selected_value == value %}
+                        checked
+                      {% endif %}
+                      data-option-position="{{ option.position }}"
+                      form="{{ product_form_id }}"
+                    >
+                    <label
+                      class="color-swatch__item"
+                      for="{{ color_id }}"
+                      style="{% render 'color-swatch-style', swatch: value.swatch, color_swatch_config: color_swatch_config, value: downcased_value %}"
+                      title="{{ value | escape }}"
+                    >
+                      <span class="visually-hidden">{{ value }}</span>
+                      {%- render 'icon', icon: 'cross-sold-out' -%}
+                    </label>
+                  {%- endif -%}
+                </div>
+              {%- endfor -%}
+            </div>
+
+          {%- when 'variant' -%}
+            <span class="product-form__option-name text--strong">
+              {{- option.name }}: <span class="product-form__selected-value">{{ option.selected_value }}</span></span
+            >
+
+            <div class="variant-swatch-list">
+              {%- for value in option.values -%}
+                {%- capture variant_swatch_id -%}{{ product_form_id }}-{{ option_name }}-{{ forloop.index }}{%- endcapture -%}
+
+                {%- liquid
+                  assign image = value.variant.featured_media
+                  assign option_name = 'option' | append: option.position
+
+                  if value.variant.featured_media == blank
+                    for variant in product.variants
+                      if variant[option_name] == value
+                        assign image = variant.featured_media
+                        break
+                      endif
+                    endfor
+                  endif
+
+                  assign image = image | default: product.featured_media
+                -%}
+
+                <div class="variant-swatch {% unless value.available %}variant-swatch--disabled{% endunless %}">
+                  {%- if value.product_url != blank -%}
+                    {%- if value == option.selected_value -%}
+                      <input
+                        type="hidden"
+                        name="{{ option_name }}"
+                        form="{{ product_form_id }}"
+                        value="{{ value.id }}"
+                        data-option-position="{{ option.position }}"
+                      >
+                    {%- endif -%}
+
+                    <a
+                      href="{{ value.product_url }}"
+                      class="variant-swatch__item {% if value == option.selected_value %}is-selected{% endif %}"
+                      title="{{ value | escape }}"
+                    >
+                      <div class="aspect-ratio" style="padding-bottom: {{ 100.0 | divided_by: image.aspect_ratio }}%">
+                        {{-
+                          image
+                          | image_url: width: image.width
+                          | image_tag: loading: 'lazy', sizes: '120px', widths: '120,240'
+                        -}}
+                      </div>
+
+                      {% render 'icon', icon: 'cross-sold-out' %}
+                    </a>
+                  {%- else -%}
+                    <input
+                      class="variant-swatch__radio product-form__single-selector"
+                      type="radio"
+                      name="{{ option_name }}"
+                      id="{{ variant_swatch_id }}"
+                      value="{{ value.id }}"
+                      data-value="{{ value | escape }}"
+                      form="{{ product_form_id }}"
+                      {% if option.selected_value == value %}
+                        checked
+                      {% endif %}
+                      data-option-position="{{ option.position }}"
+                    >
+
+                    <label class="variant-swatch__item" for="{{ variant_swatch_id }}" title="{{ value | escape }}">
+                      <div class="aspect-ratio" style="padding-bottom: {{ 100.0 | divided_by: image.aspect_ratio }}%">
+                        {{-
+                          image
+                          | image_url: width: image.width
+                          | image_tag: loading: 'lazy', sizes: '120px', widths: '120,240'
+                        -}}
+                      </div>
+
+                      {% render 'icon', icon: 'cross-sold-out' %}
+                    </label>
+                  {%- endif -%}
+                </div>
+              {%- endfor -%}
+            </div>
+
+          {%- when 'block' -%}
+            <span class="product-form__option-name text--strong">
+              {{- option.name }}: <span class="product-form__selected-value">{{ option.selected_value }}</span></span
+            >
+
+            <div class="block-swatch-list">
+              {%- for value in option.values -%}
+                {%- capture block_swatch_id -%}{{ product_form_id }}-{{ option_name }}-{{ forloop.index }}{%- endcapture -%}
+
+                <div class="block-swatch {% unless value.available %}block-swatch--disabled{% endunless %}">
+                  {%- if value.product_url != blank -%}
+                    {%- if value == option.selected_value -%}
+                      <input
+                        type="hidden"
+                        name="{{ option_name }}"
+                        form="{{ product_form_id }}"
+                        value="{{ value.id }}"
+                        data-option-position="{{ option.position }}"
+                      >
+                    {%- endif -%}
+
+                    <a
+                      href="{{ value.product_url }}"
+                      class="block-swatch__item {% if value == option.selected_value %}is-selected{% endif %}"
+                      title="{{ value | escape }}"
+                    >
+                      <span class="block-swatch__item-text">{{ value }}</span>
+                    </a>
+                  {%- else -%}
+                    <input
+                      class="block-swatch__radio product-form__single-selector"
+                      type="radio"
+                      name="{{ option_name }}"
+                      id="{{ block_swatch_id }}"
+                      data-value="{{ value | escape }}"
+                      value="{{ value.id }}"
+                      form="{{ product_form_id }}"
+                      {% if option.selected_value == value %}
+                        checked
+                      {% endif %}
+                      data-option-position="{{ option.position }}"
+                    >
+                    <label class="block-swatch__item" for="{{ block_swatch_id }}" title="{{ value | escape }}">
+                      <span class="block-swatch__item-text">{{ value }}</span>
+                    </label>
+                  {%- endif -%}
+                </div>
+              {%- endfor -%}
+            </div>
+
+          {%- when 'dropdown' -%}
+            {%- capture dropdown_id -%}{{ product_form_id }}-{{ option_name }}-{{ forloop.index }}{%- endcapture -%}
+
+            <label for="{{ dropdown_id }}" class="product-form__option-name text--strong">
+              {{- option.name }}: <span class="product-form__selected-value">{{ option.selected_value }}</span></label
+            >
+
+            <div class="select-wrapper select-wrapper--primary">
+              {%- render 'icon', icon: 'arrow-bottom' -%}
+
+              <select
+                class="product-form__single-selector"
+                name="{{ option_name }}"
+                form="{{ product_form_id }}"
+                id="{{ dropdown_id }}"
+                data-option-position="{{ option.position }}"
+              >
+                {%- for value in option.values -%}
+                  <option
+                    {% if value.product_url != blank %}
+                      data-update-url="{{ value.product_url | escape }}"
+                    {% endif %}
+                    value="{{ value.id }}"
+                    data-value="{{ value | escape }}"
+                    {% if value == option.selected_value %}
+                      selected="selected"
+                    {% endif %}
+                  >
+                    {{ value }}
+                  </option>
+                {%- endfor -%}
+              </select>
+            </div>
+        {%- endcase -%}
+      </div>
+    {%- endfor -%}
+
+    <div class="no-js product-form__option">
+      <label class="product-form__option-name text--strong" for="product-select-{{ product.id }}">
+        {{- 'product.form.variant' | t -}}
+      </label>
+
+      <div class="select-wrapper select-wrapper--primary">
+        <select id="product-select-{{ product.id }}" name="id">
+          {%- for variant in product.variants -%}
+            <option
+              {% if variant == selected_variant %}
+                selected="selected"
+              {% endif %}
+              {% unless variant.available %}
+                disabled="disabled"
+              {% endunless %}
+              value="{{ variant.id }}"
+              data-sku="{{ variant.sku }}"
+            >
+              {{ variant.title }} - {{ variant.price | money }}
+            </option>
+          {%- endfor -%}
+        </select>
+      </div>
+    </div>
+  </variant-picker>
+
+  {%- assign has_backing_included = false -%}
+  {%- assign has_paid_backing = false -%}
+
+  {%- if product.tags contains 'Backing Included' -%}
+    {%- assign has_backing_included = true -%}
+  {%- endif -%}
+
+  {%- if product.tags contains 'Paid Backing' -%}
+    {%- assign has_paid_backing = true -%}
+  {%- endif -%}
+
+  {%- if has_backing_included or has_paid_backing -%}
+    <div class="product-form__backing-options" data-backing-type="{% if has_paid_backing %}paid{% else %}included{% endif %}">
+      <div class="product-form__option">
+        <label for="retrieve-hand-{{ product.id }}" class="product-form__option-name text--strong">
+          Retrieve:
+          <span class="backing-tooltip-trigger">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+              <text x="8" y="11.5" font-size="10" font-weight="bold" text-anchor="middle" fill="currentColor">?</text>
+            </svg>
+            <span class="backing-tooltip">
+              Choose the reel handle side you prefer:<br>
+              LH (left-hand wind) means you reel with your left hand,<br>
+              RH (right-hand wind) means you reel with your right hand.
+            </span>
+          </span>
+        </label>
+        <div class="select-wrapper select-wrapper--primary">
+          {%- render 'icon', icon: 'arrow-bottom' -%}
+          <select
+            id="retrieve-hand-{{ product.id }}"
+            name="properties[Retrieve Hand]"
+            class="backing-retrieve-select"
+            required
+          >
+            <option value="" disabled selected>Select hand...</option>
+            <option value="LH">LH (Left Hand)</option>
+            <option value="RH">RH (Right Hand)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="product-form__option">
+        <label for="backing-choice-{{ product.id }}" class="product-form__option-name text--strong">
+          Backing:
+        </label>
+        <div class="select-wrapper select-wrapper--primary">
+          {%- render 'icon', icon: 'arrow-bottom' -%}
+          <select
+            id="backing-choice-{{ product.id }}"
+            name="properties[Backing Choice]"
+            class="backing-choice-select"
+            required
+          >
+            <option value="" disabled selected>Backing Choice...</option>
+            <option value="None" data-price="0">None</option>
+            {%- if has_paid_backing -%}
+              <option value="Standard" data-price="15" data-variant-id="48919028498665">Standard (+$15)</option>
+              <option value="Purchased Separately" data-price="5" data-variant-id="48919008051433">Purchased Separately (+$5)</option>
+            {%- else -%}
+              <option value="Standard">Standard</option>
+              <option value="Purchased Separately">Purchased Separately</option>
+            {%- endif -%}
+          </select>
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Variant data for JavaScript {%- endcomment -%}
+  <script id="variants-{{ section.id }}" type="application/json">
+    [
+      {%- for v in product.variants -%}
+        {
+          "available": {{ v.available | json }},
+          "options": [
+            {{ v.option1 | json }},
+            {{ v.option2 | json }},
+            {{ v.option3 | json }}
+          ]
+        }{%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    ]
+  </script>
+
+  <script id="full-variants-{{ section.id }}" type="application/json">
+    {{ product.variants | json }}
+  </script>
+
+  {%- comment -%}
+    ============================================================
+    CONSOLIDATED VARIANT SELECTOR JAVASCRIPT
+    ============================================================
+    This script handles:
+    1. Dropdown option filtering based on variant availability
+    2. Variant ID synchronization when options change
+    3. Add to cart button visibility based on stock
+    4. Affirm payment widget refresh
+    5. Affirm widget positioning
+    6. Backing options validation and submission
+    ============================================================
+  {%- endcomment -%}
+  <script>
+    (function () {
+      'use strict';
+
+      // ========================================
+      // CONFIGURATION & ELEMENT REFERENCES
+      // ========================================
+      const CONFIG = {
+        productId: '{{ product.id }}',
+        sectionId: '{{ section.id }}',
+        formId: '{{ product_form_id | escape }}',
+        scope: document.getElementById('product-info-{{ product.id }}-{{ section.id }}')
+      };
+
+      if (!CONFIG.scope) return;
+
+      const form = CONFIG.scope.querySelector('form#' + CONFIG.formId);
+      if (!form) return;
+
+      // Load variant data
+      let variantsSimple = [];
+      let variantsFull = [];
+      try {
+        variantsSimple = JSON.parse(document.getElementById('variants-' + CONFIG.sectionId).textContent || '[]');
+        variantsFull = JSON.parse(document.getElementById('full-variants-' + CONFIG.sectionId).textContent || '[]');
+      } catch (e) {
+        console.error('Failed to parse variant data:', e);
+      }
+
+      // ========================================
+      // UTILITY FUNCTIONS
+      // ========================================
+      const Utils = {
+        cleanDisplayValue: (value) => {
+          return (value || '').replace(/\s*\(Out of Stock\)$/, '');
+        },
+
+        getOptionValue: (element) => {
+          if (element.tagName === 'SELECT') {
+            const opt = element.selectedOptions && element.selectedOptions[0];
+            return opt ? ((opt.dataset && opt.dataset.value) || opt.textContent || '').trim() : '';
+          } else if (element.type === 'radio' && element.checked) {
+            return ((element.dataset && element.dataset.value) || element.value || '').trim();
+          }
+          return '';
+        },
+
+        debounce: (func, wait) => {
+          let timeout;
+          return function executedFunction(...args) {
+            const later = () => {
+              clearTimeout(timeout);
+              func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+          };
+        }
+      };
+
+      // ========================================
+      // CART UTILITIES
+      // ========================================
+      const CartUtils = {
+        addItemsToCart: function(mainItem, secondaryItem, buttons, propertyMatcher) {
+          // Disable buttons
+          buttons.forEach(btn => {
+            btn.disabled = true;
+            btn.textContent = btn.textContent.replace(/Add to .*|Buy.*/i, 'Adding...');
+          });
+
+          // Add main product first
+          return fetch('/cart/add.js', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify({ items: [mainItem] })
+          })
+          .then(response => {
+            return response.json().then(data => {
+              if (!response.ok && response.status !== 422) {
+                throw new Error('Failed to add main product: ' + (data.message || data.description || response.statusText));
+              }
+              if (response.status === 422) {
+                alert(data.message || data.description || 'Some items were added with limited quantity due to availability.');
+              }
+              return { data, response };
+            });
+          })
+          .then(({ data, response }) => {
+            // Fetch cart to determine actual quantity added
+            return fetch('/cart.js')
+              .then(res => res.json())
+              .then(cart => {
+                let actualQuantityAdded = mainItem.quantity;
+                const addedItem = cart.items.find(item => String(item.variant_id) === String(mainItem.id));
+
+                if (addedItem && propertyMatcher(addedItem.properties, mainItem.properties)) {
+                  actualQuantityAdded = addedItem.quantity;
+                }
+
+                return actualQuantityAdded;
+              });
+          })
+          .then(actualQuantityAdded => {
+            // Add secondary product if exists, using actual quantity added
+            if (secondaryItem && actualQuantityAdded > 0) {
+              secondaryItem.quantity = actualQuantityAdded;
+
+              return fetch('/cart/add.js', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json'
+                },
+                body: JSON.stringify({ items: [secondaryItem] })
+              })
+              .then(response => {
+                return response.json().then(data => {
+                  if (!response.ok && response.status !== 422) {
+                    throw new Error('Failed to add secondary product: ' + (data.message || data.description || response.statusText));
+                  }
+                  return data;
+                });
+              });
+            }
+            return Promise.resolve();
+          })
+          .then(() => {
+            // Trigger cart refresh
+            document.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
+            document.documentElement.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
+            document.dispatchEvent(new CustomEvent('cart:added', { bubbles: true, detail: { items: [mainItem, secondaryItem].filter(Boolean) } }));
+
+            // Open cart
+            if (window.theme?.openCartDrawer) {
+              window.theme.openCartDrawer();
+            } else if (window.theme?.cart?.open) {
+              window.theme.cart.open();
+            } else if (document.querySelector('[data-action="open-drawer"]')) {
+              document.querySelector('[data-action="open-drawer"]').click();
+            } else {
+              window.location.href = '/cart';
+            }
+
+            // Re-enable buttons
+            setTimeout(() => {
+              buttons.forEach(btn => {
+                btn.disabled = false;
+                const originalText = btn.getAttribute('data-original-text');
+                if (originalText) {
+                  btn.textContent = originalText;
+                } else {
+                  btn.textContent = btn.textContent.replace('Adding...', 'Add to Cart');
+                }
+              });
+            }, 1000);
+          })
+          .catch(error => {
+            alert('Error adding items to cart: ' + error.message);
+
+            // Re-enable buttons
+            buttons.forEach(btn => {
+              btn.disabled = false;
+              const originalText = btn.getAttribute('data-original-text');
+              if (originalText) {
+                btn.textContent = originalText;
+              } else {
+                btn.textContent = btn.textContent.replace('Adding...', 'Add to Cart');
+              }
+            });
+          });
+        }
+      };
+
+      // ========================================
+      // MODULE 1: DROPDOWN OPTION FILTERING
+      // ========================================
+      const DropdownFilter = {
+        selects: Array.from(form.querySelectorAll('select.product-form__single-selector')),
+        isSyncing: false,
+
+        init: function() {
+          if (this.selects.length === 0) return;
+
+          // Store original options for each select
+          this.selects.forEach(sel => {
+            if (!sel._allOptions) {
+              sel._allOptions = Array.from(sel.options).map(o => o.cloneNode(true));
+            }
+          });
+
+          // Add change listeners
+          this.selects.forEach((sel, idx) => {
+            sel.addEventListener('change', () => this.syncFrom(idx + 1));
+          });
+
+          // Initial sync
+          this.syncFrom(0);
+        },
+
+        getCurrentSelections: function() {
+          return this.selects.map(sel => {
+            const opt = sel.selectedOptions && sel.selectedOptions[0];
+            return opt ? (opt.dataset?.value || opt.textContent || '').trim() : '';
+          });
+        },
+
+        getAllowedValuesAt: function(idx, selections) {
+          const set = new Set();
+          variantsSimple.forEach(v => {
+            for (let i = 0; i < idx; i++) {
+              if (selections[i] && v.options[i] !== selections[i]) return;
+            }
+            set.add(v.options[idx]);
+          });
+          return Array.from(set);
+        },
+
+        isValueAvailable: function(idx, value, selections) {
+          return variantsSimple.some(v => {
+            if (!v.available) return false;
+            if (v.options[idx] !== value) return false;
+            for (let i = 0; i < idx; i++) {
+              if (selections[i] && v.options[i] !== selections[i]) return false;
+            }
+            return true;
+          });
+        },
+
+        repopulateSelect: function(sel, allowed, preferredValue, selectIndex, selections) {
+          const prevValue = sel.value;
+          const frag = document.createDocumentFragment();
+
+          sel._allOptions.forEach(o => {
+            const display = (o.dataset?.value || o.textContent || '').trim();
+            const cleanDisplay = Utils.cleanDisplayValue(display);
+
+            if (allowed.indexOf(cleanDisplay) !== -1) {
+              const copy = o.cloneNode(true);
+              const available = this.isValueAvailable(selectIndex, cleanDisplay, selections);
+
+              if (!available) {
+                copy.textContent = cleanDisplay + ' (Out of Stock)';
+                copy.disabled = false;
+                copy.classList.add('is-disabled');
+              } else {
+                copy.textContent = cleanDisplay;
+                copy.disabled = false;
+                copy.hidden = false;
+                copy.classList.remove('is-disabled');
+              }
+              frag.appendChild(copy);
+            }
+          });
+
+          // Fallback: restore all if nothing matched
+          if (!frag.childNodes.length) {
+            sel._allOptions.forEach(o => frag.appendChild(o.cloneNode(true)));
+          }
+
+          sel.innerHTML = '';
+          sel.appendChild(frag);
+
+          // Select preferred value or first available
+          const toSelect = Array.from(sel.options).find(o => {
+            const cleanDisplay = Utils.cleanDisplayValue((o.dataset?.value || o.textContent || '').trim());
+            return cleanDisplay === preferredValue;
+          }) || Array.from(sel.options).find(o => !o.classList.contains('is-disabled')) || sel.options[0];
+
+          if (toSelect) sel.value = toSelect.value;
+
+          return prevValue !== sel.value;
+        },
+
+        syncFrom: function(startIdx) {
+          if (this.isSyncing) return;
+          this.isSyncing = true;
+
+          const selections = this.getCurrentSelections();
+          let anyChanged = false;
+
+          for (let i = startIdx; i < this.selects.length; i++) {
+            const sel = this.selects[i];
+            const allowed = this.getAllowedValuesAt(i, selections);
+            const changed = this.repopulateSelect(sel, allowed, selections[i], i, selections);
+            anyChanged = anyChanged || changed;
+
+            // Update selection with clean value
+            const opt = sel.selectedOptions && sel.selectedOptions[0];
+            const rawText = opt ? opt.textContent.trim() : '';
+            selections[i] = Utils.cleanDisplayValue(rawText);
+          }
+
+          // Trigger change event for downstream listeners
+          if (anyChanged && this.selects.length) {
+            const last = this.selects[this.selects.length - 1];
+            last.dispatchEvent(new Event('input', { bubbles: true }));
+            last.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+
+          this.isSyncing = false;
+        }
+      };
+
+      // ========================================
+      // MODULE 2: VARIANT ID SYNCHRONIZATION
+      // ========================================
+      const VariantSync = {
+        optionInputs: Array.from(form.querySelectorAll('.product-form__single-selector[name^="option"]')),
+        idSelect: form.querySelector('#product-select-' + CONFIG.productId + '[name="id"]'),
+
+        init: function() {
+          this.optionInputs.forEach(el => {
+            el.addEventListener('change', () => this.deferredSync());
+          });
+          this.deferredSync();
+        },
+
+        getCurrentSelections: function() {
+          const byPos = {};
+          this.optionInputs.forEach(el => {
+            const pos = (parseInt(el.getAttribute('data-option-position'), 10) || 1) - 1;
+            const value = Utils.getOptionValue(el);
+            if (value) byPos[pos] = value;
+          });
+          return [byPos[0] || '', byPos[1] || '', byPos[2] || ''];
+        },
+
+        findVariantByOptions: function(opts) {
+          return variantsFull.find(v =>
+            (v.options[0] || '') === opts[0] &&
+            (v.options[1] || '') === opts[1] &&
+            (v.options[2] || '') === opts[2]
+          );
+        },
+
+        syncId: function() {
+          const opts = this.getCurrentSelections();
+          const variant = this.findVariantByOptions(opts);
+          if (!variant || !this.idSelect) return;
+
+          const newId = String(variant.id);
+          if (this.idSelect.value !== newId) {
+            // Update URL first
+            try {
+              const url = new URL(window.location.href);
+              url.searchParams.set('variant', newId);
+              window.history.replaceState({}, '', url);
+            } catch (e) {}
+
+            // Update hidden select
+            this.idSelect.value = newId;
+            this.idSelect.dispatchEvent(new Event('input', { bubbles: true }));
+            this.idSelect.dispatchEvent(new Event('change', { bubbles: true }));
+
+            // Broadcast custom events
+            document.dispatchEvent(new CustomEvent('product:variant:change', { detail: { variant } }));
+            document.dispatchEvent(new CustomEvent('variant:changed', { detail: { variant } }));
+          }
+        },
+
+        deferredSync: function() {
+          setTimeout(() => this.syncId(), 0);
+        }
+      };
+
+      // ========================================
+      // MODULE 3: ADD TO CART VISIBILITY
+      // ========================================
+      const CartButtonVisibility = {
+        lastAvailability: null,
+
+        init: function() {
+          document.addEventListener('product:variant:change', e => {
+            if (e.detail?.variant) this.update(e.detail.variant);
+          });
+          document.addEventListener('variant:changed', e => {
+            if (e.detail?.variant) this.update(e.detail.variant);
+          });
+          document.addEventListener('product:rerendered', () => this.checkCurrent());
+          document.addEventListener('shopify:section:load', () => this.checkCurrent());
+
+          this.checkCurrent();
+
+          // Periodic check for sold out variants
+          setInterval(() => this.periodicCheck(), 200);
+        },
+
+        getButton: function() {
+          return form.querySelector('button[type="submit"][name="add"]') ||
+                 form.querySelector('button[type="submit"]') ||
+                 form.querySelector('.product-form__submit') ||
+                 CONFIG.scope.querySelector('button[type="submit"]');
+        },
+
+        update: function(variant, immediate = false) {
+          if (!variant) return;
+
+          const btn = this.getButton();
+          if (!btn) return;
+
+          // Check if button is controlled by backing options
+          const isBackingControlled = btn.getAttribute('data-backing-controlled') === 'true' ||
+                                       btn.getAttribute('data-bulk-backing-controlled') === 'true';
+
+          const hasHideClass = btn.classList.contains('variant-sold-out-hide');
+
+          // Skip if no change
+          if (this.lastAvailability === variant.available && hasHideClass === !variant.available) {
+            return;
+          }
+
+          this.lastAvailability = variant.available;
+
+          if (!variant.available) {
+            // Hide immediately
+            if (!hasHideClass) {
+              btn.classList.add('variant-sold-out-hide');
+              btn.setAttribute('data-sold-out', 'true');
+            }
+          } else {
+            // Only show if not controlled by backing options, or if backing options module will handle it
+            if (hasHideClass && !isBackingControlled) {
+              const show = () => {
+                btn.classList.remove('variant-sold-out-hide');
+                btn.removeAttribute('data-sold-out');
+              };
+              immediate ? show() : setTimeout(show, 50);
+            } else if (hasHideClass && isBackingControlled) {
+              // For backing-controlled buttons, just remove the sold-out class but let backing module handle disabled state
+              btn.classList.remove('variant-sold-out-hide');
+              btn.removeAttribute('data-sold-out');
+            }
+          }
+        },
+
+        checkCurrent: function() {
+          const idSelect = form.querySelector('#product-select-' + CONFIG.productId + '[name="id"]');
+          if (idSelect?.value) {
+            const variant = variantsFull.find(v => String(v.id) === String(idSelect.value));
+            if (variant) this.update(variant, true);
+          }
+        },
+
+        periodicCheck: function() {
+          const idSelect = form.querySelector('#product-select-' + CONFIG.productId + '[name="id"]');
+          if (!idSelect?.value) return;
+
+          const variant = variantsFull.find(v => String(v.id) === String(idSelect.value));
+          if (!variant?.available) {
+            const btn = this.getButton();
+            if (btn && !btn.classList.contains('variant-sold-out-hide')) {
+              btn.classList.add('variant-sold-out-hide');
+              btn.setAttribute('data-sold-out', 'true');
+            }
+          }
+        }
+      };
+
+      // ========================================
+      // MODULE 4: AFFIRM PAYMENT INTEGRATION
+      // ========================================
+      const AffirmIntegration = {
+        init: function() {
+          // Refresh Affirm on variant changes
+          const events = ['variant:changed', 'product:variant:change', 'product:rerendered',
+                         'shopify:section:load', 'shopify:section:select'];
+          events.forEach(evt => document.addEventListener(evt, () => this.refresh()));
+
+          document.addEventListener('change', e => {
+            if (e.target?.matches('select.product-form__single-selector')) {
+              setTimeout(() => this.refresh(), 0);
+            }
+          });
+
+          // Position Affirm widget
+          this.positionWidget();
+          document.addEventListener('DOMContentLoaded', () => this.positionWidget());
+          events.forEach(evt => document.addEventListener(evt, () => this.positionWidget()));
+
+          // Watch for DOM changes
+          const target = document.getElementById('shopify-section-' + CONFIG.sectionId) || document.body;
+          const obs = new MutationObserver(() => this.positionWidget());
+          obs.observe(target, { childList: true, subtree: true });
+        },
+
+        refresh: function() {
+          if (window.affirm?.ui?.refresh) {
+            try {
+              affirm.ui.refresh();
+            } catch (e) {}
+          }
+        },
+
+        positionWidget: function() {
+          const anchor = document.querySelector('#affirm-under-price');
+          if (!anchor) return;
+
+          const section = document.getElementById('shopify-section-' + CONFIG.sectionId) || document;
+          const widget = section.querySelector('.affirm-as-low-as');
+
+          if (widget && widget.parentElement !== anchor) {
+            const originalParent = widget.parentElement;
+
+            anchor.innerHTML = '';
+            anchor.appendChild(widget);
+
+            if (originalParent?.classList.contains('shopify-app-block')) {
+              originalParent.style.display = 'none';
+            }
+
+            this.refresh();
+          }
+        }
+      };
+
+      // ========================================
+      // MODULE 5: BACKING OPTIONS
+      // ========================================
+      const BackingOptions = {
+        retrieveSelect: null,
+        backingSelect: null,
+        buttons: [],
+        paymentButtonContainer: null,
+        helperText: null,
+        isUpdating: false,
+        observers: [],
+
+        init: function() {
+          this.retrieveSelect = CONFIG.scope.querySelector('.backing-retrieve-select');
+          this.backingSelect = CONFIG.scope.querySelector('.backing-choice-select');
+
+          if (!this.retrieveSelect || !this.backingSelect) return;
+
+          // Find all buttons
+          const addToCartBtn = form.querySelector('button[type="submit"][name="add"]') ||
+                              form.querySelector('button[type="submit"]') ||
+                              CONFIG.scope.querySelector('button[type="submit"]');
+          if (addToCartBtn) this.buttons.push(addToCartBtn);
+
+          const buyNowButtons = CONFIG.scope.querySelectorAll('.shopify-payment-button__button');
+          buyNowButtons.forEach(btn => this.buttons.push(btn));
+
+          this.paymentButtonContainer = CONFIG.scope.querySelector('.shopify-payment-button');
+
+          if (this.buttons.length === 0) return;
+
+          // Create helper text element if it doesn't exist
+          this.createHelperText();
+
+          // Mark buttons as controlled
+          this.buttons.forEach(btn => {
+            btn.setAttribute('data-backing-controlled', 'true');
+            if (!btn.getAttribute('data-original-text')) {
+              btn.setAttribute('data-original-text', btn.textContent);
+            }
+          });
+
+          // Setup event handlers
+          this.setupClickHandlers();
+          this.setupFormHandler();
+          this.setupChangeListeners();
+          this.setupMutationObservers();
+          this.setupEventListeners();
+
+          // Initial state
+          this.updateButtonState();
+
+        },
+
+        createHelperText: function() {
+          // Check if helper text already exists
+          const existingHelper = form.querySelector('.product-form__button-helper[data-backing-helper]');
+          if (existingHelper) {
+            this.helperText = existingHelper;
+            this.helperText.classList.remove('show'); // Ensure it's hidden initially
+            return;
+          }
+
+          // Create helper text element
+          this.helperText = document.createElement('div');
+          this.helperText.className = 'product-form__button-helper';
+          this.helperText.setAttribute('data-backing-helper', 'true');
+          this.helperText.textContent = 'Please select all product options first';
+          // Explicitly ensure it starts hidden (CSS should handle this, but be explicit)
+          this.helperText.style.display = 'none';
+
+          // Insert BEFORE the first button or payment button container
+          const insertBefore = this.buttons[0] || this.paymentButtonContainer;
+          if (insertBefore && insertBefore.parentNode) {
+            insertBefore.parentNode.insertBefore(this.helperText, insertBefore);
+          }
+        },
+
+        setupClickHandlers: function() {
+          this.buttons.forEach(btn => {
+            btn.addEventListener('click', e => this.handleButtonClick(e), true);
+          });
+
+          if (this.paymentButtonContainer) {
+            this.paymentButtonContainer.addEventListener('click', e => {
+              if (!this.isValid()) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                alert('Please select both Retrieve Hand and Backing Choice options.');
+                return false;
+              }
+            }, true);
+          }
+        },
+
+        setupFormHandler: function() {
+          form.addEventListener('submit', e => {
+            if (!this.isValid()) {
+              e.preventDefault();
+
+              // Show helper text and flash it
+              if (this.helperText) {
+                this.helperText.classList.add('show');
+                this.helperText.style.animation = 'none';
+                setTimeout(() => {
+                  this.helperText.style.animation = 'pulse 0.5s ease-in-out 2';
+                }, 10);
+              }
+
+              alert('Please select all product options first (Retrieve Hand and Backing Choice).');
+              return false;
+            }
+
+            if (this.isPaidBacking()) {
+              e.preventDefault();
+              this.handlePaidBackingSubmit();
+              return false;
+            }
+          }, true);
+        },
+
+        setupChangeListeners: function() {
+          this.retrieveSelect.addEventListener('change', () => this.updateButtonState());
+          this.backingSelect.addEventListener('change', () => this.updateButtonState());
+        },
+
+        setupMutationObservers: function() {
+          this.buttons.forEach(btn => {
+            const observer = new MutationObserver(mutations => {
+              let needsUpdate = false;
+              mutations.forEach(mutation => {
+                if (mutation.type === 'attributes' &&
+                    (mutation.attributeName === 'disabled' || mutation.attributeName === 'aria-disabled')) {
+                  if (!this.isValid() && !btn.disabled) {
+                    needsUpdate = true;
+                  }
+                }
+              });
+              if (needsUpdate && !this.isUpdating) {
+                this.updateButtonState();
+              }
+            });
+
+            observer.observe(btn, {
+              attributes: true,
+              attributeFilter: ['disabled', 'aria-disabled']
+            });
+
+            this.observers.push(observer);
+          });
+        },
+
+        setupEventListeners: function() {
+          const enforceState = () => {
+            this.updateButtonState();
+            // Use immediate re-checks on variant changes
+            [0, 0, 5, 10, 20].forEach(delay => {
+              setTimeout(() => this.updateButtonState(), delay);
+            });
+          };
+
+          const events = ['variant:change', 'variant:changed', 'product:variant:change',
+                         'shopify:section:load', 'product:rerendered'];
+          events.forEach(evt => document.addEventListener(evt, enforceState, true));
+
+          document.addEventListener('input', e => {
+            if (e.target?.classList.contains('product-form__single-selector') || e.target?.name === 'id') {
+              enforceState();
+            }
+          }, true);
+
+          document.addEventListener('change', e => {
+            if (e.target?.classList.contains('product-form__single-selector') || e.target?.name === 'id') {
+              enforceState();
+            }
+          }, true);
+
+          // Aggressive periodic check
+          setInterval(() => {
+            if (!this.isValid()) {
+              this.buttons.forEach(btn => {
+                if (!btn.disabled || btn.getAttribute('aria-disabled') !== 'true') {
+                  btn.disabled = true;
+                  btn.setAttribute('disabled', 'disabled');
+                  btn.setAttribute('aria-disabled', 'true');
+                  btn.classList.add('backing-disabled');
+                }
+              });
+
+              if (this.paymentButtonContainer) {
+                this.paymentButtonContainer.style.pointerEvents = 'none';
+                this.paymentButtonContainer.style.opacity = '0.5';
+              }
+            }
+          }, 50);
+        },
+
+        isValid: function() {
+          return !!(this.retrieveSelect.value && this.backingSelect.value);
+        },
+
+        isPaidBacking: function() {
+          const container = CONFIG.scope.querySelector('.product-form__backing-options');
+          return container && container.getAttribute('data-backing-type') === 'paid';
+        },
+
+        handleButtonClick: function(e) {
+          if (!this.isValid()) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+
+            // Show helper text and flash it
+            if (this.helperText) {
+              this.helperText.style.display = 'block';
+              this.helperText.classList.add('show');
+              this.helperText.style.animation = 'none';
+              setTimeout(() => {
+                this.helperText.style.animation = 'pulse 0.5s ease-in-out 2';
+              }, 10);
+            }
+
+            alert('Please select all product options first (Retrieve Hand and Backing Choice).');
+            return false;
+          }
+
+          if (this.isPaidBacking()) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            this.handlePaidBackingSubmit();
+            return false;
+          }
+        },
+
+        handlePaidBackingSubmit: function() {
+          const selectedBackingOption = this.backingSelect.options[this.backingSelect.selectedIndex];
+          const backingVariantId = selectedBackingOption.getAttribute('data-variant-id');
+          const backingValue = this.backingSelect.value;
+          const retrieveValue = this.retrieveSelect.value;
+
+          // Get main variant ID
+          const idSelect = form.querySelector('#product-select-' + CONFIG.productId + '[name="id"]');
+          const idInput = form.querySelector('input[name="id"]');
+          const mainVariantId = idSelect?.value || idInput?.value;
+
+          // Get quantity from form
+          const qtyInput = form.querySelector('input[name="quantity"]') ||
+                          form.querySelector('input[type="number"]') ||
+                          form.querySelector('.quantity__input');
+          const quantity = qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
+
+          if (!mainVariantId) {
+            alert('Error: Could not determine the product variant. Please refresh and try again.');
+            return;
+          }
+
+          // Prepare main item
+          const mainItem = {
+            id: mainVariantId,
+            quantity: quantity,
+            properties: {
+              'Retrieve Hand': retrieveValue,
+              'Backing Choice': backingValue
+            }
+          };
+
+          // Prepare secondary item if applicable
+          const secondaryItem = (backingValue !== 'None' && backingVariantId) ? {
+            id: backingVariantId,
+            quantity: quantity,
+            properties: {
+              '_Related to': 'Main Product',
+              'Type': 'Backing - ' + backingValue
+            }
+          } : null;
+
+          // Property matcher for cart verification
+          const propertyMatcher = (cartProps, itemProps) => {
+            return cartProps &&
+                   cartProps['Retrieve Hand'] === itemProps['Retrieve Hand'] &&
+                   cartProps['Backing Choice'] === itemProps['Backing Choice'];
+          };
+
+          // Use shared cart utility
+          CartUtils.addItemsToCart(mainItem, secondaryItem, this.buttons, propertyMatcher)
+            .then(() => {
+              this.updateButtonState();
+            })
+            .catch(() => {
+              this.updateButtonState();
+            });
+        },
+
+        updateButtonState: function() {
+          if (this.isUpdating) return;
+          this.isUpdating = true;
+
+          const isValid = this.isValid();
+
+          this.buttons.forEach(btn => {
+            // Skip if button is hidden due to sold out variant
+            if (btn.classList.contains('variant-sold-out-hide')) {
+              this.isUpdating = false;
+              return;
+            }
+
+            if (isValid) {
+              btn.disabled = false;
+              btn.removeAttribute('disabled');
+              btn.removeAttribute('aria-disabled');
+              btn.classList.remove('backing-disabled');
+            } else {
+              btn.disabled = true;
+              btn.setAttribute('disabled', 'disabled');
+              btn.setAttribute('aria-disabled', 'true');
+              btn.classList.add('backing-disabled');
+            }
+          });
+
+          if (this.paymentButtonContainer) {
+            if (isValid) {
+              this.paymentButtonContainer.style.display = '';
+              this.paymentButtonContainer.style.pointerEvents = '';
+              this.paymentButtonContainer.style.opacity = '';
+            } else {
+              this.paymentButtonContainer.style.pointerEvents = 'none';
+              this.paymentButtonContainer.style.opacity = '0.5';
+            }
+          }
+
+          // Hide helper text when valid (only show it when user tries to click)
+          if (this.helperText && isValid) {
+            this.helperText.style.display = 'none';
+            this.helperText.classList.remove('show');
+          }
+
+          this.isUpdating = false;
+        }
+      };
+
+      // ========================================
+      // MODULE 6: BULK BACKING OPTIONS
+      // ========================================
+      const BulkBackingOptions = {
+        colorSelect: null,
+        lbSelect: null,
+        lengthSelect: null,
+        instructionsSelect: null,
+        buttons: [],
+        paymentButtonContainer: null,
+        helperText: null,
+        isUpdating: false,
+        observers: [],
+
+        init: function() {
+          this.colorSelect = CONFIG.scope.querySelector('.bulk-backing-color-select');
+          this.lbSelect = CONFIG.scope.querySelector('.bulk-backing-lb-select');
+          this.lengthSelect = CONFIG.scope.querySelector('.bulk-backing-length-select');
+          this.instructionsSelect = CONFIG.scope.querySelector('.backing-instructions-select');
+
+          // Only init if at least one of these selects exists
+          if (!this.colorSelect && !this.instructionsSelect) return;
+
+          // Find all buttons
+          const addToCartBtn = form.querySelector('button[type="submit"][name="add"]') ||
+                              form.querySelector('button[type="submit"]') ||
+                              CONFIG.scope.querySelector('button[type="submit"]');
+          if (addToCartBtn) this.buttons.push(addToCartBtn);
+
+          const buyNowButtons = CONFIG.scope.querySelectorAll('.shopify-payment-button__button');
+          buyNowButtons.forEach(btn => this.buttons.push(btn));
+
+          this.paymentButtonContainer = CONFIG.scope.querySelector('.shopify-payment-button');
+
+          if (this.buttons.length === 0) return;
+
+          // Create helper text element if it doesn't exist
+          this.createHelperText();
+
+          // Mark buttons as controlled
+          this.buttons.forEach(btn => {
+            btn.setAttribute('data-bulk-backing-controlled', 'true');
+          });
+
+          // Setup event handlers
+          this.setupClickHandlers();
+          this.setupFormHandler();
+          this.setupChangeListeners();
+          this.setupMutationObservers();
+          this.setupEventListeners();
+
+          // Initial state
+          this.updateButtonState();
+
+        },
+
+        createHelperText: function() {
+          // Check if helper text already exists
+          const existingHelper = form.querySelector('.product-form__button-helper[data-bulk-backing-helper]');
+          if (existingHelper) {
+            this.helperText = existingHelper;
+            this.helperText.classList.remove('show'); // Ensure it's hidden initially
+            return;
+          }
+
+          // Create helper text element
+          this.helperText = document.createElement('div');
+          this.helperText.className = 'product-form__button-helper';
+          this.helperText.setAttribute('data-bulk-backing-helper', 'true');
+          this.helperText.textContent = 'Please select all product options first';
+          // Explicitly ensure it starts hidden (CSS should handle this, but be explicit)
+          this.helperText.style.display = 'none';
+
+          // Insert BEFORE the first button or payment button container
+          const insertBefore = this.buttons[0] || this.paymentButtonContainer;
+          if (insertBefore && insertBefore.parentNode) {
+            insertBefore.parentNode.insertBefore(this.helperText, insertBefore);
+          }
+        },
+
+        setupClickHandlers: function() {
+          this.buttons.forEach(btn => {
+            btn.addEventListener('click', e => this.handleButtonClick(e), true);
+          });
+        },
+
+        setupFormHandler: function() {
+          form.addEventListener('submit', e => {
+            if (!this.isValid()) {
+              e.preventDefault();
+
+              // Show helper text and flash it
+              if (this.helperText) {
+                this.helperText.classList.add('show');
+                this.helperText.style.animation = 'none';
+                setTimeout(() => {
+                  this.helperText.style.animation = 'pulse 0.5s ease-in-out 2';
+                }, 10);
+              }
+
+              alert('Please select all product options first.');
+              return false;
+            }
+
+            // For bulk backing products, handle custom cart add
+            if (this.colorSelect && this.lbSelect && this.lengthSelect) {
+              e.preventDefault();
+              this.handleBulkBackingSubmit();
+              return false;
+            }
+          }, true);
+        },
+
+        setupChangeListeners: function() {
+          if (this.colorSelect) {
+            this.colorSelect.addEventListener('change', () => this.updateButtonState());
+          }
+          if (this.lbSelect) {
+            this.lbSelect.addEventListener('change', () => this.updateButtonState());
+          }
+          if (this.lengthSelect) {
+            this.lengthSelect.addEventListener('change', () => this.updateButtonState());
+          }
+          if (this.instructionsSelect) {
+            this.instructionsSelect.addEventListener('change', () => this.updateButtonState());
+          }
+        },
+
+        setupMutationObservers: function() {
+          this.buttons.forEach(btn => {
+            const observer = new MutationObserver(mutations => {
+              let needsUpdate = false;
+              mutations.forEach(mutation => {
+                if (mutation.type === 'attributes' &&
+                    (mutation.attributeName === 'disabled' || mutation.attributeName === 'aria-disabled')) {
+                  if (!this.isValid() && !btn.disabled) {
+                    needsUpdate = true;
+                  }
+                }
+              });
+              if (needsUpdate && !this.isUpdating) {
+                this.updateButtonState();
+              }
+            });
+
+            observer.observe(btn, {
+              attributes: true,
+              attributeFilter: ['disabled', 'aria-disabled']
+            });
+
+            this.observers.push(observer);
+          });
+        },
+
+        setupEventListeners: function() {
+          const enforceState = () => {
+            this.updateButtonState();
+            // Use immediate re-checks on variant changes
+            [0, 0, 5, 10, 20].forEach(delay => {
+              setTimeout(() => this.updateButtonState(), delay);
+            });
+          };
+
+          const events = ['variant:change', 'variant:changed', 'product:variant:change',
+                         'shopify:section:load', 'product:rerendered'];
+          events.forEach(evt => document.addEventListener(evt, enforceState, true));
+
+          // Aggressive periodic check
+          setInterval(() => {
+            if (!this.isValid()) {
+              this.buttons.forEach(btn => {
+                if (!btn.disabled || btn.getAttribute('aria-disabled') !== 'true') {
+                  btn.disabled = true;
+                  btn.setAttribute('disabled', 'disabled');
+                  btn.setAttribute('aria-disabled', 'true');
+                  btn.classList.add('bulk-backing-disabled');
+                }
+              });
+
+              if (this.paymentButtonContainer) {
+                this.paymentButtonContainer.style.pointerEvents = 'none';
+                this.paymentButtonContainer.style.opacity = '0.5';
+              }
+            }
+          }, 50);
+        },
+
+        isValid: function() {
+          // Check bulk backing options
+          if (this.colorSelect && this.lbSelect && this.lengthSelect) {
+            const valid = !!(this.colorSelect.value && this.lbSelect.value && this.lengthSelect.value);
+            if (this.instructionsSelect && !this.instructionsSelect.value) return false;
+            return valid;
+          }
+
+          // Check backing instructions only
+          if (this.instructionsSelect && !this.instructionsSelect.value) {
+            return false;
+          }
+
+          return true;
+        },
+
+        handleButtonClick: function(e) {
+          if (!this.isValid()) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+
+            // Show helper text and flash it
+            if (this.helperText) {
+              this.helperText.style.display = 'block';
+              this.helperText.classList.add('show');
+              this.helperText.style.animation = 'none';
+              setTimeout(() => {
+                this.helperText.style.animation = 'pulse 0.5s ease-in-out 2';
+              }, 10);
+            }
+
+            alert('Please select all product options first.');
+            return false;
+          }
+
+          // For bulk backing products with all three selects
+          if (this.colorSelect && this.lbSelect && this.lengthSelect) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            this.handleBulkBackingSubmit();
+            return false;
+          }
+
+        },
+
+        handleBulkBackingSubmit: function() {
+          const colorValue = this.colorSelect.value;
+          const lbValue = this.lbSelect.value;
+          const lengthValue = this.lengthSelect.value;
+          const lengthOption = this.lengthSelect.options[this.lengthSelect.selectedIndex];
+          const lengthVariantId = lengthOption.getAttribute('data-variant-id');
+          const instructionsValue = this.instructionsSelect ? this.instructionsSelect.value : null;
+
+          // Get main variant ID
+          const idSelect = form.querySelector('#product-select-' + CONFIG.productId + '[name="id"]');
+          const idInput = form.querySelector('input[name="id"]');
+          const mainVariantId = idSelect?.value || idInput?.value;
+
+          // Get quantity from form
+          const qtyInput = form.querySelector('input[name="quantity"]') ||
+                          form.querySelector('input[type="number"]') ||
+                          form.querySelector('.quantity__input');
+          const quantity = qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
+
+          if (!mainVariantId) {
+            alert('Error: Could not determine the product variant. Please refresh and try again.');
+            return;
+          }
+
+          // Prepare main item
+          const mainProperties = {
+            'Color': colorValue,
+            'LB': lbValue,
+            'Length Spooled Onto Reel': lengthValue
+          };
+
+          if (instructionsValue) {
+            mainProperties['Rigging Instructions'] = instructionsValue;
+          }
+
+          const mainItem = {
+            id: mainVariantId,
+            quantity: quantity,
+            properties: mainProperties
+          };
+
+          // Prepare secondary item if applicable
+          const secondaryItem = (lengthValue !== 'None' && lengthValue !== '100yds' && lengthVariantId) ? {
+            id: lengthVariantId,
+            quantity: quantity,
+            properties: {
+              '_Related to': 'Main Product',
+              'Type': 'Length Spooling - ' + lengthValue
+            }
+          } : null;
+
+          // Property matcher for cart verification
+          const propertyMatcher = (cartProps, itemProps) => {
+            return cartProps &&
+                   cartProps['Color'] === itemProps['Color'] &&
+                   cartProps['LB'] === itemProps['LB'] &&
+                   cartProps['Length Spooled Onto Reel'] === itemProps['Length Spooled Onto Reel'];
+          };
+
+          // Use shared cart utility
+          CartUtils.addItemsToCart(mainItem, secondaryItem, this.buttons, propertyMatcher)
+            .then(() => {
+              this.updateButtonState();
+            })
+            .catch(() => {
+              this.updateButtonState();
+            });
+        },
+
+        updateButtonState: function() {
+          if (this.isUpdating) return;
+          this.isUpdating = true;
+
+          const isValid = this.isValid();
+
+          this.buttons.forEach(btn => {
+            // Skip if button is hidden due to sold out variant
+            if (btn.classList.contains('variant-sold-out-hide')) {
+              this.isUpdating = false;
+              return;
+            }
+
+            if (isValid) {
+              btn.disabled = false;
+              btn.removeAttribute('disabled');
+              btn.removeAttribute('aria-disabled');
+              btn.classList.remove('bulk-backing-disabled');
+            } else {
+              btn.disabled = true;
+              btn.setAttribute('disabled', 'disabled');
+              btn.setAttribute('aria-disabled', 'true');
+              btn.classList.add('bulk-backing-disabled');
+            }
+          });
+
+          if (this.paymentButtonContainer) {
+            if (isValid) {
+              this.paymentButtonContainer.style.display = '';
+              this.paymentButtonContainer.style.pointerEvents = '';
+              this.paymentButtonContainer.style.opacity = '';
+            } else {
+              this.paymentButtonContainer.style.pointerEvents = 'none';
+              this.paymentButtonContainer.style.opacity = '0.5';
+            }
+          }
+
+          // Hide helper text when valid (only show it when user tries to click)
+          if (this.helperText && isValid) {
+            this.helperText.style.display = 'none';
+            this.helperText.classList.remove('show');
+          }
+
+          this.isUpdating = false;
+        }
+      };
+
+      // ========================================
+      // INITIALIZATION
+      // ========================================
+      function initAll() {
+        DropdownFilter.init();
+        VariantSync.init();
+        CartButtonVisibility.init();
+        AffirmIntegration.init();
+        BackingOptions.init();
+        BulkBackingOptions.init();
+
+        // Re-init on events
+        document.addEventListener('product:rerendered', initAll);
+        document.addEventListener('shopify:section:load', initAll);
+      }
+
+      // Start initialization
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initAll);
+      } else {
+        initAll();
+      }
+
+      // Retry if elements not ready
+      if (!form.querySelector('select.product-form__single-selector')) {
+        setTimeout(initAll, 200);
+      }
+    })();
+  </script>
+
+  <style>
+    #affirm-under-price .affirm-as-low-as {
+      display: block;
+      margin-top: 0.5rem;
+    }
+
+    /* Gray out out-of-stock options in dropdowns */
+    select.product-form__single-selector option.is-disabled,
+    select.product-form__single-selector option:disabled {
+      color: #999;
+      opacity: 0.6;
+    }
+
+    /* Hide add-to-cart button when out-of-stock variant selected */
+    button.variant-sold-out-hide {
+      display: none !important;
+    }
+
+    /* Backing options styling */
+    .product-form__backing-options {
+      margin-top: 0.5rem;
+    }
+
+    .product-form__backing-options .product-form__option {
+      margin-bottom: 1rem;
+    }
+
+    .product-form__backing-options .product-form__option:first-child {
+      margin-top: 0;
+    }
+
+    .product-form__backing-options select:required:invalid {
+      color: #999;
+    }
+
+    .product-form__backing-options select:required:valid {
+      color: inherit;
+    }
+
+    /* Style for required field indicator */
+    .product-form__backing-options label::after {
+      content: " *";
+      color: #d32f2f;
+      font-weight: bold;
+    }
+
+    /* Disabled button styling when backing options not selected */
+    button[type="submit"].backing-disabled,
+    button[type="submit"][data-backing-controlled="true"]:disabled,
+    button[type="submit"][data-backing-controlled="true"][disabled],
+    .shopify-payment-button__button.backing-disabled,
+    .shopify-payment-button__button[data-backing-controlled="true"]:disabled,
+    .shopify-payment-button__button[data-backing-controlled="true"][disabled],
+    button[type="submit"]:disabled,
+    button[type="submit"][disabled],
+    button[type="submit"][aria-disabled="true"] {
+      opacity: 0.5 !important;
+      cursor: not-allowed !important;
+      pointer-events: auto !important;
+      position: relative;
+    }
+
+    button[type="submit"].backing-disabled::after,
+    button[type="submit"][data-backing-controlled="true"]:disabled::after,
+    button[type="submit"][data-backing-controlled="true"][disabled]::after,
+    .shopify-payment-button__button.backing-disabled::after,
+    .shopify-payment-button__button[data-backing-controlled="true"]:disabled::after,
+    .shopify-payment-button__button[data-backing-controlled="true"][disabled]::after {
+      content: none !important;
+    }
+
+    /* Disable entire payment button container when backing options not selected */
+    .shopify-payment-button[style*="pointer-events: none"] {
+      cursor: not-allowed;
+    }
+
+    /* Ensure select elements have proper styling */
+    .backing-retrieve-select,
+    .backing-choice-select {
+      width: 100%;
+    }
+
+    /* Bulk backing options styling */
+    .product-form__bulk-backing-options {
+      margin-top: 0.5rem;
+    }
+
+    .product-form__bulk-backing-options .product-form__option {
+      margin-bottom: 1rem;
+    }
+
+    .product-form__bulk-backing-options select:required:invalid {
+      color: #999;
+    }
+
+    .product-form__bulk-backing-options select:required:valid {
+      color: inherit;
+    }
+
+    .product-form__bulk-backing-options label::after {
+      content: " *";
+      color: #d32f2f;
+      font-weight: bold;
+    }
+
+    .bulk-backing-color-select,
+    .bulk-backing-lb-select,
+    .bulk-backing-length-select {
+      width: 100%;
+    }
+
+    /* Backing instructions styling */
+    .product-form__backing-instructions {
+      margin-top: 0.5rem;
+    }
+
+    .product-form__backing-instructions .product-form__option {
+      margin-bottom: 1rem;
+    }
+
+    .product-form__backing-instructions select:required:invalid {
+      color: #999;
+    }
+
+    .product-form__backing-instructions select:required:valid {
+      color: inherit;
+    }
+
+    .product-form__backing-instructions label::after {
+      content: " *";
+      color: #d32f2f;
+      font-weight: bold;
+    }
+
+    .backing-instructions-select {
+      width: 100%;
+    }
+
+    /* Disabled button styling for bulk backing */
+    button[type="submit"].bulk-backing-disabled,
+    button[type="submit"][data-bulk-backing-controlled="true"]:disabled,
+    button[type="submit"][data-bulk-backing-controlled="true"][disabled],
+    .shopify-payment-button__button.bulk-backing-disabled,
+    .shopify-payment-button__button[data-bulk-backing-controlled="true"]:disabled,
+    .shopify-payment-button__button[data-bulk-backing-controlled="true"][disabled],
+    .shopify-payment-button__button:disabled,
+    .shopify-payment-button__button[disabled],
+    .shopify-payment-button__button[aria-disabled="true"] {
+      opacity: 0.5 !important;
+      cursor: not-allowed !important;
+      pointer-events: auto !important;
+      position: relative;
+    }
+
+    /* Helper text for disabled buttons */
+    .product-form__button-helper {
+      display: none;
+      color: #d32f2f;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .product-form__button-helper.show {
+      display: block;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.02);
+      }
+    }
+
+    /* Tooltip trigger styling */
+    .backing-tooltip-trigger {
+      position: relative;
+      display: inline-block;
+      margin-left: 0.25rem;
+      vertical-align: middle;
+      cursor: help;
+      color: #0066cc;
+    }
+
+    .backing-tooltip-trigger svg {
+      display: block;
+      transition: color 0.2s ease;
+    }
+
+    .backing-tooltip-trigger:hover svg {
+      color: #0052a3;
+    }
+
+    /* Tooltip content - hidden by default */
+    .backing-tooltip {
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+      z-index: 1000;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 280px;
+      padding: 0.75rem;
+      background-color: #333;
+      color: #fff;
+      font-size: 0.875rem;
+      font-weight: normal;
+      line-height: 1.5;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+      pointer-events: none;
+    }
+
+    /* Tooltip arrow */
+    .backing-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: #333;
+    }
+
+    /* Show tooltip on hover */
+    .backing-tooltip-trigger:hover .backing-tooltip {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* Adjust tooltip position if near edge */
+    @media (max-width: 768px) {
+      .backing-tooltip {
+        width: 240px;
+      }
+    }
+  </style>
+
+{%- else -%}
+  <input type="hidden" name="id" data-sku="{{ selected_variant.sku }}" value="{{ selected_variant.id }}">
+{%- endunless -%}
+
+{%- comment -%}
+  ============================================================
+  BULK BACKING PRODUCT OPTIONS (for products without variants)
+  ============================================================
+  For PowerPro and Cortland backing products, add custom dropdowns
+  for Color, LB, and Length Spooled options
+  ============================================================
+{%- endcomment -%}
+
+{%- assign is_powerpro_backing = false -%}
+{%- assign is_cortland_backing = false -%}
+{%- assign is_cortland_c16_backing = false -%}
+
+{%- if product.tags contains 'Power Pro Hollow Ace Bulk Backing (Rig Only)' -%}
+  {%- assign is_powerpro_backing = true -%}
+{%- endif -%}
+
+{%- if product.tags contains 'Cortland Backing (Rig Only)' -%}
+  {%- assign is_cortland_backing = true -%}
+{%- endif -%}
+
+{%- if product.tags contains 'Cortland C-16 - 40lb White Fly Line Backing (Rig Only)' -%}
+  {%- assign is_cortland_c16_backing = true -%}
+{%- endif -%}
+
+<style>
+  /* Bulk backing options styling */
+  .product-form__bulk-backing-options select:required:invalid {
+    color: #999;
+  }
+
+  .product-form__bulk-backing-options select:required:valid {
+    color: inherit;
+  }
+
+  .product-form__bulk-backing-options label::after {
+    content: " *";
+    color: #d32f2f;
+    font-weight: bold;
+  }
+
+  .bulk-backing-color-select,
+  .bulk-backing-lb-select,
+  .bulk-backing-length-select {
+    width: 100%;
+  }
+
+  /* Disabled button styling for bulk backing */
+  button[type="submit"].bulk-backing-disabled,
+  button[type="submit"][data-bulk-backing-controlled="true"]:disabled,
+  button[type="submit"][data-bulk-backing-controlled="true"][disabled],
+  .shopify-payment-button__button.bulk-backing-disabled,
+  .shopify-payment-button__button[data-bulk-backing-controlled="true"]:disabled,
+  .shopify-payment-button__button[data-bulk-backing-controlled="true"][disabled] {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    pointer-events: auto !important;
+  }
+
+  .product-form__button-helper {
+    display: none;
+    color: #d32f2f;
+    font-size: 0.875rem;
+    margin-bottom: 0.75rem;
+    text-align: center;
+    font-weight: 500;
+  }
+
+  .product-form__button-helper.show {
+    display: block;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.02);
+    }
+  }
+</style>
+
+{%- if is_powerpro_backing or is_cortland_backing or is_cortland_c16_backing -%}
+  <div class="product-form__bulk-backing-options" data-product-handle="{{ product.handle }}">
+    {%- comment -%} Color Dropdown {%- endcomment -%}
+    <div class="product-form__option">
+      <label for="bulk-color-{{ product.id }}" class="product-form__option-name text--strong">
+        Color
+      </label>
+      <div class="select-wrapper select-wrapper--primary">
+        {%- render 'icon', icon: 'arrow-bottom' -%}
+        <select
+          id="bulk-color-{{ product.id }}"
+          name="properties[Color]"
+          class="bulk-backing-color-select"
+          required
+        >
+          <option value="" disabled selected>Select color...</option>
+          <option value="White">White</option>
+        </select>
+      </div>
+    </div>
+
+    {%- comment -%} LB Dropdown {%- endcomment -%}
+    <div class="product-form__option">
+      <label for="bulk-lb-{{ product.id }}" class="product-form__option-name text--strong">
+        LB
+      </label>
+      <div class="select-wrapper select-wrapper--primary">
+        {%- render 'icon', icon: 'arrow-bottom' -%}
+        <select
+          id="bulk-lb-{{ product.id }}"
+          name="properties[LB]"
+          class="bulk-backing-lb-select"
+          required
+        >
+          <option value="" disabled selected>Select LB...</option>
+          {%- if is_powerpro_backing -%}
+            <option value="40lb">40lb</option>
+            <option value="60lb">60lb</option>
+            <option value="80lb">80lb</option>
+          {%- elsif is_cortland_backing -%}
+            <option value="50lb">50lb</option>
+            <option value="60lb">60lb</option>
+          {%- elsif is_cortland_c16_backing -%}
+            <option value="40lb">40lb</option>
+          {%- endif -%}
+        </select>
+      </div>
+    </div>
+
+    {%- comment -%} Length Spooled Dropdown {%- endcomment -%}
+    <div class="product-form__option">
+      <label for="bulk-length-{{ product.id }}" class="product-form__option-name text--strong">
+        Length Spooled Onto Reel
+      </label>
+      <div class="select-wrapper select-wrapper--primary">
+        {%- render 'icon', icon: 'arrow-bottom' -%}
+        <select
+          id="bulk-length-{{ product.id }}"
+          name="properties[Length Spooled Onto Reel]"
+          class="bulk-backing-length-select"
+          required
+        >
+          <option value="" disabled selected>Select length...</option>
+          <option value="None" data-price="0" data-variant-id="">None</option>
+          <option value="100yds" data-price="0" data-variant-id="">100yds</option>
+          <option value="150yds" data-price="13" data-variant-id="49193011380457">150yds (+$13)</option>
+          <option value="200yds" data-price="25" data-variant-id="49193011413225">200yds (+$25)</option>
+          <option value="250yds" data-price="38" data-variant-id="49193011445993">250yds (+$38)</option>
+          <option value="300yds" data-price="50" data-variant-id="49193011478761">300yds (+$50)</option>
+          <option value="400yds" data-price="75" data-variant-id="49193011511529">400yds (+$75)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{%- comment -%}
+  ============================================================
+  BACKING INSTRUCTIONS DROPDOWN
+  ============================================================
+  For products tagged with "Backing Instructions"
+  ============================================================
+{%- endcomment -%}
+{%- if product.tags contains 'Backing Instructions' -%}
+  <div class="product-form__backing-instructions">
+    <div class="product-form__option">
+      <label for="rigging-instructions-{{ product.id }}" class="product-form__option-name text--strong">
+        Rigging Instructions
+      </label>
+      <div class="select-wrapper select-wrapper--primary">
+        {%- render 'icon', icon: 'arrow-bottom' -%}
+        <select
+          id="rigging-instructions-{{ product.id }}"
+          name="properties[Rigging Instructions]"
+          class="backing-instructions-select"
+          required
+        >
+          <option value="" disabled selected>Select instructions...</option>
+          <option value="Just Send The Backing">Just Send The Backing</option>
+          <option value="Spool Onto My Reel">Spool Onto My Reel</option>
+          <option value="Spool it ALL onto my reel (Not Recommended)">Spool it ALL onto my reel (Not Recommended)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{%- comment -%}
+  ============================================================
+  JAVASCRIPT FOR PRODUCTS WITHOUT VARIANTS
+  ============================================================
+  Handle bulk backing dropdowns AND backing instructions for products with only default variant
+  ============================================================
+{%- endcomment -%}
+{%- assign has_backing_instructions = false -%}
+{%- if product.tags contains 'Backing Instructions' -%}
+  {%- assign has_backing_instructions = true -%}
+{%- endif -%}
+
+{%- assign should_load_script = false -%}
+{%- if product.has_only_default_variant -%}
+  {%- if is_powerpro_backing or is_cortland_backing or is_cortland_c16_backing or has_backing_instructions -%}
+    {%- assign should_load_script = true -%}
+  {%- endif -%}
+{%- endif -%}
+
+{%- if should_load_script -%}
+  <script>
+    (function () {
+      'use strict';
+
+      const CONFIG = {
+        productId: '{{ product.id }}',
+        sectionId: '{{ section.id }}',
+        formId: '{{ product_form_id | escape }}',
+        scope: document.getElementById('product-info-{{ product.id }}-{{ section.id }}') || document.querySelector('.product-info'),
+      };
+
+      console.log('[C-16 INIT] CONFIG:', CONFIG);
+      console.log('[C-16 INIT] Looking for scope with ID:', 'product-info-{{ product.id }}-{{ section.id }}');
+
+      if (!CONFIG.scope) {
+        console.error('[C-16 INIT] ERROR: Could not find scope element');
+        console.log('[C-16 INIT] Trying fallback selectors...');
+        return;
+      }
+      console.log('[C-16 INIT] Scope found:', CONFIG.scope);
+
+      const form = CONFIG.scope.querySelector('form#' + CONFIG.formId) ||
+                   CONFIG.scope.querySelector('form') ||
+                   document.querySelector('form[action*="/cart/add"]');
+
+      console.log('[C-16 INIT] Looking for form with ID:', CONFIG.formId);
+
+      if (!form) {
+        console.error('[C-16 INIT] ERROR: Could not find form');
+        return;
+      }
+      console.log('[C-16 INIT] Form found:', form);
+
+      // Log the variant ID input
+      const idInput = form.querySelector('input[name="id"]');
+      console.log('[C-16 INIT] Hidden input[name="id"]:', idInput);
+      console.log('[C-16 INIT] Variant ID value:', idInput?.value);
+      console.log('[C-16 INIT] Product variant from Liquid:', '{{ product.selected_or_first_available_variant.id }}');
+
+      // ========================================
+      // CART UTILITIES (needed for no-variant products too)
+      // ========================================
+      const CartUtils = {
+        addItemsToCart: function(mainItem, secondaryItem, buttons, propertyMatcher) {
+          console.log('[C-16 CartUtils] addItemsToCart called');
+          console.log('[C-16 CartUtils] mainItem:', mainItem);
+          console.log('[C-16 CartUtils] secondaryItem:', secondaryItem);
+
+          // Disable buttons
+          buttons.forEach(btn => {
+            btn.disabled = true;
+            btn.textContent = btn.textContent.replace(/Add to .*|Buy.*/i, 'Adding...');
+          });
+
+          // Add main product first
+          return fetch('/cart/add.js', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify({ items: [mainItem] })
+          })
+          .then(response => {
+            console.log('[C-16 CartUtils] Main product response status:', response.status);
+            return response.json().then(data => {
+              console.log('[C-16 CartUtils] Main product response data:', data);
+              if (!response.ok && response.status !== 422) {
+                throw new Error('Failed to add main product: ' + (data.message || data.description || response.statusText));
+              }
+              if (response.status === 422) {
+                alert(data.message || data.description || 'Some items were added with limited quantity due to availability.');
+              }
+              return { data, response };
+            });
+          })
+          .then(({ data, response }) => {
+            // Fetch cart to determine actual quantity added
+            return fetch('/cart.js')
+              .then(res => res.json())
+              .then(cart => {
+                console.log('[C-16 CartUtils] Current cart:', cart);
+                let actualQuantityAdded = mainItem.quantity;
+                const addedItem = cart.items.find(item => String(item.variant_id) === String(mainItem.id));
+                console.log('[C-16 CartUtils] Found added item in cart:', addedItem);
+
+                if (addedItem && propertyMatcher(addedItem.properties, mainItem.properties)) {
+                  actualQuantityAdded = addedItem.quantity;
+                }
+                console.log('[C-16 CartUtils] Actual quantity added:', actualQuantityAdded);
+
+                return actualQuantityAdded;
+              });
+          })
+          .then(actualQuantityAdded => {
+            // Add secondary product if exists, using actual quantity added
+            if (secondaryItem && actualQuantityAdded > 0) {
+              secondaryItem.quantity = actualQuantityAdded;
+              console.log('[C-16 CartUtils] Adding secondary item:', secondaryItem);
+
+              return fetch('/cart/add.js', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json'
+                },
+                body: JSON.stringify({ items: [secondaryItem] })
+              })
+              .then(response => {
+                console.log('[C-16 CartUtils] Secondary product response status:', response.status);
+                return response.json().then(data => {
+                  console.log('[C-16 CartUtils] Secondary product response data:', data);
+                  if (!response.ok && response.status !== 422) {
+                    throw new Error('Failed to add secondary product: ' + (data.message || data.description || response.statusText));
+                  }
+                  return data;
+                });
+              });
+            }
+            return Promise.resolve();
+          })
+          .then(() => {
+            console.log('[C-16 CartUtils] All items added successfully, dispatching events');
+            // Trigger cart refresh
+            document.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
+            document.documentElement.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
+            document.dispatchEvent(new CustomEvent('cart:added', { bubbles: true, detail: { items: [mainItem, secondaryItem].filter(Boolean) } }));
+
+            // Open cart
+            if (window.theme?.openCartDrawer) {
+              window.theme.openCartDrawer();
+            } else if (window.theme?.cart?.open) {
+              window.theme.cart.open();
+            } else if (document.querySelector('[data-action="open-drawer"]')) {
+              document.querySelector('[data-action="open-drawer"]').click();
+            } else {
+              console.log('[C-16 CartUtils] Redirecting to /cart');
+              window.location.href = '/cart';
+            }
+
+            // Re-enable buttons
+            setTimeout(() => {
+              buttons.forEach(btn => {
+                btn.disabled = false;
+                const originalText = btn.getAttribute('data-original-text');
+                if (originalText) {
+                  btn.textContent = originalText;
+                } else {
+                  btn.textContent = btn.textContent.replace('Adding...', 'Add to Cart');
+                }
+              });
+            }, 1000);
+          })
+          .catch(error => {
+            console.error('[C-16 CartUtils] Error adding items to cart:', error);
+            alert('Error adding items to cart: ' + error.message);
+
+            // Re-enable buttons
+            buttons.forEach(btn => {
+              btn.disabled = false;
+              const originalText = btn.getAttribute('data-original-text');
+              if (originalText) {
+                btn.textContent = originalText;
+              } else {
+                btn.textContent = btn.textContent.replace('Adding...', 'Add to Cart');
+              }
+            });
+          });
+        }
+      };
+
+      // ========================================
+      // BULK BACKING OPTIONS FOR NO-VARIANT PRODUCTS
+      // ========================================
+      const BulkBackingOptions = {
+        colorSelect: null,
+        lbSelect: null,
+        lengthSelect: null,
+        instructionsSelect: null,
+        buttons: [],
+        helperText: null,
+        isUpdating: false,
+        observers: [],
+
+        init: function() {
+          this.colorSelect = CONFIG.scope.querySelector('.bulk-backing-color-select');
+          this.lbSelect = CONFIG.scope.querySelector('.bulk-backing-lb-select');
+          this.lengthSelect = CONFIG.scope.querySelector('.bulk-backing-length-select');
+          this.instructionsSelect = CONFIG.scope.querySelector('.backing-instructions-select');
+
+
+          // Check if this is bulk backing (has all 3 dropdowns) or just instructions
+          const isBulkBacking = !!(this.colorSelect && this.lbSelect && this.lengthSelect);
+          const isInstructionsOnly = !isBulkBacking && !!this.instructionsSelect;
+
+
+          if (!isBulkBacking && !isInstructionsOnly) {
+            console.error('No required selects found');
+            return;
+          }
+
+          // Find all buttons
+          const addToCartBtn = form.querySelector('button[type="submit"][name="add"]') ||
+                              form.querySelector('button[type="submit"]') ||
+                              CONFIG.scope.querySelector('button[type="submit"]');
+          if (addToCartBtn) this.buttons.push(addToCartBtn);
+
+          const buyNowButtons = CONFIG.scope.querySelectorAll('.shopify-payment-button__button');
+          buyNowButtons.forEach(btn => this.buttons.push(btn));
+
+          this.paymentButtonContainer = CONFIG.scope.querySelector('.shopify-payment-button');
+
+          if (this.buttons.length === 0) {
+            console.error('No buttons found');
+            return;
+          }
+
+          // Create helper text element if it doesn't exist
+          this.createHelperText();
+
+          // Setup event handlers
+          this.setupClickHandlers();
+          this.setupFormHandler();
+          this.setupChangeListeners();
+          this.setupMutationObservers();
+          this.setupEventListeners();
+
+          // Initial state
+          this.updateButtonState();
+
+        },
+
+        createHelperText: function() {
+          // Check if helper text already exists
+          const existingHelper = form.querySelector('.product-form__button-helper[data-no-variant-helper]');
+          if (existingHelper) {
+            this.helperText = existingHelper;
+            this.helperText.classList.remove('show'); // Ensure it's hidden initially
+            return;
+          }
+
+          // Create helper text element
+          this.helperText = document.createElement('div');
+          this.helperText.className = 'product-form__button-helper';
+          this.helperText.setAttribute('data-no-variant-helper', 'true');
+          this.helperText.textContent = 'Please select all product options first';
+          // Explicitly ensure it starts hidden (CSS should handle this, but be explicit)
+          this.helperText.style.display = 'none';
+
+          // Insert BEFORE the first button
+          const insertBefore = this.buttons[0];
+          if (insertBefore && insertBefore.parentNode) {
+            insertBefore.parentNode.insertBefore(this.helperText, insertBefore);
+          }
+        },
+
+        setupClickHandlers: function() {
+          this.buttons.forEach(btn => {
+            btn.addEventListener('click', e => this.handleButtonClick(e), true);
+          });
+        },
+
+        setupFormHandler: function() {
+          form.addEventListener('submit', e => {
+            if (!this.isValid()) {
+              e.preventDefault();
+
+              // Show helper text and flash it
+              if (this.helperText) {
+                this.helperText.classList.add('show');
+                this.helperText.style.animation = 'none';
+                setTimeout(() => {
+                  this.helperText.style.animation = 'pulse 0.5s ease-in-out 2';
+                }, 10);
+              }
+
+              alert('Please select all product options first.');
+              return false;
+            }
+
+            e.preventDefault();
+            this.handleBulkBackingSubmit();
+            return false;
+          }, true);
+        },
+
+        setupChangeListeners: function() {
+          if (this.colorSelect) {
+            this.colorSelect.addEventListener('change', () => this.updateButtonState());
+          }
+          if (this.lbSelect) {
+            this.lbSelect.addEventListener('change', () => this.updateButtonState());
+          }
+          if (this.lengthSelect) {
+            this.lengthSelect.addEventListener('change', () => this.updateButtonState());
+          }
+          if (this.instructionsSelect) {
+            this.instructionsSelect.addEventListener('change', () => this.updateButtonState());
+          }
+        },
+
+        setupMutationObservers: function() {
+          this.buttons.forEach(btn => {
+            const observer = new MutationObserver(mutations => {
+              let needsUpdate = false;
+              mutations.forEach(mutation => {
+                if (mutation.type === 'attributes' &&
+                    (mutation.attributeName === 'disabled' || mutation.attributeName === 'aria-disabled')) {
+                  if (!this.isValid() && !btn.disabled) {
+                    needsUpdate = true;
+                  }
+                }
+              });
+              if (needsUpdate && !this.isUpdating) {
+                this.updateButtonState();
+              }
+            });
+
+            observer.observe(btn, {
+              attributes: true,
+              attributeFilter: ['disabled', 'aria-disabled']
+            });
+
+            this.observers.push(observer);
+          });
+        },
+
+        setupEventListeners: function() {
+          // Aggressive periodic check to ensure buttons stay disabled when invalid
+          setInterval(() => {
+            if (!this.isValid()) {
+              this.buttons.forEach(btn => {
+                if (!btn.disabled || btn.getAttribute('aria-disabled') !== 'true') {
+                  btn.disabled = true;
+                  btn.setAttribute('disabled', 'disabled');
+                  btn.setAttribute('aria-disabled', 'true');
+                  btn.classList.add('bulk-backing-disabled');
+                }
+              });
+
+              if (this.paymentButtonContainer) {
+                this.paymentButtonContainer.style.pointerEvents = 'none';
+                this.paymentButtonContainer.style.opacity = '0.5';
+              }
+            }
+          }, 50);
+        },
+
+        isValid: function() {
+          // Check if bulk backing product
+          if (this.colorSelect && this.lbSelect && this.lengthSelect) {
+            const bulkValid = !!(this.colorSelect.value && this.lbSelect.value && this.lengthSelect.value);
+            if (!bulkValid) return false;
+          }
+
+          // Check if instructions are required and selected
+          if (this.instructionsSelect && !this.instructionsSelect.value) {
+            return false;
+          }
+
+          return true;
+        },
+
+        handleButtonClick: function(e) {
+          if (!this.isValid()) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+
+            // Show helper text and flash it
+            if (this.helperText) {
+              this.helperText.style.display = 'block';
+              this.helperText.classList.add('show');
+              this.helperText.style.animation = 'none';
+              setTimeout(() => {
+                this.helperText.style.animation = 'pulse 0.5s ease-in-out 2';
+              }, 10);
+            }
+
+            alert('Please select all product options first.');
+            return false;
+          }
+
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          this.handleBulkBackingSubmit();
+          return false;
+        },
+
+        handleBulkBackingSubmit: function() {
+          console.log('[C-16 DEBUG] handleBulkBackingSubmit called');
+
+          // Get main variant ID from hidden input or form
+          const idInput = form.querySelector('input[name="id"]');
+          console.log('[C-16 DEBUG] idInput found:', !!idInput, 'value:', idInput?.value);
+
+          let mainVariantId = idInput?.value || '{{ product.selected_or_first_available_variant.id }}';
+          console.log('[C-16 DEBUG] mainVariantId after initial check:', mainVariantId);
+
+          // Additional fallback: try to get from product data
+          if (!mainVariantId || mainVariantId === '') {
+            try {
+              const productData = document.querySelector('[data-product-json]');
+              if (productData) {
+                const product = JSON.parse(productData.textContent);
+                mainVariantId = product.variants?.[0]?.id || product.id;
+                console.log('[C-16 DEBUG] Got variant ID from product data:', mainVariantId);
+              }
+            } catch (e) {
+              console.error('[C-16 DEBUG] Failed to parse product data:', e);
+            }
+          }
+
+          // Get quantity from form
+          const qtyInput = form.querySelector('input[name="quantity"]') ||
+                          form.querySelector('input[type="number"]') ||
+                          form.querySelector('.quantity__input');
+          const quantity = qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
+          console.log('[C-16 DEBUG] quantity:', quantity);
+
+          if (!mainVariantId || mainVariantId === '') {
+            console.error('[C-16 DEBUG] ERROR: No mainVariantId found');
+            alert('Error: Could not determine the product variant. Please refresh and try again.');
+            return;
+          }
+
+          // Prepare main product properties
+          const mainProperties = {};
+
+          // Check if this is a bulk backing product (has Color/LB/Length)
+          const isBulkBacking = !!(this.colorSelect && this.lbSelect && this.lengthSelect);
+
+          let lengthVariantId = null;
+          let lengthValue = null;
+          let colorValue = null;
+          let lbValue = null;
+
+          if (isBulkBacking) {
+            colorValue = this.colorSelect.value;
+            lbValue = this.lbSelect.value;
+            lengthValue = this.lengthSelect.value;
+            const lengthOption = this.lengthSelect.options[this.lengthSelect.selectedIndex];
+            lengthVariantId = lengthOption.getAttribute('data-variant-id');
+
+            mainProperties['Color'] = colorValue;
+            mainProperties['LB'] = lbValue;
+            mainProperties['Length Spooled Onto Reel'] = lengthValue;
+          }
+
+          // Add rigging instructions if present
+          const instructionsValue = this.instructionsSelect ? this.instructionsSelect.value : null;
+          if (instructionsValue) {
+            mainProperties['Rigging Instructions'] = instructionsValue;
+          }
+
+          // Prepare main item
+          const mainItem = {
+            id: mainVariantId,
+            quantity: quantity,
+            properties: mainProperties
+          };
+          console.log('[C-16 DEBUG] Main item prepared:', mainItem);
+
+          // Prepare secondary item if applicable
+          const secondaryItem = (isBulkBacking && lengthValue !== 'None' && lengthValue !== '100yds' && lengthVariantId) ? {
+            id: lengthVariantId,
+            quantity: quantity,
+            properties: {
+              '_Related to': 'Main Product',
+              'Type': 'Length Spooling - ' + lengthValue
+            }
+          } : null;
+          console.log('[C-16 DEBUG] Secondary item prepared:', secondaryItem);
+
+          // Property matcher for cart verification
+          const propertyMatcher = (cartProps, itemProps) => {
+            if (!cartProps) return false;
+
+            // For bulk backing, check all three properties
+            if (isBulkBacking) {
+              return cartProps['Color'] === itemProps['Color'] &&
+                     cartProps['LB'] === itemProps['LB'] &&
+                     cartProps['Length Spooled Onto Reel'] === itemProps['Length Spooled Onto Reel'];
+            }
+
+            // For instructions only
+            if (instructionsValue) {
+              return cartProps['Rigging Instructions'] === instructionsValue;
+            }
+
+            // No special properties
+            return true;
+          };
+
+          console.log('[C-16 DEBUG] About to call CartUtils.addItemsToCart...');
+          console.log('[C-16 DEBUG] CartUtils available:', typeof CartUtils !== 'undefined');
+
+          // Use shared cart utility
+          CartUtils.addItemsToCart(mainItem, secondaryItem, this.buttons, propertyMatcher)
+            .then(() => {
+              console.log('[C-16 DEBUG] Cart add SUCCESS!');
+              this.updateButtonState();
+            })
+            .catch((error) => {
+              console.error('[C-16 DEBUG] Cart add FAILED:', error);
+              this.updateButtonState();
+            });
+        },
+
+        updateButtonState: function() {
+          if (this.isUpdating) return;
+          this.isUpdating = true;
+
+          const isValid = this.isValid();
+
+          this.buttons.forEach(btn => {
+            if (isValid) {
+              btn.disabled = false;
+              btn.removeAttribute('disabled');
+              btn.removeAttribute('aria-disabled');
+              btn.classList.remove('bulk-backing-disabled');
+            } else {
+              btn.disabled = true;
+              btn.setAttribute('disabled', 'disabled');
+              btn.setAttribute('aria-disabled', 'true');
+              btn.classList.add('bulk-backing-disabled');
+            }
+          });
+
+          if (this.paymentButtonContainer) {
+            if (isValid) {
+              this.paymentButtonContainer.style.display = '';
+              this.paymentButtonContainer.style.pointerEvents = '';
+              this.paymentButtonContainer.style.opacity = '';
+            } else {
+              this.paymentButtonContainer.style.pointerEvents = 'none';
+              this.paymentButtonContainer.style.opacity = '0.5';
+            }
+          }
+
+          // Hide helper text when valid (only show it when user tries to click)
+          if (this.helperText && isValid) {
+            this.helperText.style.display = 'none';
+            this.helperText.classList.remove('show');
+          }
+
+          this.isUpdating = false;
+        }
+      };
+
+      // Initialize
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => BulkBackingOptions.init());
+      } else {
+        BulkBackingOptions.init();
+      }
+
+      // Retry if elements not ready
+      setTimeout(() => {
+        if (!BulkBackingOptions.colorSelect) {
+          BulkBackingOptions.init();
+        }
+      }, 200);
+    })();
+  </script>
+{%- endif -%}

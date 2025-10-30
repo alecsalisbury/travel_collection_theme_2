@@ -1,0 +1,63 @@
+<div class="product-block" data-block-type="bundle_summary" {{ block.shopify_attributes }}>
+  <div class="card card--tight bb-mini">
+    <div class="card__section">
+      <div class="bb-mini__rows" role="group" aria-label="Bundle summary">
+        <div class="bb-mini__row">
+          <span class="bb-mini__label">Items</span>
+          <span class="bb-mini__value"><span class="bb-summary__items">0</span></span>
+        </div>
+        <div class="bb-mini__row bb-mini__row--subtotal">
+          <span class="bb-mini__label">Subtotal</span>
+          <span class="bb-mini__value"><span class="bb-summary__price">$0.00</span></span>
+        </div>
+      </div>
+
+      <div class="product-form__buttons" style="margin-top:14px">
+        <button class="button button--primary button--full bb-add-all" type="button">Add All to Cart</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Compact “buy-buttons” look */
+  .bb-mini {
+    margin-top: 10px;
+  }
+  .bb-mini__rows {
+    display: grid;
+    row-gap: 8px;
+  }
+  .bb-mini__row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding: 6px 0;
+    border-top: 1px solid #eee;
+  }
+  .bb-mini__row:first-child {
+    border-top: 0;
+  }
+  .bb-mini__label {
+    color: #6b7280;
+    font-size: 14px;
+  }
+  .bb-mini__value {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.01em;
+  }
+  .bb-mini__row--subtotal .bb-mini__label {
+    color: #111827;
+    font-weight: 600;
+  }
+  .bb-mini__row--subtotal .bb-mini__value {
+    font-size: 18px;
+    font-weight: 800;
+  }
+  .bb-mini__note {
+    margin: 10px 0 0;
+    font-size: 12px;
+    color: #6b7280;
+    text-align: center;
+  }
+</style>

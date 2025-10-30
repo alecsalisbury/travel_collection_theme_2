@@ -1,0 +1,432 @@
+{% comment %}
+  Trip Itinerary Accordion Section
+{% endcomment %}
+
+{% assign has_itinerary_data = false %}
+{% if section.settings.use_metafield and product.metafields.trip.itinerary != blank %}
+  {% assign has_itinerary_data = true %}
+{% elsif section.blocks.size > 0 %}
+  {% assign has_itinerary_data = true %}
+{% endif %}
+
+{% if has_itinerary_data %}
+<section id="trip-itinerary-{{ section.id }}" class="trip-itinerary">
+  <div id="itinerary" style="position: absolute; top: -70px;"></div>
+  <div class="container">
+    {% if section.settings.use_metafield and product.metafields.trip.itinerary != blank %}
+      {% assign itinerary_items = product.metafields.trip.itinerary.value %}
+      {% assign max_day = 0 %}
+
+      {% comment %} Calculate the maximum day number for the title {% endcomment %}
+      {% for item in itinerary_items %}
+        {% assign parts = item | split: '|' %}
+        {% if parts.size >= 3 %}
+          {% assign day_range = parts[0] | strip %}
+          {% assign day_parts = day_range | split: '-' %}
+          {% if day_parts.size > 1 %}
+            {% assign last_day = day_parts[1] | strip | times: 1 %}
+          {% else %}
+            {% assign last_day = day_range | times: 1 %}
+          {% endif %}
+          {% if last_day > max_day %}
+            {% assign max_day = last_day %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+
+      <div class="trip-itinerary__header">
+        <div class="trip-itinerary__header-content">
+          <h2 class="trip-itinerary__title">{{ max_day }}-Day <span class="trip-itinerary__title-light">Itinerary</span></h2>
+          {% if section.settings.subtitle != blank %}
+            <p class="trip-itinerary__subtitle">{{ section.settings.subtitle }}</p>
+          {% endif %}
+        </div>
+        {% if section.settings.cta_text != blank %}
+          <a href="{% if section.settings.cta_url != blank %}{{ section.settings.cta_url }}{% else %}#trip-inquiry{% endif %}" class="trip-itinerary__cta">{{ section.settings.cta_text }}</a>
+        {% endif %}
+      </div>
+
+      <div class="trip-itinerary__wrapper">
+        {% for item in itinerary_items %}
+          {% assign parts = item | split: '|' %}
+          {% if parts.size >= 3 %}
+            {% assign day_number = parts[0] | strip %}
+            {% assign day_title = parts[1] | strip %}
+            {% assign day_description = parts[2] | strip %}
+
+            <div class="itinerary-item" data-accordion>
+              <button class="itinerary-item__header">
+                <div class="itinerary-item__header-content">
+                  <span class="itinerary-item__badge">{{ day_number }}</span>
+                  <span class="itinerary-item__title">{{ day_title }}</span>
+                </div>
+                <svg class="itinerary-item__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                  <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <div class="itinerary-item__content">
+                <div class="itinerary-item__inner">
+                  <p>{{ day_description }}</p>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% else %}
+      {% comment %} Fallback to blocks if metafield is not used {% endcomment %}
+      {% if section.settings.title != blank %}
+        <div class="trip-itinerary__header">
+          <h2 class="trip-itinerary__title">{{ section.settings.title }}</h2>
+        </div>
+      {% endif %}
+
+      <div class="trip-itinerary__wrapper">
+        {% for block in section.blocks %}
+          <div class="itinerary-item" data-accordion>
+            <button class="itinerary-item__header">
+              <div class="itinerary-item__header-content">
+                <span class="itinerary-item__badge">{{ forloop.index }}</span>
+                <span class="itinerary-item__title">{{ block.settings.day_title }}</span>
+              </div>
+              <svg class="itinerary-item__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="itinerary-item__content">
+              <div class="itinerary-item__inner">
+                {{ block.settings.day_content }}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  .trip-itinerary {
+    padding: 80px 0;
+    background-color: #e8e8e8;
+  }
+
+  .trip-itinerary__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 3rem;
+    gap: 2rem;
+  }
+
+  .trip-itinerary__header-content {
+    flex: 1;
+  }
+
+  .trip-itinerary__title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #000000;
+    margin-bottom: 1rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+  }
+
+  .trip-itinerary__title-light {
+    font-weight: 300;
+    color: #999999;
+  }
+
+  .trip-itinerary__subtitle {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #000000;
+    max-width: 600px;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .trip-itinerary__cta {
+    background: #4a9fd8;
+    color: #ffffff;
+    padding: 16px 40px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    display: inline-block;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .trip-itinerary__cta:hover {
+    background: #3a8fc8;
+  }
+
+  .trip-itinerary__wrapper {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .itinerary-item {
+    background: #ffffff;
+    border: none;
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .itinerary-item:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  }
+
+  .itinerary-item__header {
+    width: 100%;
+    padding: 28px 32px;
+    background: #ffffff;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .itinerary-item__header:hover {
+    background: #fafafa;
+  }
+
+  .itinerary-item.active .itinerary-item__header {
+    background: #ffffff;
+  }
+
+  .itinerary-item__header-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
+  }
+
+  .itinerary-item__badge {
+    background: #4a9fd8;
+    color: #ffffff;
+    min-width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .itinerary-item__title {
+    font-size: 1.35rem;
+    font-weight: 400;
+    color: #000000;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .itinerary-item__icon {
+    transition: transform 0.3s ease;
+    color: #cccccc;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+  }
+
+  .itinerary-item.active .itinerary-item__icon {
+    transform: rotate(180deg);
+  }
+
+  .itinerary-item__content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+
+  .itinerary-item.active .itinerary-item__content {
+    max-height: 800px;
+  }
+
+  .itinerary-item__inner {
+    padding: 32px 32px 32px 104px;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #000000;
+    background: #f5f5f5;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .itinerary-item__inner p {
+    margin: 0;
+  }
+
+  @media screen and (max-width: 768px) {
+    .trip-itinerary {
+      padding: 60px 0;
+    }
+
+    .trip-itinerary__header {
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .trip-itinerary__title {
+      font-size: 2.5rem;
+    }
+
+    .trip-itinerary__cta {
+      align-self: flex-start;
+    }
+
+    .itinerary-item__header {
+      padding: 20px 20px;
+    }
+
+    .itinerary-item__header-content {
+      gap: 15px;
+    }
+
+    .itinerary-item__badge {
+      min-width: 44px;
+      height: 44px;
+      font-size: 1rem;
+    }
+
+    .itinerary-item__title {
+      font-size: 1.1rem;
+    }
+
+    .itinerary-item__inner {
+      padding: 24px 20px 24px 79px;
+      font-size: 0.95rem;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const accordionItems = document.querySelectorAll('#trip-itinerary-{{ section.id }} [data-accordion]');
+
+    accordionItems.forEach(item => {
+      const header = item.querySelector('.itinerary-item__header');
+
+      header.addEventListener('click', function() {
+        const wasActive = item.classList.contains('active');
+
+        // Close all items
+        accordionItems.forEach(i => i.classList.remove('active'));
+
+        // Open clicked item if it wasn't active
+        if (!wasActive) {
+          item.classList.add('active');
+        }
+      });
+    });
+
+    // Open first item by default
+    if (accordionItems.length > 0) {
+      accordionItems[0].classList.add('active');
+    }
+  });
+</script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Trip Itinerary",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title (Fallback)",
+      "default": "10-Day Itinerary",
+      "info": "Only used when metafield is disabled"
+    },
+    {
+      "type": "richtext",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "<p>Each day is carefully planned to maximize your fishing success while experiencing the best of Alaska's wilderness. Itineraries are flexible based on conditions and guest preferences.</p>"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "CTA Button Text",
+      "default": "GET IN TOUCH"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "CTA Button URL"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_metafield",
+      "label": "Use Product Metafield",
+      "default": true,
+      "info": "Pull itinerary from product.metafields.trip.itinerary. Format: [number]|[heading]|[description]"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "day",
+      "name": "Itinerary Day",
+      "settings": [
+        {
+          "type": "text",
+          "id": "day_title",
+          "label": "Day Title",
+          "default": "Day 1: Arrival at Kulik Lodge"
+        },
+        {
+          "type": "richtext",
+          "id": "day_content",
+          "label": "Day Content",
+          "default": "<p>Fly from Anchorage to Dillingham, then take a scenic floatplane ride to Kulik Lodge. After settling into your cabin, enjoy an orientation and your first evening meal at the lodge.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trip Itinerary",
+      "blocks": [
+        {
+          "type": "day",
+          "settings": {
+            "day_title": "Day 1: Fly Anchorage → Kulik Lodge",
+            "day_content": "<p>Morning departure from Anchorage to Dillingham. Scenic floatplane transfer to Kulik Lodge. Afternoon orientation and gear setup. Welcome dinner and fishing program overview.</p>"
+          }
+        },
+        {
+          "type": "day",
+          "settings": {
+            "day_title": "Days 2-9: World-Class Fishing",
+            "day_content": "<p>Daily guided fishing excursions targeting rainbow trout, arctic char, and seasonal salmon runs. Options for fly-out trips to remote streams and rivers. Shore lunches provided. Evening fly-tying sessions and fishing seminars available.</p>"
+          }
+        },
+        {
+          "type": "day",
+          "settings": {
+            "day_title": "Day 10: Departure",
+            "day_content": "<p>Morning fishing session (time permitting). Floatplane transfer to Dillingham. Commercial flight back to Anchorage. End of your Alaskan fishing adventure.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

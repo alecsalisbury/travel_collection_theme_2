@@ -1,0 +1,859 @@
+{%- assign blog = section.settings.blog -%}
+
+<style>
+  {%- if section.settings.padding_top > 0 -%}
+    #shopify-section-{{ section.id }} section.tab-articles {
+      padding-top: {{ section.settings.padding_top }}px;
+    }
+  {%- endif -%}
+  {%- if section.settings.padding_bottom > 0 -%}
+    #shopify-section-{{ section.id }} section.tab-articles {
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  {%- endif -%}
+</style>
+
+{% unless section.settings.hide_on_url_contains != blank and request.path contains section.settings.hide_on_url_contains %}
+<section class="section tab-articles" data-section-id="{{ section.id }}" data-section-type="tab-articles" style="background-color: {{ section.settings.section_background_color }};">
+  <div class="container">
+    {%- if section.settings.title != blank -%}
+      <header class="section__header">
+        <h2 class="section__title heading h3">{{ section.settings.title | escape }}</h2>
+      </header>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <!-- Tab Navigation -->
+      <div class="tab-articles__navigation">
+        <ul class="tab-articles__tabs" role="tablist">
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'tab' -%}
+              <li class="tab-articles__tab-item" role="presentation">
+                <button 
+                  class="tab-articles__tab-button {% if forloop.first %}is-active{% endif %}"
+                  role="tab"
+                  aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+                  aria-controls="tab-panel-{{ block.id }}"
+                  data-tab-target="{{ block.id }}"
+                  data-tag="{{ block.settings.tag | handle }}"
+                  {{ block.shopify_attributes }}
+                >
+                  {{ block.settings.label | default: block.settings.tag | default: 'All Categories' }}
+                </button>
+              </li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tab-articles__content">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'tab' -%}
+            <div 
+              id="tab-panel-{{ block.id }}"
+              class="tab-articles__panel {% if forloop.first %}is-active{% endif %}"
+              role="tabpanel"
+              aria-labelledby="tab-{{ block.id }}"
+              data-tab-panel="{{ block.id }}"
+              data-background-color="{{ block.settings.background_color }}"
+              style="--tab-bg-color: {{ block.settings.background_color }};"
+            >
+               {%- if block.settings.title != blank -%}
+                 <header class="tab-articles__tab-header">
+                   <h2 class="tab-articles__tab-title heading h2">{{ block.settings.title | escape }}</h2>
+                 </header>
+               {%- endif -%}
+               
+               {%- capture article_list -%}
+                 {%- assign articles_to_show = section.settings.articles_per_tab | default: 6 -%}
+                 {%- assign articles_count = 0 -%}
+                 {%- assign has_articles = false -%}
+                 {%- assign displayed_articles = 0 -%}
+                 
+                 {%- if block.settings.tag == blank -%}
+                   {%- assign displayed_articles = blog.articles.size | at_most: articles_to_show -%}
+                   {%- assign articles_count = blog.articles.size -%}
+                 {%- else -%}
+                   {%- paginate blog.articles by 250 -%}
+                     {%- for article in blog.articles -%}
+                       {%- if article.tags contains block.settings.tag -%}
+                         {%- assign articles_count = articles_count | plus: 1 -%}
+                         {%- if displayed_articles < articles_to_show -%}
+                           {%- assign displayed_articles = displayed_articles | plus: 1 -%}
+                         {%- endif -%}
+                       {%- endif -%}
+                     {%- endfor -%}
+                   {%- endpaginate -%}
+                 {%- endif -%}
+
+                 <div class="article-slider-container">
+                 <button class="article-slider__nav article-slider__nav--prev" aria-label="Previous articles">
+                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                   </svg>
+                 </button>
+                 
+                 <div class="article-slider">
+                   <div class="article-list">
+                     {%- if block.settings.tag == blank -%}
+                       {%- comment -%} Show all articles if no tag is specified {%- endcomment -%}
+                     {%- for article in blog.articles limit: articles_to_show -%}
+                       {%- assign has_articles = true -%}
+                       <div class="article-list__item">
+                         {%- render 'article-item', article: article, featured: false, background_color: block.settings.background_color -%}
+                       </div>
+                     {%- endfor -%}
+                     {%- else -%}
+                       {%- comment -%} Filter by specific tag using contains {%- endcomment -%}
+                       {%- assign displayed_count = 0 -%}
+                       {%- for article in blog.articles -%}
+                         {%- if article.tags contains block.settings.tag -%}
+                         {%- if displayed_count < articles_to_show -%}
+                           {%- assign has_articles = true -%}
+                           <div class="article-list__item">
+                             {%- render 'article-item', article: article, featured: false, background_color: block.settings.background_color -%}
+                           </div>
+                           {%- assign displayed_count = displayed_count | plus: 1 -%}
+                         {%- endif -%}
+                         {%- endif -%}
+                       {%- endfor -%}
+                     {%- endif -%}
+                     
+                     {%- unless has_articles -%}
+                       <div class="tab-articles__empty">
+                         <p class="text--subdued">{{ 'blog.general.empty' | t }}</p>
+                       </div>
+                     {%- endunless -%}
+                   </div>
+                 </div>
+                 
+                 <button class="article-slider__nav article-slider__nav--next" aria-label="Next articles">
+                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                   </svg>
+                 </button>
+               </div>
+               {%- endcapture -%}
+
+               {{ article_list }}
+
+               {%- if articles_count > articles_to_show and section.settings.view_more_text != blank -%}
+                 <div class="tab-articles__view-more">
+                   {%- if block.settings.tag == blank -%}
+                     <a href="{{ blog.url }}" class="tab-articles__view-more-button" style="background-color: {{ section.settings.view_more_bg_color }}; color: {{ section.settings.view_more_text_color }}; border-color: {{ section.settings.view_more_bg_color }};">
+                       {{ section.settings.view_more_text }}
+                     </a>
+                   {%- else -%}
+                     <a href="{{ blog.url }}/tagged/{{ block.settings.tag | handle }}" class="tab-articles__view-more-button" style="background-color: {{ section.settings.view_more_bg_color }}; color: {{ section.settings.view_more_text_color }}; border-color: {{ section.settings.view_more_bg_color }};">
+                       {{ section.settings.view_more_text }}
+                     </a>
+                   {%- endif -%}
+                 </div>
+               {%- endif -%}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- else -%}
+      <div class="tab-articles__placeholder">
+        <p class="text--subdued">No tabs configured. Add tabs in the section settings.</p>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{{ 'tab-articles.css' | asset_url | stylesheet_tag }}
+
+<script>
+// Simplified Storefront API GraphQL query using direct articles query
+const ARTICLES_QUERY = `
+  query getArticles($first: Int!, $query: String) {
+    articles(first: $first, query: $query, sortKey: PUBLISHED_AT, reverse: true) {
+      nodes {
+        id
+        title
+        handle
+        excerpt(truncateAt: 150)
+        content(truncateAt: 300)
+        publishedAt
+        tags
+        image {
+          url
+          altText
+          width
+          height
+        }
+        authorV2 {
+          name
+          firstName
+          lastName
+        }
+        onlineStoreUrl
+        blog {
+          handle
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+`;
+
+// Function to make tokenless Storefront API call using direct articles query
+async function fetchArticles(blogHandle = 'Trident Fly Fishing', tag = null, maxArticles = 500) {
+  try {
+    // Build query filter for specific blog and optionally tag
+    let queryFilter = `blog_title:"${blogHandle}"`;
+    if (tag && tag.trim() !== '') {
+      queryFilter += ` AND tag:"${tag}"`;
+    }
+    const apiUrl = `https://{{ shop.permanent_domain }}/api/2025-10/graphql.json`;
+    
+    // console.log('🔍 API Request Details:');
+    // console.log('- URL:', apiUrl);
+    // console.log('- Blog Handle:', blogHandle);
+    // console.log('- Tag Filter:', tag || 'none (all articles)');
+    // console.log('- Query Filter:', queryFilter);
+    // console.log('- Max Articles:', maxArticles);
+    
+    const requestBody = {
+      query: ARTICLES_QUERY,
+      variables: {
+        first: maxArticles,
+        query: queryFilter
+      }
+    };
+    
+    // console.log('📤 Request Body:', JSON.stringify(requestBody, null, 2));
+    
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestBody)
+    });
+
+    // console.log('📥 Response Status:', response.status, response.statusText);
+    // console.log('📥 Response Headers:', Object.fromEntries(response.headers.entries()));
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      // console.error('❌ HTTP Error Response Body:', errorText);
+      throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+    }
+
+    const data = await response.json();
+    // console.log('📊 Full API Response:', JSON.stringify(data, null, 2));
+    
+    if (data.errors) {
+      // console.error('❌ GraphQL errors:', data.errors);
+      data.errors.forEach((error, index) => {
+        // console.error(`Error ${index + 1}:`, error.message);
+        // if (error.locations) console.error('Locations:', error.locations);
+        // if (error.path) console.error('Path:', error.path);
+        // if (error.extensions) console.error('Extensions:', error.extensions);
+      });
+      return null;
+    }
+
+    const articles = data.data?.articles?.nodes || [];
+    // console.log(`✅ Successfully fetched ${articles.length} articles`);
+    
+    if (articles.length > 0) {
+      // console.log('📝 Sample article:', {
+      //   title: articles[0].title,
+      //   handle: articles[0].handle,
+      //   blog: articles[0].blog?.handle,
+      //   tags: articles[0].tags,
+      //   publishedAt: articles[0].publishedAt
+      // });
+    } else {
+      // console.warn('⚠️ No articles found. Possible reasons:');
+      // console.warn('- Blog handle "' + blogHandle + '" might not exist');
+      // console.warn('- Blog might have no published articles');
+      // console.warn('- Blog might not be accessible via Storefront API');
+      // console.warn('- Query filter might be incorrect');
+    }
+
+    return articles;
+  } catch (error) {
+    // console.error('💥 Error fetching articles:', error);
+    // console.error('Error details:', {
+    //   name: error.name,
+    //   message: error.message,
+    //   stack: error.stack
+    // });
+    return null;
+  }
+}
+
+// Function to mimic Shopify's handleize filter
+function handleize(str) {
+  if (!str || typeof str !== 'string') {
+    return '';
+  }
+  
+  return str
+    .toLowerCase()                    // Convert to lowercase
+    .replace(/[^a-z0-9\s-]/g, '')     // Remove special characters except spaces and hyphens
+    .replace(/\s+/g, '-')             // Replace spaces with hyphens
+    .replace(/-+/g, '-')             // Replace multiple consecutive hyphens with single hyphen
+    .replace(/^-+|-+$/g, '');        // Remove leading and trailing hyphens
+}
+
+// Function to create article HTML matching the existing article-item structure
+function createArticleHTML(article, sectionSettings, backgroundColor = '#ffffff') {
+  const publishedDate = new Date(article.publishedAt).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+  const author = article.authorV2?.name || 'Anonymous';
+  const authorHandle = handleize(author);
+  const excerpt = article.excerpt || article.content || '';
+  const imageUrl = article.image?.url || '';
+  const imageAlt = article.image?.altText || article.title;
+  const category = article.tags.length > 0 ? article.tags[0] : '';
+
+  // Build meta items based on section settings
+  let metaItems = [];
+  if (sectionSettings.show_category && category) {
+    metaItems.push(`<span class="article-item__meta-item">${category}</span>`);
+  }
+  if (sectionSettings.show_author) {
+    metaItems.push(`<a href="/pages/authors/${authorHandle}" class="article-item__meta-item">By ${author}</a>`);
+  }
+  if (sectionSettings.show_date) {
+    metaItems.push(`<time class="article-item__meta-item">${publishedDate}</time>`);
+  }
+
+  // Return just the article-list__item structure for slider
+  return `
+    <div class="article-list__item">
+      <div class="article-item" style="background-color: ${backgroundColor};">
+        ${imageUrl ? `
+          <a href="${article.onlineStoreUrl}" class="article-item__image-container">
+            <img src="${imageUrl}" alt="${imageAlt}" loading="lazy" class="article-item__image">
+          </a>
+        ` : ''}
+        <h3 class="article-item__title heading h4">
+          <a href="${article.onlineStoreUrl}" class="link">${article.title}</a>
+        </h3>
+        ${metaItems.length > 0 ? `
+          <div class="article-item__meta">
+            ${metaItems.join('')}
+          </div>
+        ` : ''}
+        ${sectionSettings.show_excerpt && excerpt ? `
+          <div class="article-item__excerpt rte">
+            ${excerpt.length > 80 ? excerpt.substring(0, 80) + '...' : excerpt}
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
+}
+
+// Function to update tab content with API data
+async function updateTabArticlesWithAPI() {
+  // console.log('🚀 Starting updateTabArticlesWithAPI...');
+  
+  // Check if we should use API data
+  const urlParams = new URLSearchParams(window.location.search);
+  const forceAPI = urlParams.get('use_api') === 'true';
+  
+  // console.log('🔍 Environment Check:');
+  // console.log('- Current URL:', window.location.href);
+  // console.log('- URL Params:', Object.fromEntries(urlParams.entries()));
+  // console.log('- Force API:', forceAPI);
+  // console.log('- Body classes:', document.body.className);
+  // console.log('- Path includes /blogs/:', window.location.pathname.includes('/blogs/'));
+  // console.log('- Bloggle layout exists:', !!document.querySelector('#bloggle--blog_layout'));
+  
+  // Only run on bloggle template pages or when specifically requested
+  const isBlogglePage = document.body.classList.contains('template-blog') || 
+                       window.location.pathname.includes('/blogs/') ||
+                       document.querySelector('#bloggle--blog_layout') !== null ||
+                       forceAPI;
+  
+  // console.log('📋 Should run API call:', isBlogglePage);
+  
+  if (!isBlogglePage) {
+    // console.log('❌ Not a bloggle page, skipping API call');
+    return;
+  }
+
+  const tabArticlesSection = document.querySelector('[data-section-type="tab-articles"]');
+  // console.log('🎯 Tab articles section found:', !!tabArticlesSection);
+  
+  if (!tabArticlesSection) {
+    // console.log('❌ No tab-articles section found, skipping API call');
+    return;
+  }
+
+  // console.log('🌐 Fetching articles from Trident Fly Fishing blog via Storefront API...');
+
+  // Get section settings
+  const sectionSettings = {
+    show_category: {{ section.settings.show_category | json }},
+    show_author: {{ section.settings.show_author | json }},
+    show_date: {{ section.settings.show_date | json }},
+    show_excerpt: {{ section.settings.show_excerpt | json }}
+  };
+
+  // Update each tab panel with its own API call
+  const tabPanels = tabArticlesSection.querySelectorAll('[data-tab-panel]');
+  const tabButtons = tabArticlesSection.querySelectorAll('[data-tab-target]');
+
+  // console.log(`🎯 Found ${tabPanels.length} tabs to process`);
+
+  // Process each tab individually
+  for (let index = 0; index < tabPanels.length; index++) {
+    const panel = tabPanels[index];
+    const tabButton = tabButtons[index];
+    
+    if (!tabButton) continue;
+
+    const tag = tabButton.getAttribute('data-tag');
+    const tabLabel = tabButton.textContent.trim();
+    const articlesPerTab = {{ section.settings.articles_per_tab | default: 6 }};
+    
+    // console.log(`\n📑 Processing tab ${index + 1}: "${tabLabel}" (tag: "${tag || 'none'}")`);
+    
+    // Make API call for this specific tab with its tag filter
+    const articles = await fetchArticles('Trident Fly Fishing', tag, articlesPerTab);
+    
+    if (articles && articles.length > 0) {
+      // console.log(`✅ Tab "${tabLabel}": Found ${articles.length} articles`);
+      
+      // Get background color for this tab
+      const backgroundColor = panel.getAttribute('data-background-color') || '#ffffff';
+      
+      // Create article HTML
+      const articlesHTML = articles.map(article => createArticleHTML(article, sectionSettings, backgroundColor)).join('');
+      
+      // Update the panel content
+      const articleList = panel.querySelector('.article-list');
+      if (articleList) {
+        // console.log(`🎨 Updating article list for tab "${tabLabel}"`);
+        // console.log('- Article list classes before:', articleList.className);
+        // console.log('- Articles HTML length:', articlesHTML.length);
+        
+        articleList.innerHTML = articlesHTML;
+        
+        // Ensure proper classes are set
+        articleList.classList.add('article-list');
+        
+        // console.log('- Article list classes after:', articleList.className);
+        // console.log('- Number of article items:', articleList.querySelectorAll('.article-list__item').length);
+        
+        // Initialize slider for this tab
+        initializeSlider(panel);
+      }
+
+      // Update view more button if needed
+      const viewMoreButton = panel.querySelector('.tab-articles__view-more-button');
+      if (viewMoreButton) {
+        const blogUrl = '/blogs/trident-fly-fishing'; // URL slug remains lowercase with hyphens
+        const targetUrl = tag ? `${blogUrl}/tagged/${tag.toLowerCase().replace(/\s+/g, '-')}` : blogUrl;
+        viewMoreButton.href = targetUrl;
+      }
+    } else {
+      // console.log(`⚠️ Tab "${tabLabel}": No articles found`);
+    }
+  }
+
+  // console.log('\n🎉 Finished processing all tabs');
+  
+  // Initialize sliders for all tabs after API data is loaded
+  const allTabPanels = document.querySelectorAll('[data-tab-panel]');
+  allTabPanels.forEach(panel => {
+    initializeSlider(panel);
+  });
+}
+
+// Slider functionality
+function initializeSlider(panel) {
+  const sliderContainer = panel.querySelector('.article-slider-container');
+  if (!sliderContainer) return;
+  
+  const slider = sliderContainer.querySelector('.article-slider');
+  const articleList = slider.querySelector('.article-list');
+  const prevBtn = sliderContainer.querySelector('.article-slider__nav--prev');
+  const nextBtn = sliderContainer.querySelector('.article-slider__nav--next');
+  const articles = articleList.querySelectorAll('.article-list__item');
+  
+  if (articles.length === 0) return;
+  
+  let currentIndex = 0;
+  
+  // Responsive items to show (how many to slide by)
+  function getItemsToShow() {
+    if (window.innerWidth <= 640) return 1; // Mobile: slide 1
+    if (window.innerWidth <= 999) return 2; // Tablet: slide 2  
+    return 3; // Desktop: slide 3 (but show 3.2)
+  }
+  
+  let itemsToShow = getItemsToShow();
+  let maxIndex = Math.max(0, articles.length - itemsToShow);
+  
+  // Set initial state
+  updateSliderPosition();
+  updateNavigationButtons();
+  
+  // Add event listeners
+  prevBtn.addEventListener('click', () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updateSliderPosition();
+      updateNavigationButtons();
+    }
+  });
+  
+  nextBtn.addEventListener('click', () => {
+    if (currentIndex < maxIndex) {
+      currentIndex++;
+      updateSliderPosition();
+      updateNavigationButtons();
+    }
+  });
+  
+  // Handle window resize
+  const handleResize = () => {
+    const newItemsToShow = getItemsToShow();
+    if (newItemsToShow !== itemsToShow) {
+      itemsToShow = newItemsToShow;
+      maxIndex = Math.max(0, articles.length - itemsToShow);
+      currentIndex = Math.min(currentIndex, maxIndex);
+      updateSliderPosition();
+      updateNavigationButtons();
+    }
+  };
+  
+  window.addEventListener('resize', handleResize);
+  
+  function updateSliderPosition() {
+    // Calculate the percentage to move based on how many items we want to skip
+    // For desktop (25% per item), mobile (100% per item), tablet (50% per item)
+    let itemWidth;
+    if (window.innerWidth <= 640) {
+      itemWidth = 100; // Mobile: 100% per item
+    } else if (window.innerWidth <= 999) {
+      itemWidth = 50; // Tablet: 50% per item
+    } else {
+      itemWidth = 25; // Desktop: 25% per item (showing 3.2 items)
+    }
+    
+    const translateX = -(currentIndex * itemWidth);
+    articleList.style.transform = `translateX(${translateX}%)`;
+  }
+  
+  function updateNavigationButtons() {
+    prevBtn.disabled = currentIndex === 0;
+    nextBtn.disabled = currentIndex >= maxIndex;
+    
+    // Add visual feedback for disabled state
+    prevBtn.style.opacity = currentIndex === 0 ? '0.5' : '1';
+    nextBtn.style.opacity = currentIndex >= maxIndex ? '0.5' : '1';
+  }
+}
+
+// Initialize sliders on page load (for server-rendered content)
+function initializeAllSliders() {
+  const tabArticlesSection = document.querySelector('[data-section-type="tab-articles"]');
+  if (!tabArticlesSection) return;
+  
+  const allTabPanels = tabArticlesSection.querySelectorAll('[data-tab-panel]');
+  allTabPanels.forEach(panel => {
+    initializeSlider(panel);
+  });
+}
+
+// Tab switching functionality
+function initializeTabSwitching() {
+  const tabArticlesSection = document.querySelector('[data-section-type="tab-articles"]');
+  if (!tabArticlesSection) return;
+  
+  const tabButtons = tabArticlesSection.querySelectorAll('[data-tab-target]');
+  const tabPanels = tabArticlesSection.querySelectorAll('[data-tab-panel]');
+  
+  tabButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const targetId = button.getAttribute('data-tab-target');
+      
+      // Update active states
+      tabButtons.forEach(btn => {
+        btn.classList.remove('is-active');
+        btn.setAttribute('aria-selected', 'false');
+      });
+      tabPanels.forEach(panel => {
+        panel.classList.remove('is-active');
+      });
+      
+      // Set new active states
+      button.classList.add('is-active');
+      button.setAttribute('aria-selected', 'true');
+      
+      const targetPanel = document.getElementById(`tab-panel-${targetId}`);
+      if (targetPanel) {
+        targetPanel.classList.add('is-active');
+        // Reset slider position when switching tabs
+        const sliderContainer = targetPanel.querySelector('.article-slider-container');
+        if (sliderContainer) {
+          const articleList = sliderContainer.querySelector('.article-list');
+          if (articleList) {
+            articleList.style.transform = 'translateX(0%)';
+          }
+          // Re-initialize slider for the new tab
+          initializeSlider(targetPanel);
+        }
+      }
+    });
+  });
+}
+
+// Initialize when DOM is loaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    initializeTabSwitching();
+    initializeAllSliders();
+    updateTabArticlesWithAPI();
+  });
+} else {
+  initializeTabSwitching();
+  initializeAllSliders();
+  updateTabArticlesWithAPI();
+}
+
+</script>
+
+{% endunless %}
+
+
+{% schema %}
+{
+  "name": "Tab Articles",
+  "tag": "section",
+  "class": "this-section",
+  "settings": [
+    {
+      "type": "color",
+      "id": "section_background_color",
+      "label": "Section Background Color",
+      "default": "#ffffff",
+      "info": "Background color for the entire section"
+    },
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "Blog",
+      "info": "Select the blog to display articles from"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Latest Posts"
+    },
+    {
+      "type": "range",
+      "id": "articles_per_tab",
+      "label": "Articles per tab",
+      "min": 3,
+      "max": 100,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "checkbox",
+      "id": "show_category",
+      "label": "Show category",
+      "info": "The first article's tag will be shown as category.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "Show author",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "Show date",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_excerpt",
+      "label": "Show excerpt",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "View More Button"
+    },
+    {
+      "type": "text",
+      "id": "view_more_text",
+      "label": "Button text",
+      "default": "View more",
+      "info": "Leave empty to hide the button"
+    },
+    {
+      "type": "color",
+      "id": "view_more_bg_color",
+      "label": "Button background color",
+      "default": "#007acc"
+    },
+    {
+      "type": "color",
+      "id": "view_more_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "text",
+      "id": "hide_on_url_contains",
+      "label": "Hide when URL contains",
+      "info": "Enter text to hide this section when the URL contains that text. Leave blank to disable."
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 160,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 160,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "Tab",
+      "limit": 12,
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Tab Label",
+          "info": "Display name for the tab. If empty, will use the tag name.",
+          "default": "All Categories"
+        },
+        {
+          "type": "text",
+          "id": "tag",
+          "label": "Tag",
+          "info": "Enter the exact tag name to filter articles by. Case sensitive.",
+          "placeholder": "e.g. Fly Fishing Travel"
+        },
+        {
+          "type": "color",
+          "id": "background_color",
+          "label": "Background Color",
+          "default": "#ffffff",
+          "info": "Background color for articles in this tab"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Tab Title",
+          "info": "Custom title to display above this tab's content. Leave blank to hide.",
+          "placeholder": "e.g. Latest Posts"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tab Articles",
+      "category": "Blog",
+      "settings": {
+        "blog": "news",
+        "section_background_color": "#f8f9fa"
+      },
+      "blocks": [
+        {
+          "type": "tab",
+          "settings": {
+            "label": "All Categories",
+            "tag": "",
+            "background_color": "#ffffff",
+            "title": "Latest Posts"
+          }
+        },
+        {
+          "type": "tab",
+          "settings": {
+            "label": "Fly Fishing Travel",
+            "tag": "Fly Fishing Travel",
+            "background_color": "#f8f9fa",
+            "title": "Travel Adventures"
+          }
+        },
+        {
+          "type": "tab",
+          "settings": {
+            "label": "Reviews",
+            "tag": "Reviews",
+            "background_color": "#e3f2fd",
+            "title": "Gear Reviews"
+          }
+        },
+        {
+          "type": "tab",
+          "settings": {
+            "label": "Fly Tying",
+            "tag": "Fly Tying",
+            "background_color": "#f3e5f5",
+            "title": "Fly Patterns"
+          }
+        },
+        {
+          "type": "tab",
+          "settings": {
+            "label": "How to Guides",
+            "tag": "How to Guides",
+            "background_color": "#e8f5e8",
+            "title": "Expert Tips"
+          }
+        },
+        {
+          "type": "tab",
+          "settings": {
+            "label": "Shootouts",
+            "tag": "Shootouts",
+            "background_color": "#fff3e0",
+            "title": "Product Comparisons"
+          }
+        },
+        {
+          "type": "tab",
+          "settings": {
+            "label": "Trip Reports",
+            "tag": "Trip Reports",
+            "background_color": "#fce4ec",
+            "title": "Fishing Reports"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

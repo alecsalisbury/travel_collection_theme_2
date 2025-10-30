@@ -1,0 +1,503 @@
+{% comment %}
+  Trip Video + Features Section
+  Includes "Who's It For?" boxes at top, then two-column layout with video on left and expandable features list on right
+{% endcomment %}
+
+{% assign has_features_data = false %}
+{% if product.metafields.trip.trip_features != blank %}
+  {% assign has_features_data = true %}
+{% endif %}
+
+{% if has_features_data %}
+<section id="trip-video-features-{{ section.id }}" class="trip-video-features">
+  <div id="video-features" style="position: absolute; top: -70px;"></div>
+  <div class="container">
+    <div class="trip-video-features__wrapper">
+      <div class="trip-video-features__left">
+        {% if section.settings.who_title != blank %}
+          <h2 class="trip-video-features__who-title">{{ section.settings.who_title }}</h2>
+        {% endif %}
+
+        <div class="trip-video-features__boxes">
+          {% assign who_its_for = product.metafields.trip.who_its_for.value %}
+          {% if who_its_for != blank %}
+            {% for item in who_its_for %}
+              <div class="trip-video-features__box">
+                {{ item }}
+              </div>
+            {% endfor %}
+          {% else %}
+            {% comment %} Fallback if no metafield data {% endcomment %}
+            <div class="trip-video-features__box">Novice to advanced anglers</div>
+            <div class="trip-video-features__box">Couples & groups</div>
+            <div class="trip-video-features__box">Families</div>
+          {% endif %}
+        </div>
+
+        <div class="trip-video-features__video">
+        {% assign video_url = product.metafields.trip.trip_video.value %}
+        {% if video_url != blank %}
+          <div class="video-embed">
+            {% if video_url contains 'youtube.com' or video_url contains 'youtu.be' %}
+              {% assign video_id = video_url | split: 'v=' | last | split: '&' | first %}
+              {% if video_url contains 'youtu.be' %}
+                {% assign video_id = video_url | split: 'youtu.be/' | last | split: '?' | first %}
+              {% endif %}
+              <iframe
+                src="https://www.youtube.com/embed/{{ video_id }}"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+              </iframe>
+            {% elsif video_url contains 'vimeo.com' %}
+              {% assign video_id = video_url | split: 'vimeo.com/' | last | split: '/' | first %}
+              <iframe
+                src="https://player.vimeo.com/video/{{ video_id }}"
+                frameborder="0"
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowfullscreen>
+              </iframe>
+            {% else %}
+              <iframe src="{{ video_url }}" frameborder="0" allowfullscreen></iframe>
+            {% endif %}
+          </div>
+        {% else %}
+          {% comment %} Fallback to image when no video {% endcomment %}
+          {% assign fallback_image = product.metafields.trip.trip_video_fallback_image.value %}
+          {% if fallback_image != blank %}
+            <div class="video-image-fallback">
+              <img
+                src="{{ fallback_image | image_url: width: 1200 }}"
+                srcset="{{ fallback_image | image_url: width: 600 }} 600w,
+                        {{ fallback_image | image_url: width: 900 }} 900w,
+                        {{ fallback_image | image_url: width: 1200 }} 1200w"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                alt="{{ product.title }} - Video placeholder"
+                loading="lazy">
+            </div>
+          {% elsif product.featured_image %}
+            <div class="video-image-fallback">
+              <img
+                src="{{ product.featured_image | image_url: width: 1200 }}"
+                srcset="{{ product.featured_image | image_url: width: 600 }} 600w,
+                        {{ product.featured_image | image_url: width: 900 }} 900w,
+                        {{ product.featured_image | image_url: width: 1200 }} 1200w"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                alt="{{ product.title }}"
+                loading="lazy">
+            </div>
+          {% else %}
+            <div class="video-placeholder">
+              {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
+          {% endif %}
+        {% endif %}
+        </div>
+      </div>
+
+      <div class="trip-video-features__content">
+        {% if section.settings.features_label != blank %}
+          <div class="features-label">
+            <span class="features-label__icon"></span>
+            <span class="features-label__text">{{ section.settings.features_label }}</span>
+          </div>
+        {% endif %}
+
+        <div class="features-list">
+          {% assign features = product.metafields.trip.trip_features.value %}
+          {% if features != blank %}
+            {% for feature in features %}
+              {% assign parts = feature | split: ' | ' %}
+              {% assign feature_name = parts[0] %}
+              {% assign feature_description = parts[1] %}
+
+              <div class="feature-item" data-feature-index="{{ forloop.index }}">
+                <div class="feature-item__header">
+                  <h3 class="feature-item__title">
+                    {% assign words = feature_name | split: ' ' %}
+                    {% assign first_word = words[0] %}
+                    {% assign remaining_words = '' %}
+                    {% for word in words offset: 1 %}
+                      {% if forloop.first %}
+                        {% assign remaining_words = word %}
+                      {% else %}
+                        {% assign remaining_words = remaining_words | append: ' ' | append: word %}
+                      {% endif %}
+                    {% endfor %}
+                    <span class="feature-item__name">{{ first_word }}</span>
+                    {% if remaining_words != blank %}
+                      <span class="feature-item__name-secondary"> {{ remaining_words }}</span>
+                    {% endif %}
+                  </h3>
+                  <button class="feature-item__toggle" aria-label="Toggle feature details">
+                    <span class="toggle-icon"></span>
+                  </button>
+                </div>
+                {% if feature_description != blank %}
+                  <div class="feature-item__content">
+                    <p>{{ feature_description }}</p>
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          {% else %}
+            {% comment %} Fallback features {% endcomment %}
+            <div class="feature-item">
+              <div class="feature-item__header">
+                <h3 class="feature-item__title">
+                  <span class="feature-item__name">Expert</span>
+                  <span class="feature-item__name-secondary">guides</span>
+                </h3>
+                <button class="feature-item__toggle" aria-label="Toggle feature details">
+                  <span class="toggle-icon"></span>
+                </button>
+              </div>
+              <div class="feature-item__content">
+                <p>Fish alongside seasoned Alaskan fly fishing pros who know the waters inside and out.</p>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .trip-video-features {
+    padding: 80px 0;
+    background-color: #E7E9EB;
+  }
+
+  .trip-video-features__left {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .trip-video-features__who-title {
+    font-size: 4rem;
+    font-weight: 900;
+    color: #000000;
+    margin-bottom: 0;
+    text-transform: uppercase;
+    letter-spacing: 0px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .trip-video-features__boxes {
+    display: flex;
+    gap: 15px;
+    flex-wrap: nowrap;
+  }
+
+  .trip-video-features__box {
+    background-color: transparent;
+    border: 2px solid #000000;
+    padding: 12px 20px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #000000;
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .trip-video-features__wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .trip-video-features__video {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #000000;
+  }
+
+  .video-embed,
+  .video-embed iframe,
+  .video-embed video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .video-placeholder {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .video-image-fallback {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .video-image-fallback img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .video-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #ffffff;
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
+
+  .features-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+
+  .features-label__icon {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background-color: #4A9FD8;
+  }
+
+  .features-label__text {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #000000;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .features-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .feature-item {
+    border-bottom: 1px solid #d1d5db;
+    padding: 18px 0;
+  }
+
+  .feature-item:last-child {
+    border-bottom: none;
+  }
+
+  .feature-item__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .feature-item__title {
+    font-size: 2rem;
+    font-weight: 400;
+    color: #000000;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .feature-item__name {
+    font-weight: 700;
+    color: #000000;
+  }
+
+  .feature-item__name-secondary {
+    font-weight: 300;
+    color: #9ca3af;
+    margin-left: 0.25rem;
+  }
+
+  .feature-item__toggle {
+    background: transparent;
+    border: 2px solid #000000;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+  }
+
+  .feature-item__toggle:hover {
+    background-color: #000000;
+  }
+
+  .feature-item__toggle:hover .toggle-icon::before,
+  .feature-item__toggle:hover .toggle-icon::after {
+    background-color: #ffffff;
+  }
+
+  .toggle-icon {
+    position: relative;
+    width: 14px;
+    height: 14px;
+    display: block;
+  }
+
+  .toggle-icon::before,
+  .toggle-icon::after {
+    content: '';
+    position: absolute;
+    background-color: #000000;
+    transition: all 0.2s ease;
+  }
+
+  .toggle-icon::before {
+    width: 14px;
+    height: 2px;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+  }
+
+  .toggle-icon::after {
+    width: 2px;
+    height: 14px;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+  }
+
+  .feature-item.active .toggle-icon::after {
+    opacity: 0;
+    transform: translateX(-50%) rotate(90deg);
+  }
+
+  .feature-item__content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    padding: 0;
+  }
+
+  .feature-item.active .feature-item__content {
+    max-height: 500px;
+    padding-top: 15px;
+  }
+
+  .feature-item__content p {
+    font-size: 1.125rem;
+    line-height: 1.7;
+    color: #6b7280;
+    margin: 0;
+    font-weight: 400;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  @media screen and (max-width: 768px) {
+    .trip-video-features {
+      padding: 60px 20px;
+    }
+
+    .trip-video-features__left {
+      gap: 20px;
+    }
+
+    .trip-video-features__who-title {
+      font-size: 2.5rem;
+    }
+
+    .trip-video-features__boxes {
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .trip-video-features__box {
+      width: 100%;
+    }
+
+    .trip-video-features__wrapper {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+
+    .feature-item__title {
+      font-size: 1.5rem;
+    }
+
+    .feature-item__toggle {
+      width: 28px;
+      height: 28px;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const featureItems = document.querySelectorAll('.feature-item');
+
+    // Open first item by default
+    if (featureItems.length > 0) {
+      featureItems[0].classList.add('active');
+    }
+
+    featureItems.forEach(item => {
+      const header = item.querySelector('.feature-item__header');
+
+      header.addEventListener('click', function() {
+        const isActive = item.classList.contains('active');
+
+        // Close all items
+        featureItems.forEach(i => i.classList.remove('active'));
+
+        // Open clicked item if it wasn't active
+        if (!isActive) {
+          item.classList.add('active');
+        }
+      });
+    });
+  });
+</script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Trip Video + Features",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "who_title",
+      "label": "Who's It For Title",
+      "default": "Who's It For?",
+      "info": "Main heading for who's it for section"
+    },
+    {
+      "type": "text",
+      "id": "features_label",
+      "label": "Features Label",
+      "default": "FEATURES",
+      "info": "Small label above features list"
+    },
+    {
+      "type": "paragraph",
+      "content": "Who's it for boxes are pulled from product.metafields.trip.who_its_for. Video is pulled from product.metafields.trip.trip_video. If no video exists, it will fallback to: 1) product.metafields.trip.trip_video_fallback_image, 2) product featured image, or 3) placeholder. Features are pulled from product.metafields.trip.trip_features (list of single line text in format: 'Feature Name | Description')."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Who's It For + Video + Features"
+    }
+  ]
+}
+{% endschema %}

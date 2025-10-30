@@ -1,0 +1,251 @@
+{% comment %}
+  Lodging & Accommodations Section
+  Two-column layout with image and details
+  Uses product metafields: trip.accommodations_image and trip.lodging_info (rich text)
+  Format: "SectionName:Content SectionName:Content"
+  Example: "Accommodations:Rio Palena Lodge offers... Food:Cuisine at Rio Palena... Connectivity:WiFi is available..."
+{% endcomment %}
+
+{% if section.settings.product %}
+  {% assign product = section.settings.product %}
+{% else %}
+  {% assign product = product %}
+{% endif %}
+
+{% comment %} Parse the rich text field to extract sections {% endcomment %}
+{% assign lodging_data = product.metafields.trip.lodging_info.value %}
+{% assign accommodations_content = "" %}
+{% assign food_content = "" %}
+{% assign connectivity_content = "" %}
+
+{% if lodging_data.children %}
+  {% comment %} Render the entire content first {% endcomment %}
+  {% assign full_text = "" %}
+  {% for item in lodging_data.children %}
+    {% if item.type == 'paragraph' %}
+      {% for child in item.children %}
+        {% assign full_text = full_text | append: child.value %}
+      {% endfor %}
+    {% elsif item.type == 'heading' %}
+      {% for child in item.children %}
+        {% assign full_text = full_text | append: child.value %}
+      {% endfor %}
+    {% endif %}
+  {% endfor %}
+
+  {% comment %} Now split by the section markers {% endcomment %}
+  {% assign parts_1 = full_text | split: "Accommodations:" %}
+  {% if parts_1.size > 1 %}
+    {% assign after_accommodations = parts_1[1] %}
+    {% assign parts_2 = after_accommodations | split: "Food:" %}
+    {% assign accommodations_content = parts_2[0] | strip %}
+
+    {% if parts_2.size > 1 %}
+      {% assign after_food = parts_2[1] %}
+      {% assign parts_3 = after_food | split: "Connectivity:" %}
+      {% assign food_content = parts_3[0] | strip %}
+
+      {% if parts_3.size > 1 %}
+        {% assign connectivity_content = parts_3[1] | strip %}
+      {% endif %}
+    {% endif %}
+  {% endif %}
+{% endif %}
+
+{% assign has_lodging_data = false %}
+{% if accommodations_content != blank or food_content != blank or connectivity_content != blank %}
+  {% assign has_lodging_data = true %}
+{% endif %}
+
+{% if has_lodging_data %}
+<section id="trip-lodging-{{ section.id }}" class="trip-lodging">
+  <div id="lodging" style="position: absolute; top: -70px;"></div>
+  <div class="container">
+    <h2 class="trip-lodging__title">
+      <span class="trip-lodging__title-main">Lodging &</span>
+      <span class="trip-lodging__title-sub">Accommodations</span>
+    </h2>
+
+    <div class="trip-lodging__top">
+      <div class="trip-lodging__image">
+        {% if product.metafields.trip.accommodations_image != blank %}
+          <img
+            src="{{ product.metafields.trip.accommodations_image | image_url: width: 800 }}"
+            alt="{{ product.metafields.trip.accommodations_image.alt | default: 'Lodge accommodations' }}"
+            loading="lazy"
+          >
+        {% else %}
+          {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
+        {% endif %}
+      </div>
+
+      <div class="trip-lodging__detail">
+        <h3 class="lodging-detail__title">Accommodations</h3>
+        <div class="lodging-detail__content">
+          {% if accommodations_content != blank %}
+            <p>{{ accommodations_content }}</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="trip-lodging__bottom">
+      <div class="trip-lodging__detail">
+        <h3 class="lodging-detail__title">Food</h3>
+        <div class="lodging-detail__content">
+          {% if food_content != blank %}
+            <p>{{ food_content }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="trip-lodging__detail">
+        <h3 class="lodging-detail__title">Connectivity</h3>
+        <div class="lodging-detail__content">
+          {% if connectivity_content != blank %}
+            <p>{{ connectivity_content }}</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .trip-lodging {
+    padding: 100px 0;
+    background-color: #ffffff;
+  }
+
+  .trip-lodging__title {
+    text-align: left;
+    margin-bottom: 3rem;
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    line-height: 1.1;
+    text-transform: uppercase;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 20px;
+  }
+
+  .trip-lodging__title-main {
+    display: block;
+    font-size: 3rem;
+    font-weight: 900;
+    color: #000000;
+    letter-spacing: 0.02em;
+  }
+
+  .trip-lodging__title-sub {
+    display: block;
+    font-size: 3rem;
+    font-weight: 900;
+    color: #b8b8b8;
+    letter-spacing: 0.02em;
+  }
+
+  .trip-lodging__top {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto 50px;
+    padding: 0 20px;
+  }
+
+  .trip-lodging__bottom {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .trip-lodging__image {
+    border-radius: 0;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .trip-lodging__image img,
+  .trip-lodging__image .placeholder-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .trip-lodging__detail {
+    background-color: transparent;
+    padding: 0;
+  }
+
+  .lodging-detail__title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #111827;
+    background: transparent;
+    padding: 0;
+    margin-bottom: 20px;
+    letter-spacing: 0.025em;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    border-left: none;
+    border-radius: 0;
+  }
+
+  .lodging-detail__content {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: #6b7280;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 300;
+    padding: 0;
+    background-color: transparent;
+  }
+
+  .lodging-detail__content p {
+    margin: 0 0 1rem 0;
+  }
+
+  .lodging-detail__content p:last-child {
+    margin-bottom: 0;
+  }
+
+  @media screen and (max-width: 768px) {
+    .trip-lodging {
+      padding: 60px 20px;
+    }
+
+    .trip-lodging__top,
+    .trip-lodging__bottom {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+
+    .trip-lodging__title-main,
+    .trip-lodging__title-sub {
+      font-size: 2rem;
+    }
+  }
+</style>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Lodging & Accommodations",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Trip Product"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lodging & Accommodations"
+    }
+  ]
+}
+{% endschema %}

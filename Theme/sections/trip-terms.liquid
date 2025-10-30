@@ -1,0 +1,277 @@
+{% comment %}
+  Trip Details & Terms Section with Collapsible Blocks
+{% endcomment %}
+
+{% assign has_terms_data = false %}
+{% if section.settings.use_metafield and product.metafields.trip.trip_terms != blank %}
+  {% assign has_terms_data = true %}
+{% elsif section.blocks.size > 0 %}
+  {% assign has_terms_data = true %}
+{% endif %}
+
+{% if has_terms_data %}
+<section id="trip-terms-{{ section.id }}" class="trip-terms">
+  <div id="terms" style="position: absolute; top: -70px;"></div>
+  <div class="container">
+    {% if section.settings.title != blank %}
+      <h2 class="trip-terms__title">{{ section.settings.title }}</h2>
+    {% endif %}
+
+    <div class="trip-terms__wrapper">
+      {% if section.settings.use_metafield and product.metafields.trip.trip_terms != blank %}
+        {% assign terms_items = product.metafields.trip.trip_terms.value %}
+        {% for item in terms_items %}
+          {% assign parts = item | split: '|' %}
+          {% if parts.size >= 2 %}
+            {% assign header = parts[0] | strip %}
+            {% assign subtext = parts[1] | strip %}
+            <div class="terms-item" data-terms>
+              <button class="terms-item__header">
+                <span class="terms-item__title">{{ header }}</span>
+                <svg class="terms-item__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                  <path d="M12 4v16m8-8H4" stroke="currentColor" stroke-width="2" fill="none"/>
+                </svg>
+              </button>
+              <div class="terms-item__content">
+                <div class="terms-item__inner">
+                  <p>{{ subtext }}</p>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        {% for block in section.blocks %}
+          <div class="terms-item" data-terms>
+            <button class="terms-item__header">
+              <span class="terms-item__title">{{ block.settings.header }}</span>
+              <svg class="terms-item__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                <path d="M12 4v16m8-8H4" stroke="currentColor" stroke-width="2" fill="none"/>
+              </svg>
+            </button>
+            <div class="terms-item__content">
+              <div class="terms-item__inner">
+                {{ block.settings.subtext }}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .trip-terms {
+    padding: 80px 0;
+    background-color: #ffffff;
+  }
+
+  .trip-terms__title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #000000;
+    margin: 0 0 3rem 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+  }
+
+  .trip-terms__wrapper {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .terms-item {
+    background: #f5f5f5;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .terms-item:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .terms-item__header {
+    width: 100%;
+    padding: 24px 28px;
+    background: #f5f5f5;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.3s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    gap: 15px;
+  }
+
+  .terms-item__header:hover {
+    background: #eeeeee;
+  }
+
+  .terms-item.active .terms-item__header {
+    background: #f5f5f5;
+  }
+
+  .terms-item__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #000000;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .terms-item__icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    transition: transform 0.3s ease;
+    color: #000000;
+  }
+
+  .terms-item.active .terms-item__icon {
+    transform: rotate(45deg);
+  }
+
+  .terms-item__content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+
+  .terms-item.active .terms-item__content {
+    max-height: 600px;
+  }
+
+  .terms-item__inner {
+    padding: 0 28px 28px 28px;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #000000;
+    background: #f5f5f5;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .terms-item__inner p {
+    margin: 0;
+  }
+
+  @media screen and (max-width: 968px) {
+    .trip-terms__wrapper {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .trip-terms {
+      padding: 60px 0;
+    }
+
+    .trip-terms__title {
+      font-size: 2.5rem;
+    }
+
+    .terms-item__header {
+      padding: 18px 22px;
+    }
+
+    .terms-item__title {
+      font-size: 1.1rem;
+    }
+
+    .terms-item__inner {
+      padding: 0 22px 22px 22px;
+      font-size: 0.95rem;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const termsItems = document.querySelectorAll('#trip-terms-{{ section.id }} [data-terms]');
+
+    termsItems.forEach(item => {
+      const header = item.querySelector('.terms-item__header');
+
+      header.addEventListener('click', function() {
+        item.classList.toggle('active');
+      });
+    });
+  });
+</script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Trip Details & Terms",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Trip Details & Terms"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_metafield",
+      "label": "Use Product Metafield",
+      "default": true,
+      "info": "Pull terms from product.metafields.trip.trip_terms. Format: [header]|[subtext]"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "term",
+      "name": "Term Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "header",
+          "label": "Header",
+          "default": "Cancellation Policy"
+        },
+        {
+          "type": "richtext",
+          "id": "subtext",
+          "label": "Subtext",
+          "default": "<p>Cancellations made 90 days or more before your trip receive a full refund. Please see our full terms for details.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trip Details & Terms",
+      "blocks": [
+        {
+          "type": "term",
+          "settings": {
+            "header": "Cancellation Policy",
+            "subtext": "<p>Cancellations made 90 days or more before your trip receive a full refund. Please see our full terms for details.</p>"
+          }
+        },
+        {
+          "type": "term",
+          "settings": {
+            "header": "What's Included",
+            "subtext": "<p>All accommodations, meals, guided fishing, equipment, and round-trip floatplane transfers from Dillingham.</p>"
+          }
+        },
+        {
+          "type": "term",
+          "settings": {
+            "header": "Travel Requirements",
+            "subtext": "<p>Valid government-issued ID required. Alaska fishing license must be purchased prior to arrival.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

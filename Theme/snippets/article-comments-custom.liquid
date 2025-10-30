@@ -1,0 +1,366 @@
+{%- assign approved_count = article.comments | size -%}
+
+<section id="comments" class="cbox">
+  <div class="cbox__head">
+    <h2 class="cbox__title">Comments</h2>
+    <span class="cbox__count">({{ approved_count }})</span>
+  </div>
+
+  {%- if blog.moderated? and comment and comment.status != 'published' -%}
+    <article class="citem citem--pending">
+      <div class="citem__avatar">{{ comment.author | slice: 0, 1 | upcase }}</div>
+      <div class="citem__meta">
+        <div class="citem__author">{{ comment.author }}</div>
+        <div class="citem__date">Just now • <em>Awaiting moderation</em></div>
+      </div>
+      <div class="citem__body rte">{{ comment.content }}</div>
+    </article>
+  {%- endif -%}
+
+  {%- if approved_count > 0 -%}
+    <div id="cm-list" class="clist">
+      {%- comment -%} First 5 comments (approved) {%- endcomment -%}
+      {%- for c in article.comments limit: 5 -%}
+        <article class="citem" id="comment-{{ c.id }}">
+          <div class="citem__avatar">{{ c.author | slice: 0, 1 | upcase }}</div>
+          <div class="citem__meta">
+            <div class="citem__author">{{ c.author }}</div>
+            <div class="citem__date">{{ c.created_at | date: '%b %e, %Y' }}</div>
+          </div>
+          <div class="citem__body rte">{{ c.content }}</div>
+        </article>
+      {%- endfor -%}
+    </div>
+
+    {%- comment -%} Remaining comments go into a template; JS reveals them in batches {%- endcomment -%}
+    {%- if approved_count > 5 -%}
+      <template id="cm-rest">
+        {%- for c in article.comments offset: 5 -%}
+          <article class="citem" id="comment-{{ c.id }}" data-cm-hidden>
+            <div class="citem__avatar">{{ c.author | slice: 0, 1 | upcase }}</div>
+            <div class="citem__meta">
+              <div class="citem__author">{{ c.author }}</div>
+              <div class="citem__date">{{ c.created_at | date: '%b %e, %Y' }}</div>
+            </div>
+            <div class="citem__body rte">{{ c.content }}</div>
+          </article>
+        {%- endfor -%}
+      </template>
+
+      <p class="cbox__load">
+        <button type="button" id="cm-more" class="cbox__loadBtn" data-batch="5">Load More</button>
+      </p>
+    {%- endif -%}
+  {%- else -%}
+    <p class="cbox__empty">No comments yet. Be the first!</p>
+  {%- endif -%}
+
+  {%- assign open_form = false -%}
+  {%- if approved_count == 0 or form.errors -%}{%- assign open_form = true -%}{%- endif -%}
+
+  <div class="cformWrap{% unless open_form %} is-collapsed{% endunless %}">
+    <button
+      class="cform__toggle"
+      type="button"
+      aria-controls="article-comment-form"
+      aria-expanded="{% if open_form %}true{% else %}false{% endif %}"
+    >
+      Comment
+    </button>
+
+    <div
+      id="article-comment-form"
+      class="cform__panel"
+      {% unless open_form %}
+        hidden
+      {% endunless %}
+    >
+      {%- form 'new_comment', article, class: 'cform' -%}
+        {%- if form.posted_successfully? -%}
+          <p class="calert calert--ok" data-autodismiss="1">
+            {%- if blog.moderated? -%}
+              Thanks! Your comment was submitted and is awaiting moderation.
+            {%- else -%}
+              Thanks! Your comment has been posted.
+            {%- endif -%}
+          </p>
+        {%- endif -%}
+
+        {%- if form.errors -%}
+          <div class="calert calert--error" id="comment-form-errors">
+            <ul class="calert__list" role="list">
+              {%- for field in form.errors -%}
+                <li>
+                  {% if field == 'form' -%}
+                    {{- form.errors.messages[field] -}}
+                  {%- else -%}
+                    {{- form.errors.translated_fields[field] | capitalize }}
+                    {{ form.errors.messages[field] -}}
+                  {%- endif %}
+                </li>
+              {%- endfor -%}
+            </ul>
+          </div>
+        {%- endif -%}
+
+        <label class="clabel" for="c-author">Name</label>
+        <input
+          id="c-author"
+          class="cinput"
+          type="text"
+          name="comment[author]"
+          value="{{ form.author }}"
+          required
+          autocomplete="name"
+        >
+
+        <label class="clabel" for="c-email">Email</label>
+        <input
+          id="c-email"
+          class="cinput"
+          type="email"
+          name="comment[email]"
+          value="{{ form.email }}"
+          required
+          autocomplete="email"
+          {% if form.errors contains 'email' %}
+            aria-invalid="true" aria-describedby="comment-form-errors"
+          {% endif %}
+        >
+
+        <label class="clabel" for="c-body">Comment</label>
+        <textarea id="c-body" class="ctextarea" name="comment[body]" rows="5" required>{{ form.body }}</textarea>
+
+        <div class="cactions">
+          <button class="cbtn" type="submit">Comment</button>
+        </div>
+      {%- endform -%}
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    var moreBtn = document.getElementById('cm-more');
+    if (moreBtn) {
+      var tpl = document.getElementById('cm-rest');
+      var list = document.getElementById('cm-list');
+      if (tpl && list) {
+        // materialize the template once, keep items hidden
+        list.insertAdjacentHTML('beforeend', tpl.innerHTML);
+        var hidden = [].slice.call(list.querySelectorAll('[data-cm-hidden]'));
+        var batch = parseInt(moreBtn.getAttribute('data-batch'), 10) || 5;
+        var i = 0;
+        function showMore() {
+          for (var j = 0; j < batch && i < hidden.length; j++, i++) {
+            hidden[i].removeAttribute('data-cm-hidden');
+            hidden[i].style.display = '';
+          }
+          if (i >= hidden.length) moreBtn.style.display = 'none';
+        }
+        // initially keep the “rest” hidden
+        hidden.forEach(function (el) {
+          el.style.display = 'none';
+        });
+        moreBtn.addEventListener('click', showMore);
+        // first click reveals first batch of the “rest”
+      }
+    }
+
+    // Toggle comment form + smooth scroll
+    var wrap = document.querySelector('.cformWrap');
+    if (wrap) {
+      var toggle = wrap.querySelector('.cform__toggle');
+      var panel = wrap.querySelector('#article-comment-form');
+      toggle &&
+        toggle.addEventListener('click', function () {
+          var hidden = panel.hasAttribute('hidden');
+          if (hidden) {
+            panel.removeAttribute('hidden');
+            wrap.classList.remove('is-collapsed');
+            toggle.setAttribute('aria-expanded', 'true');
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          } else {
+            panel.setAttribute('hidden', '');
+            wrap.classList.add('is-collapsed');
+            toggle.setAttribute('aria-expanded', 'false');
+          }
+        });
+    }
+
+    // Auto-dismiss success notice after submit
+    var ok = document.querySelector('.calert--ok[data-autodismiss]');
+    if (ok)
+      setTimeout(function () {
+        ok.style.display = 'none';
+      }, 5000);
+  })();
+</script>
+
+<style>
+  .cbox {
+    background: #fff;
+    border: 1px solid #e6ecf2;
+    border-radius: 12px;
+    padding: 18px;
+    margin-top: 20px;
+  }
+  .cbox__head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .cbox__title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin: 0;
+  }
+  .cbox__count {
+    color: #6b7280;
+    font-weight: 600;
+  }
+  .cbox__empty {
+    color: #6b7280;
+  }
+  .cbox__load {
+    text-align: center;
+    margin: 16px 0 4px;
+  }
+  .cbox__loadBtn {
+    display: inline-block;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: #f3f4f6;
+    color: #000;
+    text-decoration: none;
+    font-weight: 600;
+    width: 100%;
+  }
+  .cbox__loadBtn:hover {
+    background: #e5e7eb;
+  }
+
+  .clist {
+    display: grid;
+    gap: 14px;
+  }
+  .citem {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    grid-template-areas: 'ava meta' 'ava body';
+    gap: 8px 12px;
+    border: 1px solid #e9eef3;
+    border-radius: 10px;
+    background: #fff;
+    padding: 12px;
+  }
+  .citem--pending {
+    border-style: dashed;
+    background: #f8fafc;
+  }
+  .citem__avatar {
+    grid-area: ava;
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    background: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    color: #374151;
+  }
+  .citem__meta {
+    grid-area: meta;
+    display: flex;
+    flex-direction: column;
+  }
+  .citem__author {
+    font-weight: 800;
+    font-size: 0.95rem;
+  }
+  .citem__date {
+    color: #6b7280;
+    font-size: 0.85rem;
+  }
+  .citem__body {
+    grid-area: body;
+    color: #1f2937;
+  }
+
+  .cformWrap {
+    margin-top: 18px;
+  }
+  .cform__toggle {
+    display: inline-block;
+    background: #2f7fbf;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .cform__panel {
+    margin-top: 12px;
+  }
+  .cformWrap.is-collapsed .cform__panel {
+    display: block;
+  } /* visibility via [hidden] */
+
+  .clabel {
+    display: block;
+    font-size: 0.85rem;
+    color: #475569;
+    margin: 8px 0 4px;
+  }
+  .cinput,
+  .ctextarea {
+    width: 100%;
+    border: 1px solid #cfd8e3;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+  }
+  .ctextarea {
+    resize: vertical;
+  }
+  .cactions {
+    text-align: right;
+    margin-top: 10px;
+  }
+  .cbtn {
+    background: #2f7fbf;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .cbtn:hover {
+    background: #296fa6;
+  }
+
+  .calert {
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin: 10px 0;
+    font-size: 0.95rem;
+  }
+  .calert--ok {
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+  }
+  .calert--error {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+  .calert__list {
+    margin: 0;
+    padding-left: 18px;
+  }
+</style>

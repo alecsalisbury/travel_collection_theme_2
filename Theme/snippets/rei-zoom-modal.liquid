@@ -1,0 +1,293 @@
+{%- comment -%}
+REI-Style Zoom Modal Component
+Provides fullscreen image viewing with 3 zoom levels (100%, 200%, 300%)
+{%- endcomment -%}
+
+<div id="rei-zoom-modal" class="rei-zoom-modal" aria-hidden="true" role="dialog">
+  <div class="rei-zoom-modal__backdrop"></div>
+  
+  <div class="rei-zoom-modal__container">
+    <div class="rei-zoom-modal__header">
+      <button class="rei-zoom-modal__close" aria-label="Close zoom">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
+        </svg>
+      </button>
+    </div>
+    
+    <div class="rei-zoom-modal__image-container">
+      <div class="rei-zoom-modal__image-wrapper">
+        <img class="rei-zoom-modal__image" src="" alt="" width="800" height="600" draggable="false">
+      </div>
+    </div>
+    
+    <div class="rei-zoom-modal__navigation">
+      <button class="rei-zoom-modal__nav rei-zoom-modal__nav--prev" aria-label="Previous image">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/>
+        </svg>
+      </button>
+      
+      <button class="rei-zoom-modal__nav rei-zoom-modal__nav--next" aria-label="Next image">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="currentColor"/>
+        </svg>
+      </button>
+    </div>
+    
+    <div class="rei-zoom-modal__zoom-controls">
+      <button class="rei-zoom-modal__zoom-in" aria-label="Zoom in">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/>
+        </svg>
+      </button>
+      
+      <span class="rei-zoom-modal__zoom-level">100%</span>
+      
+      <button class="rei-zoom-modal__zoom-out" aria-label="Zoom out">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M19 13H5v-2h14v2z" fill="currentColor"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+.rei-zoom-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.rei-zoom-modal[aria-hidden="false"] {
+  display: block;
+  opacity: 1;
+}
+
+.rei-zoom-modal__backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #FFF;
+}
+
+.rei-zoom-modal__container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.rei-zoom-modal__header {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 60px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 20px;
+  z-index: 2;
+}
+
+.rei-zoom-modal__zoom-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 24px;
+  padding: 8px 16px;
+  z-index: 2;
+}
+
+.rei-zoom-modal__zoom-out,
+.rei-zoom-modal__zoom-in {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.rei-zoom-modal__zoom-out:hover,
+.rei-zoom-modal__zoom-in:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.rei-zoom-modal__zoom-out:disabled,
+.rei-zoom-modal__zoom-in:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.rei-zoom-modal__zoom-level {
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 40px;
+  text-align: center;
+}
+
+.rei-zoom-modal__close {
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+}
+
+.rei-zoom-modal__close:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.rei-zoom-modal__image-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rei-zoom-modal__image-wrapper {
+  position: relative;
+  transition: transform 0.3s ease;
+  cursor: grab;
+}
+
+.rei-zoom-modal__image-wrapper.is-dragging {
+  cursor: grabbing;
+}
+
+.rei-zoom-modal__image {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+  user-select: none;
+  transition: transform 0.3s ease;
+}
+
+.rei-zoom-modal__navigation {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.rei-zoom-modal__nav {
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 12px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  pointer-events: auto;
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+}
+
+.rei-zoom-modal:hover .rei-zoom-modal__nav {
+  opacity: 1;
+}
+
+.rei-zoom-modal__nav:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: scale(1.1);
+}
+
+.rei-zoom-modal__nav:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Popup zoom cursor styles */
+.product-gallery__carousel--popup-zoom .product-gallery__image {
+  cursor: zoom-in;
+}
+
+.product-gallery__carousel--popup-zoom .product-gallery__image:hover {
+  cursor: zoom-in;
+}
+
+/* Disable Drift.js zoom effects when popup mode is enabled */
+.product-gallery__carousel--popup-zoom .drift-zoom-pane {
+  display: none !important;
+}
+
+.product-gallery__carousel--popup-zoom .drift-bounding-box {
+  display: none !important;
+}
+
+.product-gallery__carousel--popup-zoom .product-gallery__image.drift-demo-trigger {
+  transform: none !important;
+}
+
+.product-gallery__carousel--popup-zoom .product-gallery__image.drift-demo-trigger:hover {
+  transform: none !important;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .rei-zoom-modal__header {
+    height: 50px;
+    padding: 0 16px;
+  }
+  
+  .rei-zoom-modal__zoom-controls {
+    bottom: 16px;
+    left: 16px;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+  }
+  
+  .rei-zoom-modal__navigation {
+    padding: 0 16px;
+  }
+  
+  .rei-zoom-modal__nav {
+    padding: 8px;
+    width: 40px;
+    height: 40px;
+  }
+  
+  /* On mobile, still show zoom-in cursor for popup mode */
+  .product-gallery__carousel--popup-zoom .product-gallery__image {
+    cursor: zoom-in;
+  }
+}
+</style>

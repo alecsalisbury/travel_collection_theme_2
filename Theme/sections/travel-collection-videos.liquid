@@ -1,0 +1,425 @@
+{% comment %}
+  Travel Collection Videos Section
+  Displays collection videos in a dynamic grid layout
+  Opens videos in a lightbox/modal
+{% endcomment %}
+
+{%- liquid
+  assign collection_videos = collection.metafields.travel.collection_videos.value | default: collection.metafields.travel.collection_videos
+  assign video_count = 0
+  if collection_videos != blank
+    assign video_count = collection_videos.size
+  endif
+-%}
+
+{% if video_count > 0 %}
+<style>
+  .travel-videos {
+    padding: 0;
+    background-color: #000000;
+  }
+
+  .travel-videos__container {
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
+  }
+
+  .travel-videos__grid {
+    display: grid;
+    gap: 0;
+    {% if video_count == 1 %}
+      grid-template-columns: 1fr;
+    {% elsif video_count == 2 %}
+      grid-template-columns: repeat(2, 1fr);
+    {% else %}
+      grid-template-columns: repeat(3, 1fr);
+    {% endif %}
+  }
+
+  .travel-video-item {
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    background-color: #1a1a1a;
+  }
+
+  .travel-video-item__thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .travel-video-item:hover .travel-video-item__thumbnail {
+    transform: scale(1.05);
+  }
+
+  .travel-video-item__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.6) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease;
+  }
+
+  .travel-video-item:hover .travel-video-item__overlay {
+    background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.7) 100%);
+  }
+
+  .travel-video-item__play-button {
+    width: 80px;
+    height: 80px;
+    background-color: #3E90C5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(62, 144, 197, 0.4);
+  }
+
+  .travel-video-item:hover .travel-video-item__play-button {
+    transform: scale(1.1);
+    background-color: #2E7AAC;
+  }
+
+  .travel-video-item__play-icon {
+    width: 0;
+    height: 0;
+    border-left: 24px solid #FFFFFF;
+    border-top: 14px solid transparent;
+    border-bottom: 14px solid transparent;
+    margin-left: 6px;
+  }
+
+  .travel-video-item__title {
+    display: none;
+  }
+
+  /* Lightbox/Modal Styles */
+  .travel-video-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.95);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .travel-video-modal.active {
+    display: flex;
+  }
+
+  .travel-video-modal__content {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    max-height: 100vh;
+  }
+
+  .travel-video-modal__content::before {
+    content: '';
+    display: block;
+    padding-top: 56.25%; /* 16:9 aspect ratio */
+  }
+
+  .travel-video-modal__video-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .travel-video-modal__close {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    color: #FFFFFF;
+    font-size: 32px;
+    cursor: pointer;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s ease;
+    z-index: 10000;
+  }
+
+  .travel-video-modal__close:hover {
+    color: #3E90C5;
+  }
+
+  #video-container {
+    width: 100%;
+    height: 100%;
+  }
+
+  .travel-video-modal__video,
+  .travel-video-modal__iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  @media (max-width: 768px) {
+    .travel-videos__grid {
+      grid-template-columns: 1fr !important;
+    }
+
+    .travel-video-item__title {
+      font-size: 18px;
+      bottom: 16px;
+      left: 16px;
+    }
+
+    .travel-video-item__play-button {
+      width: 60px;
+      height: 60px;
+    }
+
+    .travel-video-item__play-icon {
+      border-left-width: 18px;
+      border-top-width: 10px;
+      border-bottom-width: 10px;
+    }
+
+    .travel-videos {
+      padding: 0;
+    }
+
+    .travel-video-modal__content {
+      width: 100%;
+    }
+
+    .travel-video-modal__close {
+      top: 10px;
+      right: 10px;
+      font-size: 28px;
+    }
+  }
+</style>
+
+<section class="travel-videos">
+  <div class="travel-videos__container">
+    <div class="travel-videos__grid">
+
+      {% for video in collection_videos %}
+        {%- liquid
+          # Determine if it's a video file or URL
+          assign video_url = ''
+          assign video_type = 'video/mp4'
+          assign thumbnail_url = ''
+          assign youtube_id = ''
+
+          if video.src
+            assign video_url = video.src
+            # Try to get a preview image
+            assign thumbnail_url = video.preview_image.src | default: video.src
+          else
+            assign video_url = video
+          endif
+
+          # Extract YouTube ID and generate thumbnail URL
+          if video_url contains 'youtube.com/watch?v='
+            assign youtube_parts = video_url | split: 'watch?v='
+            assign youtube_id = youtube_parts[1] | split: '&' | first
+          elsif video_url contains 'youtu.be/'
+            assign youtube_parts = video_url | split: 'youtu.be/'
+            assign youtube_id = youtube_parts[1] | split: '?' | first
+          elsif video_url contains 'youtube.com/embed/'
+            assign youtube_parts = video_url | split: 'embed/'
+            assign youtube_id = youtube_parts[1] | split: '?' | first
+          endif
+
+          if youtube_id != blank
+            assign thumbnail_url = 'https://img.youtube.com/vi/' | append: youtube_id | append: '/maxresdefault.jpg'
+          endif
+
+          # Set video title from settings or default
+          assign video_title = 'Video Title'
+          case forloop.index
+            when 1
+              assign video_title = section.settings.video_title_1 | default: 'Video Title'
+            when 2
+              assign video_title = section.settings.video_title_2 | default: 'Video Title'
+            when 3
+              assign video_title = section.settings.video_title_3 | default: 'Video Title'
+            when 4
+              assign video_title = section.settings.video_title_4 | default: 'Video Title'
+            when 5
+              assign video_title = section.settings.video_title_5 | default: 'Video Title'
+          endcase
+        -%}
+
+        <div class="travel-video-item" data-video-url="{{ video_url }}" data-video-index="{{ forloop.index }}">
+          {% if thumbnail_url != blank %}
+            <img src="{{ thumbnail_url }}" alt="{{ video_title }}" class="travel-video-item__thumbnail" loading="lazy">
+          {% else %}
+            <div class="travel-video-item__thumbnail" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+          {% endif %}
+
+          <div class="travel-video-item__overlay">
+            <div class="travel-video-item__play-button">
+              <div class="travel-video-item__play-icon"></div>
+            </div>
+          </div>
+
+          <div class="travel-video-item__title">{{ video_title }}</div>
+        </div>
+      {% endfor %}
+
+    </div>
+  </div>
+</section>
+
+<!-- Video Modal -->
+<div class="travel-video-modal" id="travel-video-modal">
+  <div class="travel-video-modal__content">
+    <button class="travel-video-modal__close" id="close-video-modal">&times;</button>
+    <div class="travel-video-modal__video-wrapper">
+      <div id="video-container"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const videoItems = document.querySelectorAll('.travel-video-item');
+  const modal = document.getElementById('travel-video-modal');
+  const videoContainer = document.getElementById('video-container');
+  const closeButton = document.getElementById('close-video-modal');
+
+  function getYouTubeId(url) {
+    const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[7].length == 11) ? match[7] : false;
+  }
+
+  function getVimeoId(url) {
+    const regExp = /vimeo.*\/(\d+)/i;
+    const match = url.match(regExp);
+    return match ? match[1] : false;
+  }
+
+  videoItems.forEach(item => {
+    item.addEventListener('click', function() {
+      const videoUrl = this.getAttribute('data-video-url');
+      let videoHtml = '';
+
+      // Check if it's a YouTube URL
+      const youtubeId = getYouTubeId(videoUrl);
+      if (youtubeId) {
+        videoHtml = `<iframe class="travel-video-modal__iframe" src="https://www.youtube.com/embed/${youtubeId}?autoplay=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+      }
+      // Check if it's a Vimeo URL
+      else {
+        const vimeoId = getVimeoId(videoUrl);
+        if (vimeoId) {
+          videoHtml = `<iframe class="travel-video-modal__iframe" src="https://player.vimeo.com/video/${vimeoId}?autoplay=1" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+        }
+        // Otherwise treat as direct video file
+        else {
+          videoHtml = `<video class="travel-video-modal__video" controls autoplay><source src="${videoUrl}" type="video/mp4">Your browser does not support the video tag.</video>`;
+        }
+      }
+
+      videoContainer.innerHTML = videoHtml;
+      modal.classList.add('active');
+    });
+  });
+
+  function closeModal() {
+    modal.classList.remove('active');
+    videoContainer.innerHTML = '';
+  }
+
+  closeButton.addEventListener('click', closeModal);
+
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+
+  // Close on Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && modal.classList.contains('active')) {
+      closeModal();
+    }
+  });
+});
+</script>
+
+{% endif %}
+
+{% schema %}
+{
+  "name": "Travel Videos",
+  "class": "travel-collection-videos-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Videos"
+    },
+    {
+      "type": "paragraph",
+      "content": "Videos are pulled from collection.metafields.travel.collection_videos. Configure video titles below."
+    },
+    {
+      "type": "text",
+      "id": "video_title_1",
+      "label": "Video 1 title",
+      "default": "VIDEO TITLE"
+    },
+    {
+      "type": "text",
+      "id": "video_title_2",
+      "label": "Video 2 title",
+      "default": "VIDEO TITLE"
+    },
+    {
+      "type": "text",
+      "id": "video_title_3",
+      "label": "Video 3 title",
+      "default": "VIDEO TITLE"
+    },
+    {
+      "type": "text",
+      "id": "video_title_4",
+      "label": "Video 4 title",
+      "default": "VIDEO TITLE"
+    },
+    {
+      "type": "text",
+      "id": "video_title_5",
+      "label": "Video 5 title",
+      "default": "VIDEO TITLE"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Travel Collection Videos"
+    }
+  ]
+}
+{% endschema %}

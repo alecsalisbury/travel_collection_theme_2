@@ -1,0 +1,200 @@
+{% unless section.settings.hide_on_url_contains != blank and request.path contains section.settings.hide_on_url_contains %}
+
+{{ 'blog-hero.css' | asset_url | stylesheet_tag }}
+
+{%- if section.settings.show_search_bar -%}
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Ensure the BlogHeroSection is initialized
+      if (typeof window.BlogHeroSection === 'undefined') {
+        console.warn('BlogHeroSection not found, search functionality may not work');
+      }
+    });
+  </script>
+{%- endif -%}
+
+<style>
+  /* Section-specific customization styles */
+  #shopify-section-{{ section.id }},
+  #shopify-section-{{ section.id }} :is(.heading, .rte h1, .rte h2, .rte h3, .rte h4, .rte h5, .rte h6):not(.blog-search-bar__empty-state p) {
+    color: {{ section.settings.color }};
+  }
+
+  @media screen and (min-width: 641px) {
+    #shopify-section-{{ section.id }} .page__title {
+      font-size: {{ section.settings.title_font_size }}px;
+    }
+  }
+
+  {% if section.settings.title_font_family == "condensed" %}
+    #shopify-section-{{ section.id }} .page__title {
+      font-family: "Roboto Condensed", sans-serif;
+    }
+  {% endif %}
+
+  /* Ensure the hero section doesn't clip the search results */
+  #shopify-section-{{ section.id }} {
+    overflow: visible !important;
+  }
+
+  #shopify-section-{{ section.id }} .page__header {
+    overflow: visible !important;
+    margin-bottom: 0;
+  }
+</style>
+
+<header class="page__header page__header--stack page__header--centered page__header--image {% if section.settings.show_image_overlay %}page__header--overlay{% endif %}" data-section-id="{{ section.id }}" data-section-type="blog-hero" {% if settings.enable_banner_max_width %}style="max-width: {{ settings.banner_max_width }}px; margin-left: auto; margin-right: auto;"{% endif %}>
+  {%- if section.settings.image != blank -%}
+    {{- section.settings.image | image_url: width: section.settings.width | image_tag: loading: 'lazy', widths: '300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000', class: 'page__header-image' -}}
+  {%- else -%}
+    {{ 'lifestyle-1' | placeholder_svg_tag: 'page__header-image page__header-image--placeholder' }}
+  {%- endif -%}
+
+  {%- if section.settings.content != blank or section.settings.title != blank or section.settings.show_search_bar -%}
+    <div class="page__header-content container--narrow">
+      {%- if section.settings.title != blank -%}
+        <h1 class="page__title heading h1">{{ section.settings.title | escape }}</h1>
+      {%- endif -%}
+      {%- if section.settings.content != blank -%}
+        <div class="page__description rte">
+          {{ section.settings.content }}
+        </div>
+      {%- endif -%}
+      
+      {%- if section.settings.show_search_bar -%}
+        <div class="blog-hero__search-wrapper">
+          <form action="{{ routes.search_url }}" method="get" role="search" class="blog-search-bar">
+            <input type="hidden" name="type" value="article">
+            
+            <div class="blog-search-bar__input-wrapper">
+              <button type="submit" class="blog-search-bar__submit" aria-label="{{ 'header.search.submit' | t }}">
+                {%- render 'icon', icon: 'search' -%}
+                {%- render 'icon', icon: 'search-loader' -%}
+              </button>
+              
+              <input class="blog-search-bar__input" 
+                     type="text" 
+                     name="q" 
+                     autocomplete="off" 
+                     autocorrect="off" 
+                     aria-label="{{ section.settings.search_placeholder | default: 'Search the blog' }}" 
+                     placeholder="{{ section.settings.search_placeholder | default: 'Search the blog' }}">
+              
+              <button type="button" class="blog-search-bar__input-clear" data-action="clear-blog-input">
+                <span class="visually-hidden">{{ 'header.search.clear' | t }}</span>
+                {%- render 'icon', icon: 'close' -%}
+              </button>
+            </div>
+            
+            <div class="blog-search-bar__results" aria-hidden="true">
+              <div class="blog-search-bar__results-inner">
+                <!-- Results populated via AJAX -->
+              </div>
+            </div>
+          </form>
+        </div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+</header>
+{% endunless %}
+
+{% schema %}
+{
+  "name": "Blog hero",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Image will be dynamically resized to fit into the box. To prevent image cut, please use Slideshow section instead."
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image",
+      "info": "2000 x 650px .jpg recommended"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Blog hero"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "min": 12,
+      "max": 84,
+      "step": 2,
+      "unit": "px",
+      "label": "Title size",
+      "default": 32
+    },
+    {
+      "type": "select",
+      "id": "title_font_family",
+      "label": "Title font family",
+      "options": [
+        {
+          "value": "normal",
+          "label": "Normal"
+        },
+        {
+          "value": "condensed",
+          "label": "Condensed"
+        }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "Content",
+      "default": "<p>Use overlay text to give your customers insight into your brand. Select imagery and text that relates to your style and story.</p>"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image_overlay",
+      "label": "Show image overlay",
+      "info": "Increase text readability on busy images.",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "color",
+      "label": "Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "text",
+      "id": "hide_on_url_contains",
+      "label": "Hide when URL contains",
+      "info": "Enter text to hide this section when the URL contains that text. Leave blank to disable."
+    },
+    {
+      "type": "header",
+      "content": "Search Bar"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search_bar",
+      "label": "Show search bar",
+      "default": false,
+      "info": "Display a search bar that searches only blog articles"
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Search placeholder text",
+      "default": "Search the blog",
+      "info": "Placeholder text shown in the search input"
+    }
+  ],
+  "presets": [
+    {
+      "category": "Image",
+      "name": "Blog hero",
+      "settings": {}
+    }
+  ]
+}
+{% endschema %}

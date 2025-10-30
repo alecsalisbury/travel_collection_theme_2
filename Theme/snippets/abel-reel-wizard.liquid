@@ -1,0 +1,2677 @@
+{% comment %}
+  ABEL ORDERING INSTRUCTIONS (no Spare Spool)
+  -------------------------------------------
+  • Renders only when:
+    - product.vendor == "Abel"
+    - product.type == "Reels" (or product.product_type == "Reels")
+    - product.title does NOT contain "Spare Spool"
+  • Set the block title in the editor (e.g., "How to Order Your Abel Reel")
+
+  WIZARD INSTRUCTIONS:
+  1. Start with the Abel Reel Builder:
+     Use the Abel Reel Builder at https://abelreels.com/products/fly-reels.html
+     to configure your reel with your desired size, finish, drag, and other custom options.
+     This tool helps you see all available choices and ensure they work together.
+
+  2. Match Your Configuration on Our Website:
+     Once you've finalized your reel in the builder, return to our website and match
+     your selections from the options provided.
+
+  3. Add to Cart and Checkout:
+     After matching your configuration, add the reel to your cart and proceed with checkout.
+
+  By following these steps, you'll avoid any mismatched options and get the exact Abel reel
+  you've customized. If you have any questions or need assistance, feel free to reach out!
+
+  -------------------------------------------
+  Abel Reel Builder Wizard
+  Base product: Current product page
+  Tier products: custom-abel-reel-options
+
+  DATA STRUCTURE FOR EASY EDITING:
+  - Add/remove options in the data capture sections below
+  - Each option needs: value, data-tier, data-price
+  - data-tier="None" means no variant needed (base features)
+  - data-tier matches variant title in custom-abel-reel-options product
+{% endcomment %}
+
+{% assign option_product = all_products['custom-abel-reel-options'] %}
+{% assign base_product = product %}
+
+{% if option_product == blank %}
+  <div class="error-message">
+    Error: Could not load tier products. Please ensure "custom-abel-reel-options" product exists.
+  </div>
+{% endif %}
+
+<div class="abel-wizard-container" data-product-handle="custom-abel-reel-options">
+
+  {% comment %} Running Total Display {% endcomment %}
+  <div class="running-total-bar">
+    <span class="total-label">Your Total:</span>
+    <span class="total-amount" id="running-total">$0.00</span>
+  </div>
+
+  {% comment %} Progress Bar {% endcomment %}
+  <div class="wizard-progress">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+    <div class="progress-steps">
+      <div class="progress-step active" data-step="1">
+        <span class="step-number">1</span>
+        <span class="step-label">Instructions</span>
+      </div>
+      <div class="progress-step" data-step="2">
+        <span class="step-number">2</span>
+        <span class="step-label">Basics</span>
+      </div>
+      <div class="progress-step" data-step="3">
+        <span class="step-number">3</span>
+        <span class="step-label">Finish</span>
+      </div>
+      <div class="progress-step" data-step="4">
+        <span class="step-number">4</span>
+        <span class="step-label">Knob</span>
+      </div>
+      <div class="progress-step" data-step="5">
+        <span class="step-number">5</span>
+        <span class="step-label">Engraving</span>
+      </div>
+      <div class="progress-step" data-step="6">
+        <span class="step-number">6</span>
+        <span class="step-label">Titanium</span>
+      </div>
+      <div class="progress-step" data-step="7">
+        <span class="step-number">7</span>
+        <span class="step-label">Handle</span>
+      </div>
+      <div class="progress-step" data-step="8">
+        <span class="step-number">8</span>
+        <span class="step-label">Review</span>
+      </div>
+    </div>
+  </div>
+
+  <form id="abel-wizard-form">
+
+    {% comment %} Step 1: Instructions & Notice {% endcomment %}
+    <div class="wizard-step active" data-step="1">
+      <h2 class="step-title">Before You Begin</h2>
+      <div class="step-content">
+
+        <div class="special-order-notice">
+          <h3>⚠️ Abel Special Order Notice</h3>
+          <p>We have limited stock of this product as most are made to order by Abel. You may see a backorder notification in your shopping cart, and/or receive an e-mail about it. This indicates that we are out of stock and the product will ship from the manufacturer.</p>
+          <p><strong>The lead time on Abel Fly Reels is roughly 4–6 weeks.</strong> Please keep this in mind when placing your order.</p>
+        </div>
+
+        <div class="ordering-instructions">
+          <h3>How to Order Your Abel Reel</h3>
+          <ol>
+            <li>
+              <strong>Start with the Abel Reel Builder:</strong> Use the <a href="https://abelreels.com/products/fly-reels.html" target="_blank" rel="noopener">Abel Reel Builder</a> to configure your reel with your desired size, finish, drag, and other custom options. This tool helps you see all available choices and ensure they work together.
+            </li>
+            <li>
+              <strong>Match Your Configuration on Our Website:</strong> Once you've finalized your reel in the builder, return to our website and match your selections from the options provided.
+            </li>
+            <li>
+              <strong>Add to Cart and Checkout:</strong> After matching your configuration, add the reel to your cart and proceed with checkout.
+            </li>
+          </ol>
+          <p class="instructions-note">By following these steps, you'll avoid any mismatched options and get the exact Abel reel you've customized.</p>
+        </div>
+
+        <div class="contact-disclaimer">
+          <p><strong>Note:</strong> We strive to keep our reel builder up to date with Abel's latest options. However, if you encounter any outdated information or notice missing options, please contact us at <strong>888-413-5211</strong> or <strong>support@tridentflyfishing.com</strong> and we'll be happy to place a custom order for you with the exact specifications you need.</p>
+        </div>
+
+      </div>
+    </div>
+
+    {% comment %} Step 2: Basic Configuration {% endcomment %}
+    <div class="wizard-step" data-step="2">
+      <h2 class="step-title">Configure Your Reel Basics</h2>
+      <div class="step-content">
+
+        {% comment %} Base Reel Model {% endcomment %}
+        <div class="option-group">
+          <label class="option-label">Reel Model *</label>
+          <select name="reel_model" id="reel-model-select" class="option-select" required>
+            <option value="">Select your reel model...</option>
+            {% for variant in base_product.variants %}
+              <option value="{{ variant.id }}" data-price="{{ variant.price | divided_by: 100.0 }}">
+                {{ variant.title }} - {{ variant.price | money }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        {% comment %} Retrieve {% endcomment %}
+        <div class="option-group">
+          <label class="option-label">Retrieve *</label>
+          <div class="radio-group">
+            <label class="radio-option">
+              <input type="radio" name="retrieve" value="RH" data-tier="None" data-price="0" required>
+              <span class="radio-label">Right Hand</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="retrieve" value="LH" data-tier="None" data-price="0" required>
+              <span class="radio-label">Left Hand</span>
+            </label>
+          </div>
+        </div>
+
+        {% comment %} Style {% endcomment %}
+        <div class="option-group">
+          <label class="option-label">Style</label>
+          <div class="radio-group">
+            <label class="radio-option">
+              <input type="radio" name="style" value="None" data-tier="None" data-price="0">
+              <span class="radio-label">None / Not Applicable</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="style" value="Solid" data-tier="None" data-price="0">
+              <span class="radio-label">Solid</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="style" value="Ported" data-tier="None" data-price="0">
+              <span class="radio-label">Ported</span>
+            </label>
+          </div>
+        </div>
+
+        {% comment %} Drag Plate {% endcomment %}
+        <div class="option-group">
+          <label class="option-label">Drag Plate *</label>
+          <select name="drag_plate" class="option-select" required>
+            <option value="">Select drag plate...</option>
+            <option value="Fresh/Salt Combo" data-tier="None" data-price="0">Fresh/Salt Combo</option>
+            <option value="Freshwater" data-tier="None" data-price="0">Freshwater</option>
+            <option value="Saltwater" data-tier="None" data-price="0">Saltwater</option>
+            <option value="Blank" data-tier="None" data-price="0">Blank</option>
+          </select>
+        </div>
+
+        {% comment %} Backing {% endcomment %}
+        <div class="option-group">
+          <label class="option-label">Backing *</label>
+          <select name="backing" class="option-select" required>
+            <option value="">Select backing option...</option>
+            <option value="None" data-tier="None" data-price="0">None</option>
+            <option value="Standard" data-tier="None" data-price="0">Standard</option>
+            <option value="Purchased Separately" data-tier="None" data-price="0">Purchased Separately</option>
+          </select>
+        </div>
+
+      </div>
+    </div>
+
+    {% comment %} Step 3: Finish {% endcomment %}
+    <div class="wizard-step" data-step="3">
+      <h2 class="step-title">Choose Your Finish</h2>
+      <div class="step-content">
+
+        <div class="option-group">
+          <label class="option-label">Select Finish *</label>
+          <div class="finish-options">
+
+            {% comment %} Standard Finishes - No Cost {% endcomment %}
+            <div class="finish-section">
+              <h4>Standard Finishes</h4>
+              <div class="finish-grid">
+                <label class="finish-option">
+                  <input type="radio" name="finish" value="Black" data-tier="None" data-price="0" data-variant-id="" required>
+                  <div class="color-swatch" id="black-swatch"></div>
+                  <span class="finish-name">Black</span>
+                  <span class="finish-price">Included</span>
+                </label>
+              </div>
+            </div>
+
+            {% comment %} Dynamic finishes will be loaded from JSON {% endcomment %}
+            <div id="dynamic-finishes-container">
+              <div class="loading-finishes">Loading finish options...</div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {% comment %} Step 4: Drag Knob {% endcomment %}
+    <div class="wizard-step" data-step="4">
+      <h2 class="step-title">Select Your Drag Knob</h2>
+      <div class="step-content">
+
+        <div class="option-group">
+          <label class="option-label">Choose Drag Knob Color *</label>
+          <div class="hardware-options">
+
+            {% comment %} Standard Option {% endcomment %}
+            <div class="hardware-section">
+              <h4>Standard Option</h4>
+              <div class="hardware-grid">
+                <label class="hardware-option">
+                  <input type="radio" name="drag_knob" value="Black" data-tier="None" data-price="0" required>
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Black</span>
+                  <span class="hardware-price">Included</span>
+                </label>
+              </div>
+            </div>
+
+            {% comment %} Tier 1 - Solid Colors (+$50) {% endcomment %}
+            <div class="hardware-section">
+              <h4>Solid Colors (+$50)</h4>
+              <div class="hardware-grid">
+                <label class="hardware-option">
+                  <input type="radio" name="drag_knob" value="Satin Black" data-tier="Drag Knob Tier #1" data-price="50">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Satin Black</span>
+                </label>
+                <label class="hardware-option">
+                  <input type="radio" name="drag_knob" value="Blue III" data-tier="Drag Knob Tier #1" data-price="50">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Blue III</span>
+                </label>
+                <label class="hardware-option">
+                  <input type="radio" name="drag_knob" value="Deep Blue" data-tier="Drag Knob Tier #1" data-price="50">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Deep Blue</span>
+                </label>
+                <label class="hardware-option">
+                  <input type="radio" name="drag_knob" value="Bronze" data-tier="Drag Knob Tier #1" data-price="50">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Bronze</span>
+                </label>
+                <label class="hardware-option">
+                  <input type="radio" name="drag_knob" value="Dark Olive" data-tier="Drag Knob Tier #1" data-price="50">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Dark Olive</span>
+                </label>
+                <label class="hardware-option">
+                  <input type="radio" name="drag_knob" value="Olive" data-tier="Drag Knob Tier #1" data-price="50">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Olive</span>
+                </label>
+                <label class="hardware-option">
+                  <input type="radio" name="drag_knob" value="Orange" data-tier="Drag Knob Tier #1" data-price="50">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Orange</span>
+                </label>
+                <label class="hardware-option">
+                  <input type="radio" name="drag_knob" value="Satin Orange" data-tier="Drag Knob Tier #1" data-price="50">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Satin Orange</span>
+                </label>
+                <label class="hardware-option">
+                  <input type="radio" name="drag_knob" value="Platinum" data-tier="Drag Knob Tier #1" data-price="50">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Platinum</span>
+                </label>
+                <label class="hardware-option">
+                  <input type="radio" name="drag_knob" value="Satin Platinum" data-tier="Drag Knob Tier #1" data-price="50">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Satin Platinum</span>
+                </label>
+                <label class="hardware-option">
+                  <input type="radio" name="drag_knob" value="Pink" data-tier="Drag Knob Tier #1" data-price="50">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Pink</span>
+                </label>
+                <label class="hardware-option">
+                  <input type="radio" name="drag_knob" value="Purple" data-tier="Drag Knob Tier #1" data-price="50">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Purple</span>
+                </label>
+                <label class="hardware-option">
+                  <input type="radio" name="drag_knob" value="Red" data-tier="Drag Knob Tier #1" data-price="50">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Red</span>
+                </label>
+                <label class="hardware-option">
+                  <input type="radio" name="drag_knob" value="Slate Gray" data-tier="Drag Knob Tier #1" data-price="50">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Slate Gray</span>
+                </label>
+                <label class="hardware-option">
+                  <input type="radio" name="drag_knob" value="Teal" data-tier="Drag Knob Tier #1" data-price="50">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Teal</span>
+                </label>
+              </div>
+            </div>
+
+            {% comment %} Tier 2 - Fade Patterns (+$100) {% endcomment %}
+            <div class="hardware-section">
+              <h4>Fade Patterns (+$100)</h4>
+              <div class="hardware-grid">
+                <label class="hardware-option">
+                  <input type="radio" name="drag_knob" value="Black Blue Fade" data-tier="Drag Knob Tier #2" data-price="100">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Black Blue Fade</span>
+                </label>
+                <label class="hardware-option">
+                  <input type="radio" name="drag_knob" value="Black Green Fade" data-tier="Drag Knob Tier #2" data-price="100">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Black Green Fade</span>
+                </label>
+                <label class="hardware-option">
+                  <input type="radio" name="drag_knob" value="Black Platinum Fade" data-tier="Drag Knob Tier #2" data-price="100">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Black Platinum</span>
+                </label>
+                <label class="hardware-option">
+                  <input type="radio" name="drag_knob" value="Black Red Fade" data-tier="Drag Knob Tier #2" data-price="100">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Black Red Fade</span>
+                </label>
+                <label class="hardware-option">
+                  <input type="radio" name="drag_knob" value="Northern Lights Fade" data-tier="Drag Knob Tier #2" data-price="100">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Northern Lights</span>
+                </label>
+                <label class="hardware-option">
+                  <input type="radio" name="drag_knob" value="Sunset Fade" data-tier="Drag Knob Tier #2" data-price="100">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Sunset Fade</span>
+                </label>
+              </div>
+            </div>
+
+            {% comment %} Tier 3 - Fish Patterns (+$125) {% endcomment %}
+            <div class="hardware-section">
+              <h4>Fish Patterns (+$125)</h4>
+              <div class="hardware-grid">
+                <label class="hardware-option premium">
+                  <input type="radio" name="drag_knob" value="Bass" data-tier="Drag Knob Tier #3" data-price="125">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Bass</span>
+                </label>
+                <label class="hardware-option premium">
+                  <input type="radio" name="drag_knob" value="Bonefish" data-tier="Drag Knob Tier #3" data-price="125">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Bonefish</span>
+                </label>
+                <label class="hardware-option premium">
+                  <input type="radio" name="drag_knob" value="Rainbow Trout" data-tier="Drag Knob Tier #3" data-price="125">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Rainbow Trout</span>
+                </label>
+                <label class="hardware-option premium">
+                  <input type="radio" name="drag_knob" value="Tarpon" data-tier="Drag Knob Tier #3" data-price="125">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Tarpon</span>
+                </label>
+                <label class="hardware-option premium">
+                  <input type="radio" name="drag_knob" value="Wild Trout" data-tier="Drag Knob Tier #3" data-price="125">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Wild Trout</span>
+                </label>
+              </div>
+            </div>
+
+            {% comment %} Special Drag Knobs {% endcomment %}
+            <div class="hardware-section">
+              <h4>Special Options</h4>
+              <div class="hardware-grid">
+                <label class="hardware-option">
+                  <input type="radio" name="drag_knob" value="Arapaima" data-tier="None" data-price="0" data-included-with="arapaima-finish">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Arapaima</span>
+                  <span class="hardware-price included-text">Included with Arapaima finish</span>
+                </label>
+              </div>
+            </div>
+
+            {% comment %} Tier 4 - Special Edition (+$200) {% endcomment %}
+            <div class="hardware-section">
+              <h4>Special Edition (+$200)</h4>
+              <div class="hardware-grid">
+                <label class="hardware-option premium">
+                  <input type="radio" name="drag_knob" value="Grateful Dead Drag Knob" data-tier="Drag Knob Tier #4" data-price="200">
+                  <div class="color-swatch" style=""></div>
+                  <span class="hardware-name">Grateful Dead</span>
+                  <span class="hardware-price">+$200</span>
+                </label>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {% comment %} Step 5: Optional Engraving {% endcomment %}
+    <div class="wizard-step" data-step="5">
+      <h2 class="step-title">Optional Engraved Designs</h2>
+      <div class="step-content">
+
+        <div class="option-group">
+          <label class="option-label">Choose Custom Engraving</label>
+          <div class="engraving-options">
+
+            {% comment %} No Engraving Option {% endcomment %}
+            <div class="engraving-section">
+              <div class="engraving-grid">
+                <label class="engraving-option">
+                  <input type="radio" name="engraving" value="" data-tier="None" data-price="0" checked>
+                  <div class="engraving-placeholder">None</div>
+                  <span class="engraving-name">No Engraving</span>
+                  <span class="engraving-price">Included</span>
+                </label>
+              </div>
+            </div>
+
+            {% comment %} DeYoung Designs {% endcomment %}
+            <div class="engraving-section">
+              <h4>DeYoung Designs (+$250)</h4>
+              <div class="engraving-grid">
+                <label class="engraving-option">
+                  <input type="radio" name="engraving" value="DeYoung Looking Up" data-tier="Optional Engraved Designs" data-price="250">
+                  <div class="engraving-swatch" style=""></div>
+                  <span class="engraving-name">Looking Up</span>
+                  <span class="engraving-price">+$250</span>
+                </label>
+                <label class="engraving-option">
+                  <input type="radio" name="engraving" value="DeYoung Missile Lock" data-tier="Optional Engraved Designs" data-price="250">
+                  <div class="engraving-swatch" style=""></div>
+                  <span class="engraving-name">Missile Lock</span>
+                  <span class="engraving-price">+$250</span>
+                </label>
+                <label class="engraving-option">
+                  <input type="radio" name="engraving" value="DeYoung Particularly Good to Me" data-tier="Optional Engraved Designs" data-price="250">
+                  <div class="engraving-swatch" style=""></div>
+                  <span class="engraving-name">Particularly Good to Me</span>
+                  <span class="engraving-price">+$250</span>
+                </label>
+              </div>
+            </div>
+
+            {% comment %} Larko Designs {% endcomment %}
+            <div class="engraving-section">
+              <h4>Larko Designs (+$250)</h4>
+              <div class="engraving-grid">
+                <label class="engraving-option">
+                  <input type="radio" name="engraving" value="Larko Bonefish Triptych" data-tier="Optional Engraved Designs" data-price="250">
+                  <div class="engraving-swatch" style=""></div>
+                  <span class="engraving-name">Bonefish Triptych</span>
+                  <span class="engraving-price">+$250</span>
+                </label>
+                <label class="engraving-option">
+                  <input type="radio" name="engraving" value="Larko - Permit" data-tier="Optional Engraved Designs" data-price="250">
+                  <div class="engraving-swatch" style=""></div>
+                  <span class="engraving-name">Permit</span>
+                  <span class="engraving-price">+$250</span>
+                </label>
+                <label class="engraving-option">
+                  <input type="radio" name="engraving" value="Larko - Trout" data-tier="Optional Engraved Designs" data-price="250">
+                  <div class="engraving-swatch" style=""></div>
+                  <span class="engraving-name">Trout</span>
+                  <span class="engraving-price">+$250</span>
+                </label>
+                <label class="engraving-option">
+                  <input type="radio" name="engraving" value="Larko - Steelhead Duet" data-tier="Optional Engraved Designs" data-price="250">
+                  <div class="engraving-swatch" style=""></div>
+                  <span class="engraving-name">Steelhead Duet</span>
+                  <span class="engraving-price">+$250</span>
+                </label>
+              </div>
+            </div>
+
+            {% comment %} Underwood Designs {% endcomment %}
+            <div class="engraving-section">
+              <h4>Underwood Designs (+$250)</h4>
+              <div class="engraving-grid">
+                <label class="engraving-option">
+                  <input type="radio" name="engraving" value="Underwood Cruising Carp" data-tier="Optional Engraved Designs" data-price="250">
+                  <div class="engraving-swatch" style=""></div>
+                  <span class="engraving-name">Cruising Carp</span>
+                  <span class="engraving-price">+$250</span>
+                </label>
+                <label class="engraving-option">
+                  <input type="radio" name="engraving" value="Underwood Cutty Feast" data-tier="Optional Engraved Designs" data-price="250">
+                  <div class="engraving-swatch" style=""></div>
+                  <span class="engraving-name">Cutty Feast</span>
+                  <span class="engraving-price">+$250</span>
+                </label>
+                <label class="engraving-option">
+                  <input type="radio" name="engraving" value="Underwood GT Frenzy" data-tier="Optional Engraved Designs" data-price="250">
+                  <div class="engraving-swatch" style=""></div>
+                  <span class="engraving-name">GT Frenzy</span>
+                  <span class="engraving-price">+$250</span>
+                </label>
+                <label class="engraving-option">
+                  <input type="radio" name="engraving" value="Underwood Red Dawn" data-tier="Optional Engraved Designs" data-price="250">
+                  <div class="engraving-swatch" style=""></div>
+                  <span class="engraving-name">Red Dawn</span>
+                  <span class="engraving-price">+$250</span>
+                </label>
+                <label class="engraving-option">
+                  <input type="radio" name="engraving" value="Underwood Timber Smallies" data-tier="Optional Engraved Designs" data-price="250">
+                  <div class="engraving-swatch" style=""></div>
+                  <span class="engraving-name">Timber Smallies</span>
+                  <span class="engraving-price">+$250</span>
+                </label>
+                <label class="engraving-option">
+                  <input type="radio" name="engraving" value="Underwood - Drift" data-tier="Optional Engraved Designs" data-price="250">
+                  <div class="engraving-swatch" style=""></div>
+                  <span class="engraving-name">Drift</span>
+                  <span class="engraving-price">+$250</span>
+                </label>
+                <label class="engraving-option">
+                  <input type="radio" name="engraving" value="Underwood - Salt" data-tier="Optional Engraved Designs" data-price="250">
+                  <div class="engraving-swatch" style=""></div>
+                  <span class="engraving-name">Salt</span>
+                  <span class="engraving-price">+$250</span>
+                </label>
+                <label class="engraving-option">
+                  <input type="radio" name="engraving" value="Underwood - Swing" data-tier="Optional Engraved Designs" data-price="250">
+                  <div class="engraving-swatch" style=""></div>
+                  <span class="engraving-name">Swing</span>
+                  <span class="engraving-price">+$250</span>
+                </label>
+                <label class="engraving-option">
+                  <input type="radio" name="engraving" value="Underwood - Tailing Bones" data-tier="Optional Engraved Designs" data-price="250">
+                  <div class="engraving-swatch" style=""></div>
+                  <span class="engraving-name">Tailing Bones</span>
+                  <span class="engraving-price">+$250</span>
+                </label>
+                <label class="engraving-option">
+                  <input type="radio" name="engraving" value="Underwood - Mayfly Flurry" data-tier="Optional Engraved Designs" data-price="250">
+                  <div class="engraving-swatch" style=""></div>
+                  <span class="engraving-name">Mayfly Flurry</span>
+                  <span class="engraving-price">+$250</span>
+                </label>
+                <label class="engraving-option">
+                  <input type="radio" name="engraving" value="Underwood - Moondance" data-tier="Optional Engraved Designs" data-price="250">
+                  <div class="engraving-swatch" style=""></div>
+                  <span class="engraving-name">Moondance</span>
+                  <span class="engraving-price">+$250</span>
+                </label>
+                <label class="engraving-option">
+                  <input type="radio" name="engraving" value="Underwood - Ridge Risers" data-tier="Optional Engraved Designs" data-price="250">
+                  <div class="engraving-swatch" style=""></div>
+                  <span class="engraving-name">Ridge Risers</span>
+                  <span class="engraving-price">+$250</span>
+                </label>
+                <label class="engraving-option">
+                  <input type="radio" name="engraving" value="Underwood - Slammin'" data-tier="Optional Engraved Designs" data-price="250">
+                  <div class="engraving-swatch" style=""></div>
+                  <span class="engraving-name">Slammin'</span>
+                  <span class="engraving-price">+$250</span>
+                </label>
+                <label class="engraving-option">
+                  <input type="radio" name="engraving" value="Underwood - Sunrise Blitz" data-tier="Optional Engraved Designs" data-price="250">
+                  <div class="engraving-swatch" style=""></div>
+                  <span class="engraving-name">Sunrise Blitz</span>
+                  <span class="engraving-price">+$250</span>
+                </label>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {% comment %} Step 6: Titanium Upgrades {% endcomment %}
+    <div class="wizard-step" data-step="6">
+      <h2 class="step-title">Titanium Component Upgrades</h2>
+      <div class="step-content">
+
+        <div class="option-group">
+          <label class="option-label">Choose Titanium Components</label>
+          <div class="titanium-section">
+            <div class="titanium-grid">
+              <label class="titanium-option">
+                <input type="radio" name="titanium" value="" data-tier="None" data-price="0" checked>
+                <div class="titanium-placeholder">None</div>
+                <span class="titanium-name">No Titanium</span>
+                <span class="titanium-price">Included</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="titanium-section">
+            <h4>Titanium Finishes (+$500)</h4>
+            <div class="titanium-grid">
+              <label class="titanium-option">
+                <input type="radio" name="titanium" value="Atomic Amber" data-tier="Add Titanium Components" data-price="500">
+                <div class="titanium-swatch" style="background-color: #a1593a;"></div>
+                <span class="titanium-name">Atomic Amber</span>
+                <span class="titanium-price">+$500</span>
+              </label>
+              <label class="titanium-option">
+                <input type="radio" name="titanium" value="Electric Pink" data-tier="Add Titanium Components" data-price="500">
+                <div class="titanium-swatch" style="background-color: #ad077b;"></div>
+                <span class="titanium-name">Electric Pink</span>
+                <span class="titanium-price">+$500</span>
+              </label>
+              <label class="titanium-option">
+                <input type="radio" name="titanium" value="Energized Green" data-tier="Add Titanium Components" data-price="500">
+                <div class="titanium-swatch" style="background-color: #93b000;"></div>
+                <span class="titanium-name">Energized Green</span>
+                <span class="titanium-price">+$500</span>
+              </label>
+              <label class="titanium-option">
+                <input type="radio" name="titanium" value="Iridescent Indigo" data-tier="Add Titanium Components" data-price="500">
+                <div class="titanium-swatch" style="background-color: #6600ff;"></div>
+                <span class="titanium-name">Iridescent Indigo</span>
+                <span class="titanium-price">+$500</span>
+              </label>
+              <label class="titanium-option">
+                <input type="radio" name="titanium" value="Natural Titanium" data-tier="Add Titanium Components" data-price="500">
+                <div class="titanium-swatch" style="background-color: #9e9e9e;"></div>
+                <span class="titanium-name">Natural Titanium</span>
+                <span class="titanium-price">+$500</span>
+              </label>
+              <label class="titanium-option">
+                <input type="radio" name="titanium" value="Powdered Brown" data-tier="Add Titanium Components" data-price="500">
+                <div class="titanium-swatch" style="background-color: #824a24;"></div>
+                <span class="titanium-name">Powdered Brown</span>
+                <span class="titanium-price">+$500</span>
+              </label>
+              <label class="titanium-option">
+                <input type="radio" name="titanium" value="Voltaic Blue" data-tier="Add Titanium Components" data-price="500">
+                <div class="titanium-swatch" style="background-color: #246dff;"></div>
+                <span class="titanium-name">Voltaic Blue</span>
+                <span class="titanium-price">+$500</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {% comment %} Step 7: Handle Selection {% endcomment %}
+    <div class="wizard-step" data-step="7">
+      <h2 class="step-title">Select Your Handle</h2>
+      <div class="step-content">
+
+        <div class="option-group">
+          <label class="option-label">Choose Handle Material *</label>
+          <p class="option-description">Select from our premium wood finishes or anodized aluminum options.</p>
+
+          <div class="handle-options">
+            {% comment %} Standard Wood Options (No extra cost) {% endcomment %}
+            <label class="handle-option">
+              <input type="radio" name="handle" value="Walnut" data-tier="None" data-price="0" required>
+              <div class="handle-swatch">
+                <img src="https://abelreels.com/media/catalog/custom_options/cache/30x30/walnut_3.jpg" alt="Walnut">
+              </div>
+              <span class="handle-name">Walnut</span>
+              <span class="handle-price">Standard</span>
+            </label>
+
+            <label class="handle-option">
+              <input type="radio" name="handle" value="Ebony" data-tier="None" data-price="0">
+              <div class="handle-swatch">
+                <img src="https://abelreels.com/media/catalog/custom_options/cache/30x30/ebony_1.jpg" alt="Ebony">
+              </div>
+              <span class="handle-name">Ebony</span>
+              <span class="handle-price">Standard</span>
+            </label>
+
+            <label class="handle-option">
+              <input type="radio" name="handle" value="Rosewood" data-tier="None" data-price="0">
+              <div class="handle-swatch">
+                <img src="https://abelreels.com/media/catalog/custom_options/cache/30x30/rosewood_1.jpg" alt="Rosewood">
+              </div>
+              <span class="handle-name">Rosewood</span>
+              <span class="handle-price">Standard</span>
+            </label>
+
+            {% comment %} Anodized Options (+$30) {% endcomment %}
+            <label class="handle-option">
+              <input type="radio" name="handle" value="Black" data-tier="Handle Tier #1" data-price="30">
+              <div class="handle-swatch">
+                <img src="https://abelreels.com/media/catalog/custom_options/cache/30x30/black.jpg" alt="Black">
+              </div>
+              <span class="handle-name">Black</span>
+              <span class="handle-price">+$30</span>
+            </label>
+
+            <label class="handle-option">
+              <input type="radio" name="handle" value="Blue III" data-tier="Handle Tier #1" data-price="30">
+              <div class="handle-swatch">
+                <img src="https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-blue-iii.jpg" alt="Blue III">
+              </div>
+              <span class="handle-name">Blue III</span>
+              <span class="handle-price">+$30</span>
+            </label>
+
+            <label class="handle-option">
+              <input type="radio" name="handle" value="Deep Green" data-tier="Handle Tier #1" data-price="30">
+              <div class="handle-swatch">
+                <img src="https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-deep-green.jpg" alt="Deep Green">
+              </div>
+              <span class="handle-name">Deep Green</span>
+              <span class="handle-price">+$30</span>
+            </label>
+
+            <label class="handle-option">
+              <input type="radio" name="handle" value="Platinum" data-tier="Handle Tier #1" data-price="30">
+              <div class="handle-swatch">
+                <img src="https://abelreels.com/media/catalog/custom_options/cache/30x30/platinum.jpg" alt="Platinum">
+              </div>
+              <span class="handle-name">Platinum</span>
+              <span class="handle-price">+$30</span>
+            </label>
+
+            <label class="handle-option">
+              <input type="radio" name="handle" value="Red" data-tier="Handle Tier #1" data-price="30">
+              <div class="handle-swatch">
+                <img src="https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-red.jpg" alt="Red">
+              </div>
+              <span class="handle-name">Red</span>
+              <span class="handle-price">+$30</span>
+            </label>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {% comment %} Step 8: Review & Add to Cart {% endcomment %}
+    <div class="wizard-step" data-step="8">
+      <h2 class="step-title">Review Your Configuration</h2>
+      <div class="step-content">
+
+        <div class="configuration-review">
+          <div class="review-section">
+            <h3>Your Custom Abel Reel</h3>
+            <div id="configuration-summary"></div>
+          </div>
+
+          <div class="price-breakdown">
+            <h3>Price Breakdown</h3>
+            <div id="price-details"></div>
+            <div class="total-price">
+              <span>Total Price:</span>
+              <span id="final-price">$0.00</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {% comment %} Navigation Buttons {% endcomment %}
+    <div class="wizard-navigation">
+      <button type="button" class="btn-nav btn-prev" id="prev-btn" style="display: none;">
+        <span>← Previous</span>
+      </button>
+      <button type="button" class="btn-nav btn-next" id="next-btn">
+        <span>Next →</span>
+      </button>
+      <button type="submit" class="btn-nav btn-submit" id="submit-btn" style="display: none;">
+        <span>Add to Cart</span>
+      </button>
+    </div>
+
+  </form>
+
+  <div class="wizard-message" id="wizard-message" style="display: none;"></div>
+</div>
+
+<style>
+  .abel-wizard-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 30px 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  /* Contact Disclaimer - Simple Notice */
+  .contact-disclaimer {
+    background: #f3f4f6;
+    border-left: 4px solid #0088CB;
+    border-radius: 4px;
+    padding: 15px 20px;
+    margin-top: 20px;
+  }
+
+  .contact-disclaimer p {
+    color: #4b5563;
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .contact-disclaimer strong {
+    color: #1f2937;
+    font-weight: 600;
+  }
+
+  /* Special Order Notice */
+  .special-order-notice {
+    background: #fef3c7;
+    border: 2px solid #f59e0b;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 25px;
+  }
+
+  .special-order-notice h3 {
+    color: #92400e;
+    margin: 0 0 10px 0;
+    font-size: 18px;
+  }
+
+  .special-order-notice p {
+    color: #78350f;
+    margin: 10px 0;
+    line-height: 1.6;
+  }
+
+  /* Ordering Instructions */
+  .ordering-instructions {
+    background: #f0f9ff;
+    border: 2px solid #0088CB;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+  }
+
+  .ordering-instructions h3 {
+    color: #0c4a6e;
+    margin: 0 0 15px 0;
+    font-size: 18px;
+  }
+
+  .ordering-instructions ol {
+    margin: 15px 0;
+    padding-left: 20px;
+  }
+
+  .ordering-instructions li {
+    margin: 10px 0;
+    line-height: 1.6;
+    color: #075985;
+  }
+
+  .ordering-instructions li strong {
+    color: #0c4a6e;
+  }
+
+  .ordering-instructions a {
+    color: #0088CB;
+    text-decoration: underline;
+  }
+
+  .ordering-instructions a:hover {
+    color: #006ba1;
+  }
+
+  .instructions-note {
+    color: #075985;
+    margin-top: 15px;
+    font-style: italic;
+  }
+
+  /* Running Total Bar */
+  .running-total-bar {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border: 2px solid #0088CB;
+    border-radius: 8px;
+    padding: 15px 20px;
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 136, 203, 0.15);
+    position: sticky;
+    top: 20px;
+    z-index: 100;
+  }
+
+  .total-label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e40af;
+  }
+
+  .total-amount {
+    font-size: 24px;
+    font-weight: 700;
+    color: #0088CB;
+  }
+
+  /* Progress Bar */
+  .wizard-progress {
+    margin-bottom: 40px;
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: #e5e7eb;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0088CB, #006ba1);
+    transition: width 0.3s ease;
+    width: 14.28%;
+  }
+
+  .progress-steps {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .progress-step {
+    text-align: center;
+    flex: 1;
+    position: relative;
+  }
+
+  .progress-step.active .step-number {
+    background: #0088CB;
+    color: white;
+  }
+
+  .progress-step.completed .step-number {
+    background: #0088CB;
+    color: white;
+  }
+
+  .progress-step.completed {
+    cursor: pointer;
+  }
+
+  .progress-step.completed:hover .step-number {
+    background: #006ba1;
+    transform: scale(1.1);
+    transition: all 0.2s;
+  }
+
+  .progress-step.active {
+    cursor: pointer;
+  }
+
+  .step-number {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    color: #6b7280;
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+
+  .step-label {
+    display: block;
+    font-size: 12px;
+    color: #6b7280;
+  }
+
+  /* Wizard Steps */
+  .wizard-step {
+    display: none;
+    animation: fadeIn 0.3s;
+  }
+
+  .wizard-step.active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .step-title {
+    font-size: 24px;
+    color: #111827;
+    margin-bottom: 25px;
+  }
+
+  .step-content {
+    min-height: 300px;
+  }
+
+  /* Form Elements */
+  .option-group {
+    margin-bottom: 25px;
+  }
+
+  .option-label {
+    display: block;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+
+  .option-select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 15px;
+    background: white;
+  }
+
+  .radio-group {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+
+  .radio-option {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .radio-option:hover {
+    border-color: #0088CB;
+    background: #f0f9ff;
+  }
+
+  .radio-option input[type="radio"] {
+    margin-right: 8px;
+  }
+
+  .radio-option input[type="radio"]:checked + .radio-label {
+    font-weight: 600;
+    color: #0088CB;
+  }
+
+  /* Shared Grid Styles for Options */
+  .finish-section,
+  .hardware-section,
+  .engraving-section {
+    margin-bottom: 30px;
+  }
+
+  .finish-section h4,
+  .hardware-section h4,
+  .engraving-section h4 {
+    font-size: 16px;
+    color: #4b5563;
+    margin-bottom: 15px;
+    font-weight: 500;
+  }
+
+  .finish-grid,
+  .hardware-grid,
+  .engraving-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+  }
+
+  .finish-option,
+  .hardware-option,
+  .engraving-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    position: relative;
+  }
+
+  /* Engraving swatches */
+  .engraving-swatch {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    border: 1px solid #d1d5db;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .engraving-placeholder {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    border: 2px dashed #d1d5db;
+    background: #f9fafb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #9ca3af;
+  }
+
+  .engraving-option:hover .engraving-swatch,
+  .engraving-option:hover .engraving-placeholder {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+
+  .engraving-option:has(input[type="radio"]:checked) .engraving-swatch,
+  .engraving-option:has(input[type="radio"]:checked) .engraving-placeholder {
+    border: 3px solid #0088CB;
+    box-shadow: 0 0 0 2px white, 0 0 0 4px #0088CB;
+  }
+
+  /* Color swatch styles */
+  .color-swatch {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-bottom: 6px;
+    border: 1px solid #d1d5db;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .color-swatch.no-image,
+  .color-swatch.image-error {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .color-swatch .fallback-initial {
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
+
+  .finish-option:hover .color-swatch,
+  .hardware-option:hover .color-swatch {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+
+  .finish-option:has(input[type="radio"]:checked) .color-swatch,
+  .hardware-option:has(input[type="radio"]:checked) .color-swatch {
+    border: 3px solid #0088CB;
+    box-shadow: 0 0 0 2px white, 0 0 0 4px #0088CB;
+  }
+
+  .finish-option:hover,
+  .hardware-option:hover,
+  .engraving-option:hover {
+    border-color: #0088CB;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  .finish-option input[type="radio"],
+  .hardware-option input[type="radio"],
+  .engraving-option input[type="radio"] {
+    display: none;
+  }
+
+  .finish-option input[type="radio"]:checked ~ .finish-name,
+  .hardware-option input[type="radio"]:checked ~ .hardware-name,
+  .engraving-option input[type="radio"]:checked ~ .engraving-name {
+    font-weight: 600;
+    color: #0088CB;
+  }
+
+  .finish-option input[type="radio"]:checked ~ .finish-price,
+  .hardware-option input[type="radio"]:checked ~ .hardware-price,
+  .engraving-option input[type="radio"]:checked ~ .engraving-price {
+    color: #0088CB;
+  }
+
+  .finish-option:has(input[type="radio"]:checked),
+  .hardware-option:has(input[type="radio"]:checked),
+  .engraving-option:has(input[type="radio"]:checked) {
+    border-color: #0088CB;
+    background: #eff6ff;
+  }
+
+  .finish-name,
+  .hardware-name,
+  .engraving-name {
+    display: block;
+    font-size: 14px;
+    color: #374151;
+    margin-bottom: 4px;
+  }
+
+  .finish-price,
+  .hardware-price,
+  .engraving-price {
+    display: block;
+    font-size: 12px;
+    color: #6b7280;
+    font-weight: 500;
+  }
+
+  .hardware-price.included-text {
+    font-size: 11px;
+    color: #059669;
+    font-style: italic;
+  }
+
+  .finish-option.premium,
+  .hardware-option.premium,
+  .engraving-option.premium {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border-color: #f59e0b;
+  }
+
+  /* Titanium Options */
+  .titanium-section {
+    margin-bottom: 30px;
+  }
+
+  .titanium-section h4 {
+    font-size: 16px;
+    color: #4b5563;
+    margin-bottom: 15px;
+    font-weight: 500;
+  }
+
+  .titanium-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+  }
+
+  .titanium-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    position: relative;
+  }
+
+  .titanium-option:hover {
+    border-color: #0088CB;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  .titanium-option input[type="radio"] {
+    display: none;
+  }
+
+  .titanium-swatch {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-bottom: 6px;
+    border: 2px solid #d1d5db;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .titanium-placeholder {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-bottom: 6px;
+    border: 2px dashed #d1d5db;
+    background: #f9fafb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #9ca3af;
+  }
+
+  .titanium-option:hover .titanium-swatch,
+  .titanium-option:hover .titanium-placeholder {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+
+  .titanium-option:has(input[type="radio"]:checked) .titanium-swatch,
+  .titanium-option:has(input[type="radio"]:checked) .titanium-placeholder {
+    border: 3px solid #0088CB;
+    box-shadow: 0 0 0 2px white, 0 0 0 4px #0088CB;
+  }
+
+  .titanium-option input[type="radio"]:checked ~ .titanium-name {
+    font-weight: 600;
+    color: #0088CB;
+  }
+
+  .titanium-option input[type="radio"]:checked ~ .titanium-price {
+    color: #0088CB;
+  }
+
+  .titanium-option:has(input[type="radio"]:checked) {
+    border-color: #0088CB;
+    background: #eff6ff;
+  }
+
+  .titanium-name {
+    display: block;
+    font-size: 14px;
+    color: #374151;
+    margin-bottom: 4px;
+  }
+
+  .titanium-price {
+    display: block;
+    font-size: 12px;
+    color: #6b7280;
+    font-weight: 500;
+  }
+
+  /* Handle options */
+  .handle-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+  }
+
+  .handle-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    position: relative;
+  }
+
+  .handle-option:hover {
+    border-color: #0088CB;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+
+  .handle-option:has(input[type="radio"]:checked) {
+    border-color: #0088CB;
+    background: #f0f9ff;
+  }
+
+  .handle-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+  }
+
+  .handle-swatch {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-bottom: 8px;
+    overflow: hidden;
+    border: 1px solid #d1d5db;
+  }
+
+  .handle-swatch img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .handle-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: #1f2937;
+    margin-bottom: 4px;
+  }
+
+  .handle-price {
+    font-size: 11px;
+    color: #6b7280;
+  }
+
+  .handle-option:has(input[type="radio"]:checked) .handle-name {
+    color: #0088CB;
+  }
+
+  /* Review Section */
+  .configuration-review {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  @media (min-width: 768px) {
+    .configuration-review {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .review-section h3,
+  .price-breakdown h3 {
+    font-size: 18px;
+    color: #374151;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  #configuration-summary {
+    line-height: 1.8;
+  }
+
+  .config-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px dotted #e5e7eb;
+  }
+
+  .config-label {
+    color: #6b7280;
+    font-size: 14px;
+  }
+
+  .config-value {
+    color: #111827;
+    font-weight: 500;
+    font-size: 14px;
+  }
+
+  .price-breakdown {
+    background: #f9fafb;
+    padding: 20px;
+    border-radius: 8px;
+  }
+
+  #price-details {
+    margin-bottom: 20px;
+  }
+
+  .price-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 14px;
+  }
+
+  .price-item.subtotal {
+    color: #059669;
+    font-weight: 500;
+  }
+
+  .total-price {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 15px;
+    border-top: 2px solid #111827;
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  /* Navigation */
+  .wizard-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .btn-nav {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: white;
+  }
+
+  .btn-prev {
+    background: #0088CB;
+    color: white;
+  }
+
+  .btn-prev:hover {
+    background: #006ba1;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 136, 203, 0.3);
+  }
+
+  .btn-next {
+    background: #0088CB;
+    color: white;
+  }
+
+  .btn-next:hover {
+    background: #006ba1;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 136, 203, 0.3);
+  }
+
+  .btn-submit {
+    background: #FF6900;
+    color: white;
+  }
+
+  .btn-submit:hover {
+    background: #e55a00;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 105, 0, 0.3);
+  }
+
+  /* Message */
+  .wizard-message {
+    margin-top: 20px;
+    padding: 12px;
+    border-radius: 6px;
+    text-align: center;
+  }
+
+  .wizard-message.success {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+  }
+
+  .wizard-message.error {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+  }
+</style>
+
+<script>
+(function() {
+  // Storefront API configuration (similar to bundle app)
+  const shop = '{{ shop.permanent_domain }}';
+  const storefrontToken = '83e699c13152117e3e92c69d78070fec'; // Using the same token from bundle app
+  const endpoint = `https://${shop}/api/2025-01/graphql.json`;
+
+  // Store product title for use in cart notes
+  const productTitle = '{{ base_product.title | escape }}';
+
+  // Hardcoded variant IDs for tier products
+  const variantMap = {
+    "Finish Tier #1": 49115962671337,
+    "Finish Tier #2": 49115962704105,
+    "Finish Tier #3": 49115962736873,
+    "Finish Tier #4": 49115962769641,
+    "Finish Tier #5": 49115962802409,
+    "Finish Tier #6": 49115962835177,
+    "Finish Tier #7": 49115962867945,
+    "Finish Tier #8": 49115962900713,
+    "Finish Tier #9": 49115962933481,
+    "Optional Engraved Designs": 49115962966249,
+    "Drag Knob Tier #1": 49115962999017,
+    "Drag Knob Tier #2": 49116101017833,
+    "Drag Knob Tier #3": 49116101050601,
+    "Drag Knob Tier #4": 49116101083369,
+    "Handle Tier #1": 49115963031785,
+    "Add Titanium Components": 49115963064553
+  };
+
+  console.log('Abel Reel Wizard initialized with tier variants');
+
+  // Debug logging function
+  function debug(message, data = null) {
+    const timestamp = new Date().toLocaleTimeString();
+    const logDiv = document.getElementById('debug-log');
+    if (logDiv) {
+      const entry = document.createElement('div');
+      entry.style.borderBottom = '1px solid #333';
+      entry.style.paddingBottom = '3px';
+      entry.style.marginBottom = '3px';
+      entry.innerHTML = `<span style="color: yellow;">[${timestamp}]</span> ${message}`;
+      if (data) {
+        entry.innerHTML += `<br><span style="color: cyan;">${JSON.stringify(data, null, 2)}</span>`;
+      }
+      logDiv.appendChild(entry);
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+    console.log(`[${timestamp}] ${message}`, data || '');
+  }
+
+  debug('Script loaded');
+
+  // Load finish options from JSON
+  async function loadFinishOptions() {
+    try {
+      console.log('Starting to load finish options...');
+
+      // Get the asset URLs
+      const finishesUrl = '{{ "abel-color-finishes.json" | asset_url }}';
+      const imagesUrl = '{{ "abel-color-images.json" | asset_url }}';
+      const dragKnobsUrl = '{{ "abel-drag-knobs.json" | asset_url }}';
+
+      console.log('Fetching from URLs:', { finishesUrl, imagesUrl, dragKnobsUrl });
+
+      // Load finishes, images, and drag knobs data
+      const [finishesResponse, imagesResponse, dragKnobsResponse] = await Promise.all([
+        fetch(finishesUrl).catch(err => {
+          console.error('Failed to fetch finishes:', err);
+          return null;
+        }),
+        fetch(imagesUrl).catch(err => {
+          console.error('Failed to fetch images:', err);
+          return null;
+        }),
+        fetch(dragKnobsUrl).catch(err => {
+          console.error('Failed to fetch drag knobs:', err);
+          return null;
+        })
+      ]);
+
+      // Check responses
+      if (!finishesResponse || !finishesResponse.ok) {
+        console.error('Finishes response error:', finishesResponse ? finishesResponse.status : 'No response');
+        // Log the actual URL for debugging
+        console.error('Attempted to fetch from:', finishesUrl);
+        throw new Error(`Failed to load finishes: ${finishesResponse ? `HTTP ${finishesResponse.status}` : 'Network error'}`);
+      }
+
+      if (!imagesResponse || !imagesResponse.ok) {
+        console.warn('Images response error (continuing without images):', imagesResponse ? imagesResponse.status : 'No response');
+      }
+
+      const finishes = await finishesResponse.json();
+      const images = imagesResponse && imagesResponse.ok ? await imagesResponse.json() : [];
+      const dragKnobs = dragKnobsResponse && dragKnobsResponse.ok ? await dragKnobsResponse.json() : [];
+
+      console.log(`Loaded ${finishes.length} finishes, ${images.length} image entries, and ${dragKnobs.length} drag knobs`);
+
+      // Validate finishes data structure
+      if (!Array.isArray(finishes) || finishes.length === 0) {
+        console.error('Invalid finishes data: expected non-empty array');
+        throw new Error('Invalid finish data format');
+      }
+
+      // Create a map for quick image lookup
+      const imageMap = {};
+      if (Array.isArray(images)) {
+        images.forEach(img => {
+          if (img && img.name && img.swatches) {
+            imageMap[img.name.toLowerCase()] = img.swatches;
+          }
+        });
+      }
+
+      // Update the Black finish image if found in the image map
+      const blackSwatch = document.getElementById('black-swatch');
+      if (blackSwatch && imageMap['black'] && imageMap['black']['30x30']) {
+        blackSwatch.style.backgroundImage = `url('${imageMap['black']['30x30']}')`;
+      }
+
+      // Update ALL hardcoded swatches with images from the JSON
+      function updateAllSwatches() {
+        // Find all swatches - color, engraving, and titanium
+        const allSwatches = document.querySelectorAll('.color-swatch, .engraving-swatch, .titanium-swatch');
+
+        allSwatches.forEach(swatch => {
+          // Get the parent label to find the associated input
+          const parentLabel = swatch.closest('label');
+          if (!parentLabel) return;
+
+          // Get the value from the associated input
+          const input = parentLabel.querySelector('input[type="radio"]');
+          if (!input) return;
+
+          const value = input.value.toLowerCase();
+
+          // Look up the image in our map
+          if (imageMap[value] && imageMap[value]['30x30']) {
+            swatch.style.backgroundImage = `url('${imageMap[value]['30x30']}')`;
+          } else {
+            // Try alternative naming patterns for various options
+            const altNames = [
+              value.replace(' drag knob', ''),
+              value.replace('satin ', ''),
+              value.replace(' fade', ''),
+              value.replace('deyoung ', ''),
+              value.replace('larko ', ''),
+              value.replace('underwood ', ''),
+              value.replace('larko - ', ''),
+              value.replace('underwood - ', ''),
+              value.replace(/^grateful dead /, '')
+            ];
+
+            let imageFound = false;
+            for (const altName of altNames) {
+              if (imageMap[altName] && imageMap[altName]['30x30']) {
+                swatch.style.backgroundImage = `url('${imageMap[altName]['30x30']}')`;
+                imageFound = true;
+                break;
+              }
+            }
+
+            if (!imageFound && value) {
+              // Clear the image if not found in JSON
+              swatch.style.backgroundImage = '';
+              console.warn(`No image found in JSON for: ${input.value}`);
+            }
+          }
+        });
+
+        // Also update engraving images with larger size if available
+        const engravingSwatches = document.querySelectorAll('.engraving-swatch');
+        engravingSwatches.forEach(swatch => {
+          const parentLabel = swatch.closest('label');
+          if (!parentLabel) return;
+          const input = parentLabel.querySelector('input[type="radio"]');
+          if (!input || !input.value) return;
+
+          const value = input.value.toLowerCase();
+          // Try to use 60x60 for engravings for better visibility
+          if (imageMap[value] && imageMap[value]['60x60']) {
+            swatch.style.backgroundImage = `url('${imageMap[value]['60x60']}')`;
+          }
+        });
+      }
+
+      // Call the update function after a short delay to ensure DOM is ready
+      setTimeout(updateAllSwatches, 100);
+
+      // Get current product handle
+      const productHandle = '{{ product.handle }}';
+      console.log('Current product handle:', productHandle);
+
+      // Group all finishes by tier (no compatibility filtering)
+      const finishesByTier = {};
+
+      finishes.forEach(finish => {
+        if (!finishesByTier[finish.add_on_tier]) {
+          finishesByTier[finish.add_on_tier] = [];
+        }
+        finishesByTier[finish.add_on_tier].push(finish);
+      });
+
+      console.log(`Showing all ${finishes.length} finishes`);
+
+      // Render finish options
+      const container = document.getElementById('dynamic-finishes-container');
+      if (container) {
+        let html = '';
+
+        // Define tier display names and order
+        const tierConfig = {
+          'Finish Tier #1': { name: 'Classic Colors', price: 150 },
+          'Finish Tier #2': { name: 'Fade Finishes', price: 300 },
+          'Finish Tier #3': { name: 'Fish Patterns', price: 350 },
+          'Finish Tier #4': { name: 'Custom Colors', price: 450 },
+          'Finish Tier #5': { name: 'Special Editions', price: 500 },
+          'Finish Tier #6': { name: 'Native Series', price: 600 },
+          'Finish Tier #7': { name: 'Artist Series', price: 750 },
+          'Finish Tier #8': { name: 'Artist Collaborations', price: 1200 },
+          'Finish Tier #9': { name: 'Flag Editions', price: 1500 },
+          'Finish Tier #10': { name: 'Premium Collection', price: 1170 }
+        };
+
+        Object.keys(tierConfig).forEach(tier => {
+          if (finishesByTier[tier] && finishesByTier[tier].length > 0) {
+            const config = tierConfig[tier];
+            html += `
+              <div class="finish-section">
+                <h4>${config.name} (+$${config.price})</h4>
+                <div class="finish-grid">
+            `;
+
+            finishesByTier[tier].forEach(finish => {
+              // Skip Flag Series New Mexico as requested
+              if (finish.colorway === 'Flag Series New Mexico') {
+                return; // Skip this finish
+              }
+
+              // Define fallback images - using exact names from JSON
+              const fallbackImages = {
+                // Flag Series (exact matches from JSON)
+                'Flag Series Colorado': 'https://abelreels.com/media/catalog/custom_options/cache/30x30/colorado_3_1.jpg',
+                'Flag Series USA Flag Fade': 'https://abelreels.com/media/catalog/custom_options/cache/30x30/usa-new-swatch_2.jpg',
+                'Flag Series Texas Flag': 'https://abelreels.com/media/catalog/custom_options/cache/30x30/texas_3_2.jpg',
+                "Flag Series 'USA Edition'": 'https://abelreels.com/media/catalog/custom_options/cache/30x30/usa_2.jpg',
+                'Flag Series Bahamas': 'https://abelreels.com/media/catalog/custom_options/cache/30x30/bahama_3.jpg',
+                'Flag Series Chicago': 'https://abelreels.com/media/catalog/custom_options/cache/30x30/chicago_2.jpg',
+                'Flag Series Cuba': 'https://abelreels.com/media/catalog/custom_options/cache/30x30/cuba_2.jpg',
+                // Other finishes (exact matches from JSON)
+                'Black Retro Green': 'https://abelreels.com/media/catalog/custom_options/cache/30x30/retro-green-black_3.jpg',
+                'Skull and Crossbones': 'https://abelreels.com/media/catalog/custom_options/cache/30x30/skull_4.jpg',
+                'Larko Permit': 'https://abelreels.com/media/catalog/custom_options/cache/30x30/larko-permit-swatch.jpg',
+                'Larko Brown Trout Rise Up': 'https://abelreels.com/media/catalog/custom_options/cache/30x30/larko-brown-title_2.jpg',
+                'Osiris Tribal Salmon': 'https://abelreels.com/media/catalog/custom_options/cache/30x30/osiris-salmon.jpg',
+                'Slammin Underwood': 'https://abelreels.com/media/catalog/custom_options/cache/30x30/grand-slam-swatch_2.jpg'
+              };
+
+              // Look up the image URL from the image map
+              const finishNameLower = finish.colorway.toLowerCase();
+              let imageUrl = '';
+
+              // Check fallback images first - try exact match, then lowercase
+              if (fallbackImages[finish.colorway]) {
+                imageUrl = fallbackImages[finish.colorway];
+                console.log(`Using fallback image for ${finish.colorway} (exact match)`);
+              } else if (fallbackImages[finishNameLower]) {
+                imageUrl = fallbackImages[finishNameLower];
+                console.log(`Using fallback image for ${finish.colorway} (lowercase)`);
+              } else {
+                // Try to find in the image map
+                let imageData = imageMap[finishNameLower];
+
+                // If not found, try alternative naming patterns
+                if (!imageData) {
+                // Handle Flag Series naming differences
+                if (finish.colorway.includes('Flag Series')) {
+                  // Convert "Flag Series Bahamas" to "Bahamas Flag Edition"
+                  const flagName = finish.colorway.replace('Flag Series ', '').replace("'USA Edition'", 'USA').trim();
+                  const alternativeNames = [
+                    `${flagName} Flag Edition`.toLowerCase(),
+                    `${flagName} Flag`.toLowerCase(),
+                    flagName.toLowerCase()
+                  ];
+
+                  // Special cases
+                  if (flagName === 'Colorado') {
+                    alternativeNames.push('co flag edition');
+                  } else if (flagName === 'Texas Flag') {
+                    alternativeNames.push('texas flag edition', 'tx flag edition');
+                  } else if (flagName === 'New Mexico') {
+                    alternativeNames.push('zia sun nm flag edition');
+                  }
+
+                  for (const altName of alternativeNames) {
+                    if (imageMap[altName]) {
+                      imageData = imageMap[altName];
+                      console.log(`Found image for ${finish.colorway} as ${altName}`);
+                      break;
+                    }
+                  }
+                }
+                // Handle Larko naming differences
+                else if (finish.colorway.includes('Larko')) {
+                  const larkoVariations = [
+                    finishNameLower,
+                    finishNameLower.replace('larko ', 'larko - '),
+                    finishNameLower.replace('larko brook trout', 'larko brown trout'),
+                    finishNameLower.replace('larko permit', 'larko - permit'),
+                    finishNameLower.replace('larko permit', 'larko portrait of a permit')
+                  ];
+
+                  for (const variant of larkoVariations) {
+                    if (imageMap[variant]) {
+                      imageData = imageMap[variant];
+                      console.log(`Found image for ${finish.colorway} as ${variant}`);
+                      break;
+                    }
+                  }
+                }
+                // Handle other naming patterns
+                else if (finish.colorway === 'Albacore') {
+                  if (imageMap['false albacore']) {
+                    imageData = imageMap['false albacore'];
+                    console.log(`Found image for Albacore as False Albacore`);
+                  }
+                }
+                // Handle Osiris naming
+                else if (finish.colorway.includes('Osiris')) {
+                  // Try exact match first, then variations
+                  const osirisParts = finish.colorway.toLowerCase();
+                  if (!imageMap[osirisParts]) {
+                    // Osiris Tribal Salmon might not exist, but check for similar
+                    console.warn(`No Osiris image found for: ${finish.colorway}`);
+                  }
+                }
+                }
+
+                if (imageData && imageData['30x30']) {
+                  imageUrl = imageData['30x30'];
+                }
+              }
+
+              // If still no image, log a warning
+              if (!imageUrl) {
+                console.warn(`No image found for finish: ${finish.colorway}`);
+              }
+
+              const isPremium = config.price >= 500 ? 'premium' : '';
+
+              // Create a unique ID for this swatch to handle error events
+              const swatchId = `swatch-${finish.colorway.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()}`;
+
+              html += `
+                <label class="finish-option ${isPremium}">
+                  <input type="radio" name="finish"
+                    value="${finish.colorway}"
+                    data-tier="${tier}"
+                    data-price="${finish.add_on_cost}"
+                    data-variant-id="${finish.variant_id}">
+                  <div class="color-swatch" id="${swatchId}" data-finish-name="${finish.colorway}"></div>
+                  <span class="finish-name">${finish.colorway}</span>
+                </label>
+              `;
+
+              // Add image with error handling after the element is created
+              setTimeout(() => {
+                const swatchElement = document.getElementById(swatchId);
+                if (swatchElement) {
+                  if (imageUrl) {
+                    // Test if the image loads
+                    const img = new Image();
+                    img.onload = function() {
+                      swatchElement.style.backgroundImage = `url('${imageUrl}')`;
+                    };
+                    img.onerror = function() {
+                      console.error(`Failed to load image for ${finish.colorway}: ${imageUrl}`);
+                      // Set a fallback gradient based on the finish name
+                      swatchElement.classList.add('image-error');
+                      swatchElement.innerHTML = '<span class="fallback-initial">' + finish.colorway.charAt(0) + '</span>';
+                    };
+                    img.src = imageUrl;
+                  } else {
+                    // No image URL found, use fallback immediately
+                    swatchElement.classList.add('no-image');
+                    swatchElement.innerHTML = '<span class="fallback-initial">' + finish.colorway.charAt(0) + '</span>';
+                  }
+                }
+              }, 0);
+            });
+
+            html += `
+                </div>
+              </div>
+            `;
+          }
+        });
+
+        container.innerHTML = html || '<p>No finish options available for this reel.</p>';
+
+        // Reattach event listeners to new radio buttons
+        attachFinishListeners();
+      }
+
+      // Render drag knobs dynamically
+      if (dragKnobs && dragKnobs.length > 0) {
+        renderDragKnobs(dragKnobs);
+      }
+    } catch (error) {
+      console.error('Error loading finish options:', error);
+      const container = document.getElementById('dynamic-finishes-container');
+      if (container) {
+        // Provide more detailed error information
+        container.innerHTML = `
+          <div style="padding: 20px; background: #fee2e2; border-radius: 8px; margin: 10px 0;">
+            <p style="color: #991b1b; font-weight: bold;">Unable to load finish options</p>
+            <p style="color: #7f1d1d; font-size: 14px;">Please check your internet connection and refresh the page.</p>
+            <details style="margin-top: 10px;">
+              <summary style="cursor: pointer; color: #7f1d1d;">Technical details</summary>
+              <pre style="font-size: 12px; color: #7f1d1d; margin-top: 5px;">${error.message}</pre>
+            </details>
+          </div>
+        `;
+
+        // Also check the console for any hints about the actual issue
+        console.log('Checking for common issues...');
+        console.log('1. Are JSON files uploaded to Shopify assets?');
+        console.log('2. Is the product handle correct?');
+        console.log('3. Check Network tab in DevTools for 404 errors');
+
+        // Add a fallback message to still allow Black finish selection
+        container.innerHTML += `
+          <div style="margin-top: 20px;">
+            <p style="color: #6b7280; font-size: 14px;">
+              Standard Black finish is still available. Other finishes will be available once the page loads correctly.
+            </p>
+          </div>
+        `;
+      }
+    }
+  }
+
+  // Call loadFinishOptions on page load
+  loadFinishOptions();
+
+  // Function to attach event listeners to finish options
+  function attachFinishListeners() {
+    const finishInputs = document.querySelectorAll('input[name="finish"]');
+    finishInputs.forEach(input => {
+      input.addEventListener('change', () => {
+        collectConfiguration(); // Update the configuration when finish changes
+      });
+    });
+  }
+
+  // Function to render drag knobs dynamically
+  function renderDragKnobs(dragKnobs) {
+    console.log('Rendering drag knobs...');
+
+    // Group drag knobs by tier
+    const knobsByTier = {};
+    dragKnobs.forEach(knob => {
+      if (!knobsByTier[knob.tier]) {
+        knobsByTier[knob.tier] = [];
+      }
+      knobsByTier[knob.tier].push(knob);
+    });
+
+    // Define tier display names
+    const tierConfig = {
+      'Drag Knob Tier #1': { name: 'Solid Colors', price: 50 },
+      'Drag Knob Tier #2': { name: 'Fade Patterns', price: 100 },
+      'Drag Knob Tier #3': { name: 'Fish Patterns', price: 125 },
+      'Drag Knob Tier #4': { name: 'Special Edition', price: 200 }
+    };
+
+    // Find the hardware options container
+    const container = document.querySelector('.hardware-options');
+    if (!container) {
+      console.error('Hardware options container not found');
+      return;
+    }
+
+    // Keep the standard option (Black) and clear the rest
+    const standardOption = container.querySelector('.hardware-section');
+    let html = standardOption ? standardOption.outerHTML : '';
+
+    // Add dynamic drag knob tiers in price order (low to high)
+    const orderedTiers = ['Drag Knob Tier #1', 'Drag Knob Tier #2', 'Drag Knob Tier #3', 'Drag Knob Tier #4'];
+    orderedTiers.forEach(tier => {
+      if (knobsByTier[tier] && knobsByTier[tier].length > 0) {
+        const config = tierConfig[tier];
+        html += `
+          <div class="hardware-section">
+            <h4>${config.name} (+$${config.price})</h4>
+            <div class="hardware-grid">
+        `;
+
+        // Sort knobs by name within each tier for consistency
+        knobsByTier[tier].sort((a, b) => a.name.localeCompare(b.name));
+
+        knobsByTier[tier].forEach(knob => {
+          const isPremium = config.price >= 125 ? 'premium' : '';
+          const imageUrl = knob.swatches && knob.swatches['30x30'] ? knob.swatches['30x30'] : '';
+
+          html += `
+            <label class="hardware-option ${isPremium}">
+              <input type="radio" name="drag_knob"
+                value="${knob.name}"
+                data-tier="${tier}"
+                data-price="${knob.tier_price}">
+              <div class="color-swatch" style="background-image: url('${imageUrl}');"></div>
+              <span class="hardware-name">${knob.name}</span>
+              ${config.price > 0 ? `<span class="hardware-price">+$${config.price}</span>` : ''}
+            </label>
+          `;
+        });
+
+        html += `
+            </div>
+          </div>
+        `;
+      }
+    });
+
+    // Add special options (Arapaima)
+    html += `
+      <div class="hardware-section">
+        <h4>Special Options</h4>
+        <div class="hardware-grid">
+          <label class="hardware-option">
+            <input type="radio" name="drag_knob" value="Arapaima" data-tier="None" data-price="0" data-included-with="arapaima-finish">
+            <div class="color-swatch" style=""></div>
+            <span class="hardware-name">Arapaima</span>
+            <span class="hardware-price included-text">Included with Arapaima finish</span>
+          </label>
+        </div>
+      </div>
+    `;
+
+    container.innerHTML = html;
+
+    // Attach event listeners to new drag knob options
+    const dragKnobInputs = container.querySelectorAll('input[name="drag_knob"]');
+    dragKnobInputs.forEach(input => {
+      input.addEventListener('change', () => {
+        collectConfiguration();
+      });
+    });
+
+    console.log('Drag knobs rendered successfully');
+  }
+
+  // Wizard state
+  let currentStep = 1;
+  const totalSteps = 8;
+  let configuration = {};
+  let selectedVariants = new Map();
+  let baseReelVariantId = null;
+  let baseReelPrice = 0;
+
+  // Elements (will be initialized after DOM loads)
+  let form, prevBtn, nextBtn, submitBtn, progressFill, messageDiv;
+
+  // Navigation functions
+  function showStep(step) {
+    debug(`showStep called with step: ${step}`);
+
+    // Hide all steps
+    const allSteps = document.querySelectorAll('.wizard-step');
+    debug(`Found ${allSteps.length} wizard steps`);
+
+    allSteps.forEach(s => {
+      s.classList.remove('active');
+    });
+
+    // Show current step
+    const currentStepEl = document.querySelector(`.wizard-step[data-step="${step}"]`);
+    if (currentStepEl) {
+      currentStepEl.classList.add('active');
+      debug(`Activated step ${step}`);
+    } else {
+      debug(`ERROR: Could not find step element for step ${step}`);
+    }
+
+    // Update progress
+    updateProgress(step);
+
+    // Update navigation buttons
+    updateNavigation(step);
+
+    // If review step, update summary
+    if (step === 7) {
+      updateReviewSummary();
+    }
+
+    // Scroll to top of wizard when changing steps
+    const wizardContainer = document.querySelector('.abel-wizard-container');
+    if (wizardContainer) {
+      wizardContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  function updateProgress(step) {
+    // Update progress bar
+    const progressPercent = (step / totalSteps) * 100;
+    progressFill.style.width = progressPercent + '%';
+
+    // Update step indicators
+    document.querySelectorAll('.progress-step').forEach((stepEl, index) => {
+      const stepNum = index + 1;
+      stepEl.classList.remove('active', 'completed');
+
+      if (stepNum < step) {
+        stepEl.classList.add('completed');
+      } else if (stepNum === step) {
+        stepEl.classList.add('active');
+      }
+    });
+  }
+
+  function updateNavigation(step) {
+    // Previous button
+    if (step === 1) {
+      prevBtn.style.display = 'none';
+    } else {
+      prevBtn.style.display = 'block';
+    }
+
+    // Next/Submit buttons
+    if (step === totalSteps) {
+      nextBtn.style.display = 'none';
+      submitBtn.style.display = 'block';
+    } else {
+      nextBtn.style.display = 'block';
+      submitBtn.style.display = 'none';
+    }
+  }
+
+  function validateStep(step) {
+    // Step 1 (instructions) doesn't need validation
+    if (step === 1) {
+      return true;
+    }
+
+    const stepEl = document.querySelector(`.wizard-step[data-step="${step}"]`);
+    const requiredInputs = stepEl.querySelectorAll('[required]');
+
+    let isValid = true;
+    requiredInputs.forEach(input => {
+      if (input.type === 'radio') {
+        const radioGroup = stepEl.querySelectorAll(`[name="${input.name}"]`);
+        const isChecked = Array.from(radioGroup).some(r => r.checked);
+        if (!isChecked) {
+          isValid = false;
+        }
+      } else if (!input.value) {
+        isValid = false;
+        input.classList.add('error');
+      } else {
+        input.classList.remove('error');
+      }
+    });
+
+    return isValid;
+  }
+
+  function collectConfiguration() {
+    configuration = {};
+    selectedVariants.clear();
+
+    // Get base reel selection
+    const reelModelSelect = document.getElementById('reel-model-select');
+    if (reelModelSelect && reelModelSelect.value) {
+      baseReelVariantId = reelModelSelect.value;
+      const selectedOption = reelModelSelect.options[reelModelSelect.selectedIndex];
+      // Parse price, removing any commas that might be present
+      const priceStr = (selectedOption.dataset.price || '0').replace(/,/g, '');
+      baseReelPrice = parseFloat(priceStr) || 0;
+      configuration['reel_model'] = selectedOption.text.split(' - ')[0];
+
+      console.log(`Base reel: ${configuration['reel_model']}, Price: $${baseReelPrice}`);
+    }
+
+    // Collect all form data
+    const formData = new FormData(form);
+    let totalPrice = baseReelPrice; // Start with base reel price
+
+    for (let [name, value] of formData.entries()) {
+      if (value && name !== 'reel_model') {
+        configuration[name] = value;
+
+        // Find the selected element to get tier and price - check both radio and select
+        let element = form.querySelector(`[name="${name}"][value="${value}"]:checked`);
+        if (!element) {
+          // For select elements
+          const selectElement = form.querySelector(`select[name="${name}"]`);
+          if (selectElement) {
+            element = selectElement.querySelector(`option[value="${value}"]`);
+          }
+        }
+
+        if (element && element.dataset.tier && element.dataset.tier !== 'None') {
+          const tier = element.dataset.tier;
+          const price = parseFloat(element.dataset.price || 0);
+
+          console.log(`Found tier: "${tier}" | Option: "${value}" | Price: $${price} | Has ID: ${!!variantMap[tier]}`);
+
+          if (variantMap[tier]) {
+            selectedVariants.set(tier, {
+              id: variantMap[tier],
+              price: price,
+              value: value
+            });
+            totalPrice += price;
+            console.log(`Added to cart: ${tier} (+$${price}) - Running total: $${totalPrice}`);
+          } else {
+            console.error(`ERROR: No variant ID found for tier: "${tier}"`);
+            console.log('Available tiers in variantMap:', Object.keys(variantMap));
+          }
+        } else if (element && element.dataset.includedWith === 'arapaima-finish') {
+          // Special handling for Arapaima drag knob (included with finish)
+          console.log(`Arapaima drag knob selected - included with Arapaima finish (no additional cost)`);
+        }
+      }
+    }
+
+    console.log('Selected variants:', Array.from(selectedVariants.entries()));
+    console.log(`FINAL TOTAL: $${totalPrice.toFixed(2)} (Base: $${baseReelPrice.toFixed(2)} + Upgrades: $${(totalPrice - baseReelPrice).toFixed(2)})`);
+
+    // Update running total display
+    updateRunningTotal(totalPrice);
+
+    return totalPrice;
+  }
+
+  function updateRunningTotal(total) {
+    const runningTotalEl = document.getElementById('running-total');
+    if (runningTotalEl) {
+      runningTotalEl.textContent = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD'
+      }).format(total);
+    }
+  }
+
+  function updateReviewSummary() {
+    const totalPrice = collectConfiguration();
+
+    // Update configuration display
+    const summaryHtml = Object.entries(configuration)
+      .filter(([key, value]) => value)
+      .map(([key, value]) => {
+        const label = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        return `
+          <div class="config-item">
+            <span class="config-label">${label}:</span>
+            <span class="config-value">${value}</span>
+          </div>
+        `;
+      }).join('');
+
+    document.getElementById('configuration-summary').innerHTML = summaryHtml;
+
+    // Update price breakdown
+    let priceDetailsHtml = '';
+
+    // Add base reel price
+    if (baseReelPrice > 0) {
+      priceDetailsHtml += `
+        <div class="price-item">
+          <span>Base Reel: ${configuration['reel_model'] || 'Not Selected'}</span>
+          <span>$${baseReelPrice.toFixed(2)}</span>
+        </div>
+      `;
+    }
+
+    // Add upgrade prices
+    if (selectedVariants.size > 0) {
+      selectedVariants.forEach((data, tier) => {
+        priceDetailsHtml += `
+          <div class="price-item">
+            <span>${data.value}</span>
+            <span>+$${data.price.toFixed(2)}</span>
+          </div>
+        `;
+      });
+    }
+
+    if (priceDetailsHtml === '') {
+      priceDetailsHtml = '<div class="price-item">No selections made</div>';
+    }
+
+    document.getElementById('price-details').innerHTML = priceDetailsHtml;
+
+    // Update total
+    document.getElementById('final-price').textContent = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(totalPrice);
+  }
+
+  function showMessage(text, type) {
+    messageDiv.textContent = text;
+    messageDiv.className = 'wizard-message ' + type;
+    messageDiv.style.display = 'block';
+
+    setTimeout(() => {
+      messageDiv.style.display = 'none';
+    }, 5000);
+  }
+
+  // Event handlers - moved inside initializeWizard function
+  function attachEventHandlers() {
+    debug('Attaching event handlers');
+
+    // Add click handlers to progress steps
+    document.querySelectorAll('.progress-step').forEach((stepEl, index) => {
+      stepEl.addEventListener('click', () => {
+        const targetStep = index + 1;
+        debug(`Progress step ${targetStep} clicked`, { currentStep, targetStep });
+
+        // Allow navigation to completed steps or current step
+        if (targetStep < currentStep || targetStep === currentStep) {
+          // Validate current step before leaving (optional - remove if not wanted)
+          if (targetStep < currentStep) {
+            currentStep = targetStep;
+            debug(`Navigating to step ${currentStep}`);
+            showStep(currentStep);
+          }
+        } else if (targetStep === currentStep + 1) {
+          // Allow clicking next step if current step is valid
+          const isValid = validateStep(currentStep);
+          if (isValid) {
+            currentStep = targetStep;
+            debug(`Moving forward to step ${currentStep}`);
+            showStep(currentStep);
+          } else {
+            debug('Cannot skip ahead - current step validation failed');
+            showMessage('Please complete the current step before proceeding', 'error');
+          }
+        } else {
+          debug('Cannot skip ahead multiple steps');
+        }
+      });
+    });
+
+    prevBtn.addEventListener('click', () => {
+      debug('Previous button clicked', { currentStep });
+      if (currentStep > 1) {
+        currentStep--;
+        debug(`Moving to step ${currentStep}`);
+        showStep(currentStep);
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      debug('Next button clicked', { currentStep });
+      const isValid = validateStep(currentStep);
+      debug(`Step ${currentStep} validation result: ${isValid}`);
+
+      if (isValid) {
+        if (currentStep < totalSteps) {
+          currentStep++;
+          debug(`Moving to step ${currentStep}`);
+          showStep(currentStep);
+        } else {
+          debug('Already at last step');
+        }
+      } else {
+        debug('Validation failed');
+        showMessage('Please complete all required fields', 'error');
+      }
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Collect final configuration
+      const totalPrice = collectConfiguration();
+
+      // Check if base reel is selected
+      if (!baseReelVariantId) {
+        showMessage('Please select a reel model', 'error');
+        return;
+      }
+
+      // Validate price calculation
+      let calculatedTotal = baseReelPrice;
+      const pricingErrors = [];
+
+      selectedVariants.forEach((data, tier) => {
+        calculatedTotal += data.price;
+
+        // Check if we have a valid variant ID for this tier
+        if (!data.id) {
+          pricingErrors.push(`Missing variant ID for ${tier}: ${data.value}`);
+        }
+
+        // Log each tier selection for debugging
+        console.log(`Tier: ${tier}, Option: ${data.value}, Price: $${data.price}, ID: ${data.id}`);
+      });
+
+      // Check if calculated total matches expected total
+      if (Math.abs(calculatedTotal - totalPrice) > 0.01) {
+        console.error(`Price mismatch! Calculated: $${calculatedTotal.toFixed(2)}, Expected: $${totalPrice.toFixed(2)}`);
+        showMessage(`Price calculation error. Please refresh and try again.`, 'error');
+        return;
+      }
+
+      // Check for any pricing errors
+      if (pricingErrors.length > 0) {
+        console.error('Pricing validation errors:', pricingErrors);
+        showMessage(`Configuration error: ${pricingErrors[0]}`, 'error');
+        return;
+      }
+
+      console.log(`Price validation passed. Total: $${totalPrice.toFixed(2)}`);
+
+      // Build cart items array - base product + tier products
+      const items = [];
+
+      // Add base reel with all configuration details
+      const baseProperties = {
+        'Reel Model': `${configuration.style || ''}`,
+        'Retrieve': `${configuration.retrieve || ''}`,
+        'Finish': `${configuration.finish || 'Not selected'}`,
+        'Drag Knob': `${configuration.drag_knob || 'Not selected'}`,
+        'Handle': `${configuration.handle || 'Standard'}`,
+        'Engraving': `${configuration.engraving || 'None'}`,
+        'Titanium Components': `${configuration.titanium || 'None'}`,
+        'Total': `$${totalPrice.toFixed(2)}`
+      };
+
+      items.push({
+        id: parseInt(baseReelVariantId),
+        quantity: 1,
+        properties: baseProperties
+      });
+
+      // Add tier products from custom-abel-reel-options
+      selectedVariants.forEach((data, tier) => {
+        if (data.id) {
+          // Ensure we're using numeric IDs like the bundle app
+          const numericId = typeof data.id === 'string' ? parseInt(data.id) : data.id;
+          items.push({
+            id: numericId, // Use numeric ID
+            quantity: 1,
+            properties: {
+              '_hidden': 'true',
+              'Upgrade': data.value
+            }
+          });
+        }
+      });
+
+      console.log('Cart items to add:', items);
+      console.log('Item IDs:', items.map(item => ({ id: item.id, type: typeof item.id })));
+
+      // Add all items to cart
+      try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>Adding to cart...</span>';
+
+        // Test: Try adding just base product first
+        console.log('Testing: Adding base product first...');
+        const baseResponse = await fetch('/cart/add.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ items: [items[0]] }) // Just base product
+        });
+
+        if (!baseResponse.ok) {
+          console.error('Base product failed:', await baseResponse.text());
+          throw new Error('Failed to add base product');
+        }
+
+        console.log('Base product added successfully');
+
+        // Now try adding tier products if any
+        if (items.length > 1) {
+          const tierItems = items.slice(1);
+          console.log('Adding tier products:', tierItems);
+
+          const tierResponse = await fetch('/cart/add.js', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify({ items: tierItems })
+          });
+
+          if (!tierResponse.ok) {
+            console.error('Tier products failed:', await tierResponse.text());
+            // Don't throw - at least base product was added
+            console.warn('Could not add tier products, but base product was added');
+          } else {
+            console.log('All items added successfully');
+          }
+        }
+
+        showMessage('Configuration added to cart!', 'success');
+
+        // Redirect to cart
+        setTimeout(() => {
+          window.location.href = '/cart';
+        }, 1500);
+
+      } catch (error) {
+        console.error('Error details:', error);
+        showMessage(`Error: ${error.message}`, 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>Add to Cart</span>';
+      }
+    });
+
+    // Add event listeners for real-time price updates
+    form.addEventListener('change', (e) => {
+      collectConfiguration(); // This will update the running total
+    });
+  } // End of attachEventHandlers
+
+  // Initialize wizard when DOM is ready
+  function initializeWizard() {
+    debug('initializeWizard called');
+
+    // Get DOM elements
+    form = document.getElementById('abel-wizard-form');
+    prevBtn = document.getElementById('prev-btn');
+    nextBtn = document.getElementById('next-btn');
+    submitBtn = document.getElementById('submit-btn');
+    progressFill = document.getElementById('progress-fill');
+    messageDiv = document.getElementById('wizard-message');
+
+    debug('Elements found:', {
+      form: !!form,
+      prevBtn: !!prevBtn,
+      nextBtn: !!nextBtn,
+      submitBtn: !!submitBtn,
+      progressFill: !!progressFill,
+      messageDiv: !!messageDiv
+    });
+
+    if (!form || !prevBtn || !nextBtn || !submitBtn) {
+      debug('ERROR: Required elements not found');
+      console.error('Abel Wizard: Required elements not found');
+      return;
+    }
+
+    debug('All elements found, initializing wizard');
+    console.log('Abel Wizard elements found, initializing...');
+
+    // Attach event handlers
+    attachEventHandlers();
+
+    // Initialize
+    showStep(1);
+    collectConfiguration(); // Initialize running total
+  }
+
+  // Run initialization when DOM is ready
+  debug('Document readyState:', document.readyState);
+
+  if (document.readyState === 'loading') {
+    debug('Waiting for DOMContentLoaded event');
+    document.addEventListener('DOMContentLoaded', initializeWizard);
+  } else {
+    // DOM already loaded
+    debug('DOM already loaded, initializing immediately');
+    initializeWizard();
+  }
+})();
+</script>

@@ -1,0 +1,1290 @@
+<section class="blog-article container">
+  <div class="blog-hero">
+    <nav class="blog-hero-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+      <a href="/blogs/{{ blog.handle }}" class="blog-hero-breadcrumbs__home">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span>Blog</span>
+      </a>
+      {%- assign valid_categories = 'Category_Fly Tying,Category_Beginner,Category_Fly Fishing Travel,Category_Fly Line Reviews,Category_Fly Reel Reviews,Category_Fly Rod Reviews,Category_How To,Category_Shootouts,Category_Spey Reviews,Category_Trip Reports,Category_Wader Reviews' | split: ',' -%}
+      {%- assign found_category = blank -%}
+      {%- for tag in article.tags -%}
+        {%- if valid_categories contains tag -%}
+          {%- assign found_category = tag -%}
+          {%- break -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {%- if found_category != blank -%}
+        {%- assign cat_name = found_category | remove: 'Category_' -%}
+        {%- assign cat_display = cat_name | strip -%}
+        {%- assign cat_slug = cat_name | strip | handleize -%}
+        <span class="blog-hero-breadcrumbs__separator">›</span>
+        <a href="/pages/category/{{ cat_slug }}" class="blog-hero-breadcrumbs__item">{{ cat_display }}</a>
+      {%- endif -%}
+      <span class="blog-hero-breadcrumbs__separator">›</span>
+      <span class="blog-hero-breadcrumbs__current">{{ article.title | truncate: 50 }}</span>
+    </nav>
+
+    {%- assign valid_categories = 'Category_Fly Tying,Category_Beginner,Category_Fly Fishing Travel,Category_Fly Line Reviews,Category_Fly Reel Reviews,Category_Fly Rod Reviews,Category_How To,Category_Shootouts,Category_Spey Reviews,Category_Trip Reports,Category_Wader Reviews' | split: ',' -%}
+    {%- assign found_category = blank -%}
+    {%- for tag in article.tags -%}
+      {%- if valid_categories contains tag -%}
+        {%- assign found_category = tag -%}
+        {%- break -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {%- if found_category != blank -%}
+      {%- assign cat_hero_name = found_category | remove: 'Category_' -%}
+      {%- assign cat_hero_slug = cat_hero_name | strip | handleize -%}
+      <a href="/pages/category/{{ cat_hero_slug }}" class="blog-category">{{ cat_hero_name }}</a>
+    {%- endif -%}
+    <h1 class="blog-title">{{ article.title }}</h1>
+
+    <span class="blog-subtitle">{{ article.metafields.custom.subtitle }}</span>
+
+    {%- if cat and cat.meta_description != blank -%}
+      <p class="blog-subtitle">{{ cat.meta_description }}</p>
+    {%- endif -%}
+
+    <div class="blog-meta">
+      <div class="blog-meta-calendar">
+        <div class="blog-meta-calendar-icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            xml:space="preserve"
+            width="20"
+            height="20"
+            style="shape-rendering:geometricPrecision;text-rendering:geometricPrecision;image-rendering:optimizeQuality;fill-rule:evenodd;clip-rule:evenodd"
+            viewBox="0 0 2048 2048"
+          >
+            <defs><style>.fil0{fill:#212121;fill-rule:nonzero}</style></defs>
+            <g id="Layer_x0020_1"><g id="_442651776">
+                <path id="_442653336" class="fil0" d="M350.778 442.758h1346.44c43.036 0 82.14 17.584 110.467 45.91 28.326 28.328 45.91 67.431 45.91 110.467v1036.49c0 43.036-17.584 82.138-45.91 110.466-28.328 28.326-67.431 45.91-110.467 45.91H350.778c-43.036 0-82.14-17.584-110.467-45.91-28.326-28.328-45.91-67.43-45.91-110.466V599.135c0-43.036 17.584-82.139 45.91-110.466 28.328-28.327 67.432-45.911 110.467-45.911zm1346.44 64.002H350.778c-25.37 0-48.46 10.403-65.217 27.16-16.756 16.757-27.16 39.845-27.16 65.215v1036.49c0 25.37 10.404 48.458 27.16 65.216 16.758 16.756 39.847 27.16 65.217 27.16h1346.44c25.37 0 48.46-10.404 65.217-27.16 16.756-16.758 27.16-39.846 27.16-65.216V599.135c0-25.37-10.404-48.458-27.16-65.216-16.757-16.756-39.847-27.16-65.217-27.16z"/>
+                <path id="_442653984" class="fil0" d="M226.401 774.696c-17.673 0-32 14.328-32 32 0 17.674 14.327 32.002 32 32.002h1595.2c17.673 0 32-14.328 32-32.001s-14.327-32.001-32-32.001h-1595.2z"/>
+                <path id="_442653720" class="fil0" d="M512.735 532.838c29.789 0 56.761 12.078 76.287 31.603 19.524 19.526 31.603 46.499 31.603 76.287 0 29.789-12.079 56.763-31.602 76.287-19.526 19.524-46.5 31.602-76.288 31.602-29.789 0-56.763-12.079-76.286-31.602-19.525-19.526-31.603-46.5-31.603-76.287 0-29.788 12.079-56.761 31.603-76.287 19.523-19.524 46.497-31.603 76.286-31.603zm31.037 76.853c-7.94-7.94-18.914-12.851-31.037-12.851-12.123 0-23.096 4.912-31.036 12.851-7.94 7.94-12.852 18.914-12.852 31.037 0 12.123 4.913 23.097 12.852 31.036 7.94 7.94 18.913 12.852 31.036 12.852 12.123 0 23.098-4.913 31.037-12.852 7.94-7.94 12.852-18.913 12.852-31.036 0-12.123-4.913-23.097-12.852-31.037z"/>
+                <path id="_442653960" class="fil0" d="M1535.27 532.838c29.789 0 56.763 12.08 76.286 31.603 19.524 19.526 31.603 46.499 31.603 76.287 0 29.788-12.078 56.76-31.603 76.287-19.523 19.523-46.497 31.602-76.286 31.602s-56.761-12.078-76.287-31.602c-19.524-19.524-31.603-46.498-31.603-76.287 0-29.788 12.079-56.761 31.603-76.287 19.526-19.525 46.498-31.603 76.287-31.603zm31.036 76.853c-7.94-7.94-18.913-12.851-31.036-12.851-12.123 0-23.098 4.912-31.037 12.851-7.94 7.94-12.852 18.914-12.852 31.037 0 12.123 4.913 23.097 12.852 31.036 7.94 7.94 18.914 12.852 31.037 12.852 12.123 0 23.096-4.913 31.036-12.852 7.94-7.94 12.852-18.913 12.852-31.036 0-12.123-4.913-23.097-12.852-31.037z"/>
+                <path id="_442653888" class="fil0" d="M544.737 287.999c0-17.673-14.328-32-32-32-17.674 0-32.002 14.327-32.002 32v276.975c0 17.673 14.328 32 32.001 32s32.001-14.327 32.001-32V287.999z"/>
+                <path id="_442653288" class="fil0" d="M1567.26 287.999c0-17.673-14.328-32-32-32-17.674 0-32.002 14.327-32.002 32v276.975c0 17.673 14.328 32 32.001 32s32.001-14.327 32.001-32V287.999z"/>
+                <path id="_442653216" class="fil0" d="M935.691 940.389c-17.673 0-32 14.328-32 32 0 17.674 14.327 32.002 32 32.002h114.428c17.673 0 32-14.328 32-32.001s-14.327-32.001-32-32.001H935.691z"/>
+                <path id="_442652880" class="fil0" d="M1241.66 940.389c-17.673 0-32 14.328-32 32 0 17.674 14.327 32.002 32 32.002h114.428c17.673 0 32-14.328 32-32.001s-14.327-32.001-32-32.001H1241.66z"/>
+                <path id="_442653168" class="fil0" d="M1531.88 940.389c-17.673 0-32 14.328-32 32 0 17.674 14.327 32.002 32 32.002h114.428c17.673 0 32-14.328 32-32.001s-14.327-32.001-32-32.001H1531.88z"/>
+                <path id="_442653120" class="fil0" d="M401.694 1147.69c-17.673 0-32 14.328-32 32 0 17.674 14.327 32.002 32 32.002h114.428c17.673 0 32-14.328 32-32.001s-14.327-32.001-32-32.001H401.694z"/>
+                <path id="_442652784" class="fil0" d="M668.692 1147.69c-17.673 0-32 14.328-32 32 0 17.674 14.327 32.002 32 32.002h114.429c17.673 0 32-14.328 32-32.001s-14.327-32.001-32-32.001H668.692z"/>
+                <path id="_442653072" class="fil0" d="M935.691 1147.69c-17.673 0-32 14.328-32 32 0 17.674 14.327 32.002 32 32.002h114.428c17.673 0 32-14.328 32-32.001s-14.327-32.001-32-32.001H935.691z"/>
+                <path id="_442652736" class="fil0" d="M1241.66 1147.69c-17.673 0-32 14.328-32 32 0 17.674 14.327 32.002 32 32.002h114.428c17.673 0 32-14.328 32-32.001s-14.327-32.001-32-32.001H1241.66z"/>
+                <path id="_442652208" class="fil0" d="M1531.88 1147.69c-17.673 0-32 14.328-32 32 0 17.674 14.327 32.002 32 32.002h114.428c17.673 0 32-14.328 32-32.001s-14.327-32.001-32-32.001H1531.88z"/>
+                <path id="_442651992" class="fil0" d="M401.694 1354.99c-17.673 0-32 14.328-32 32 0 17.674 14.327 32.002 32 32.002h114.428c17.673 0 32-14.328 32-32.001s-14.327-32.001-32-32.001H401.694z"/>
+                <path id="_442651872" class="fil0" d="M668.692 1354.99c-17.673 0-32 14.328-32 32 0 17.674 14.327 32.002 32 32.002h114.429c17.673 0 32-14.328 32-32.001s-14.327-32.001-32-32.001H668.692z"/>
+                <path id="_442652088" class="fil0" d="M935.691 1354.99c-17.673 0-32 14.328-32 32 0 17.674 14.327 32.002 32 32.002h114.428c17.673 0 32-14.328 32-32.001s-14.327-32.001-32-32.001H935.691z"/>
+                <path id="_442651968" class="fil0" d="M1241.66 1354.99c-17.673 0-32 14.328-32 32 0 17.674 14.327 32.002 32 32.002h114.428c17.673 0 32-14.328 32-32.001s-14.327-32.001-32-32.001H1241.66z"/>
+                <path id="_442652424" class="fil0" d="M1531.88 1354.99c-17.673 0-32 14.328-32 32 0 17.674 14.327 32.002 32 32.002h114.428c17.673 0 32-14.328 32-32.001s-14.327-32.001-32-32.001H1531.88z"/>
+                <path id="_442652064" class="fil0" d="M401.694 1562.29c-17.673 0-32 14.328-32 32 0 17.674 14.327 32.002 32 32.002h114.428c17.673 0 32-14.328 32-32.001s-14.327-32.001-32-32.001H401.694z"/>
+                <path id="_442652256" class="fil0" d="M668.692 1562.29c-17.673 0-32 14.328-32 32 0 17.674 14.327 32.002 32 32.002h114.429c17.673 0 32-14.328 32-32.001s-14.327-32.001-32-32.001H668.692z"/>
+                <path id="_442652520" class="fil0" d="M935.691 1562.29c-17.673 0-32 14.328-32 32 0 17.674 14.327 32.002 32 32.002h114.428c17.673 0 32-14.328 32-32.001s-14.327-32.001-32-32.001H935.691z"/>
+            </g></g>
+            <path style="fill:none" d="M0 0h2048v2048H0z"/>
+          </svg>
+        </div>
+        <span>{{ article.published_at | date: '%b %d, %Y' }}</span>
+      </div>
+
+      <div class="blog-meta-author">
+        {% assign avatar = article.metafields.custom.writer_image %}
+        {% if avatar != blank %}
+          <img
+            class="blog-author-avatar"
+            src="{{ avatar | image_url: width: 96, height: 96, crop: 'center' }}"
+            alt="{{ article.author | escape }}"
+            loading="lazy"
+            width="48"
+            height="48"
+          >
+        {% endif %}
+        <a class="blog-author-name" href="/pages/authors/{{ article.author | handleize }}">{{ article.author }}</a>
+      </div>
+    </div>
+
+    {%- if article.image -%}
+      <div class="blog-hero__image">
+        <img
+          src="{{ article.image | image_url: width: 800 }}"
+          alt="{{ article.title | escape }}"
+          width="{{ article.image.width | default: 800 }}"
+          height="{{ article.image.height | default: 400 }}"
+          loading="eager"
+        >
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} ---------- LAYOUT: LEFT (SIDEBAR) + RIGHT (BUILDER) ---------- {%- endcomment -%}
+  <div class="blog-article__grid">
+    {%- comment -%} LEFT: SIDEBAR {%- endcomment -%}
+    <aside class="blog-article__sidebar">
+      <div class="navigation">
+        <h3>Quick Links</h3>
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <div><a href="/">Home</a></div>
+          <div><a href="/blogs/{{ blog.handle }}">Blog</a></div>
+
+          {%- assign valid_categories = 'Category_Fly Tying,Category_Beginner,Category_Fly Fishing Travel,Category_Fly Line Reviews,Category_Fly Reel Reviews,Category_Fly Rod Reviews,Category_How To,Category_Shootouts,Category_Spey Reviews,Category_Trip Reports,Category_Wader Reviews' | split: ',' -%}
+          {%- assign found_category = blank -%}
+          {%- for tag in article.tags -%}
+            {%- if valid_categories contains tag -%}
+              {%- assign found_category = tag -%}
+              {%- break -%}
+            {%- endif -%}
+          {%- endfor -%}
+          {%- if found_category != blank -%}
+            {%- assign cat_name = found_category | remove: 'Category_' -%}
+            {%- assign cat_display = cat_name | strip -%}
+            {%- assign cat_slug = cat_name | strip | handleize -%}
+            <div>
+              <a href="/pages/category/{{ cat_slug }}">{{ cat_display }}</a>
+            </div>
+          {%- endif -%}
+
+          {%- assign article_title_display = article.title | split: '_' | last | strip -%}
+          <div class="breadcrumb-current">{{ article_title_display }}</div>
+        </nav>
+      </div>
+
+      <div class="toc-sidebar">
+        <h3>Table of Contents</h3>
+        <ul id="toc-list"></ul>
+      </div>
+
+
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'feat_prods' -%}
+          <div
+            class="featured-products"
+            id="featured-products-{{ block.id }}"
+            {{ block.shopify_attributes }}
+            data-product-1="{{ block.settings.product_1.handle }}"
+            data-product-2="{{ block.settings.product_2.handle }}"
+            data-product-3="{{ block.settings.product_3.handle }}"
+            data-product-4="{{ block.settings.product_4.handle }}"
+          >
+            <h3>{{ block.settings.title | default: 'Featured Gear' }}</h3>
+
+            <div class="featured-products-list" style="opacity: 0;">
+              {%- if block.settings.product_1 != blank -%}
+                {%- assign product = block.settings.product_1 -%}
+                <article class="featured-card" data-product-handle="{{ product.handle }}">
+                  <a class="fc-image" href="{{ product.url }}">
+                    {%- if product.featured_image -%}
+                      <img
+                        src="{{ product.featured_image | image_url: width: 360 }}"
+                        alt="{{ product.title | escape }}"
+                        width="{{ product.featured_image.width | default: 360 }}"
+                        height="{{ product.featured_image.height | default: 360 }}"
+                        loading="lazy"
+                      >
+                    {%- endif -%}
+                  </a>
+
+                  <div class="fc-body">
+                    <a class="fc-title" href="{{ product.url }}">{{ product.title }}</a>
+
+                    <div
+                      class="yotpo-widget-instance"
+                      data-yotpo-instance-id="1200392"
+                      data-yotpo-product-id="{{ product.id }}"
+                      data-yotpo-section-id="{{ template.name }}"
+                      {% unless request.page_type == 'product' %}
+                        data-redirect-url="{{ product.url }}#product-reviews"
+                        data-click-reviews="1"
+                      {% endunless %}
+                    ></div>
+
+                    {% if product.price_varies %}
+                      <p class="fc-price">{{ product.price_min | money }} – {{ product.price_max | money }}</p>
+                    {% else %}
+                      <p class="fc-price">{{ product.price | money }}</p>
+                    {% endif %}
+
+                    <a class="fc-button" href="{{ product.url }}">SHOP NOW</a>
+                  </div>
+                </article>
+              {%- endif -%}
+
+              {%- if block.settings.product_2 != blank -%}
+                {%- assign product = block.settings.product_2 -%}
+                <article class="featured-card" data-product-handle="{{ product.handle }}">
+                  <a class="fc-image" href="{{ product.url }}">
+                    {%- if product.featured_image -%}
+                      <img
+                        src="{{ product.featured_image | image_url: width: 360 }}"
+                        alt="{{ product.title | escape }}"
+                        width="{{ product.featured_image.width | default: 360 }}"
+                        height="{{ product.featured_image.height | default: 360 }}"
+                        loading="lazy"
+                      >
+                    {%- endif -%}
+                  </a>
+
+                  <div class="fc-body">
+                    <a class="fc-title" href="{{ product.url }}">{{ product.title }}</a>
+
+                    <div
+                      class="yotpo-widget-instance"
+                      data-yotpo-instance-id="1200392"
+                      data-yotpo-product-id="{{ product.id }}"
+                      data-yotpo-section-id="{{ template.name }}"
+                      {% unless request.page_type == 'product' %}
+                        data-redirect-url="{{ product.url }}#product-reviews"
+                        data-click-reviews="1"
+                      {% endunless %}
+                    ></div>
+
+                    {% if product.price_varies %}
+                      <p class="fc-price">{{ product.price_min | money }} – {{ product.price_max | money }}</p>
+                    {% else %}
+                      <p class="fc-price">{{ product.price | money }}</p>
+                    {% endif %}
+
+                    <a class="fc-button" href="{{ product.url }}">SHOP NOW</a>
+                  </div>
+                </article>
+              {%- endif -%}
+
+              {%- if block.settings.product_3 != blank -%}
+                {%- assign product = block.settings.product_3 -%}
+                <article class="featured-card" data-product-handle="{{ product.handle }}">
+                  <a class="fc-image" href="{{ product.url }}">
+                    {%- if product.featured_image -%}
+                      <img
+                        src="{{ product.featured_image | image_url: width: 360 }}"
+                        alt="{{ product.title | escape }}"
+                        width="{{ product.featured_image.width | default: 360 }}"
+                        height="{{ product.featured_image.height | default: 360 }}"
+                        loading="lazy"
+                      >
+                    {%- endif -%}
+                  </a>
+
+                  <div class="fc-body">
+                    <a class="fc-title" href="{{ product.url }}">{{ product.title }}</a>
+
+                    <div
+                      class="yotpo-widget-instance"
+                      data-yotpo-instance-id="1200392"
+                      data-yotpo-product-id="{{ product.id }}"
+                      data-yotpo-section-id="{{ template.name }}"
+                      {% unless request.page_type == 'product' %}
+                        data-redirect-url="{{ product.url }}#product-reviews"
+                        data-click-reviews="1"
+                      {% endunless %}
+                    ></div>
+
+                    {% if product.price_varies %}
+                      <p class="fc-price">{{ product.price_min | money }} – {{ product.price_max | money }}</p>
+                    {% else %}
+                      <p class="fc-price">{{ product.price | money }}</p>
+                    {% endif %}
+
+                    <a class="fc-button" href="{{ product.url }}">SHOP NOW</a>
+                  </div>
+                </article>
+              {%- endif -%}
+
+              {%- if block.settings.product_4 != blank -%}
+                {%- assign product = block.settings.product_4 -%}
+                <article class="featured-card" data-product-handle="{{ product.handle }}">
+                  <a class="fc-image" href="{{ product.url }}">
+                    {%- if product.featured_image -%}
+                      <img
+                        src="{{ product.featured_image | image_url: width: 360 }}"
+                        alt="{{ product.title | escape }}"
+                        width="{{ product.featured_image.width | default: 360 }}"
+                        height="{{ product.featured_image.height | default: 360 }}"
+                        loading="lazy"
+                      >
+                    {%- endif -%}
+                  </a>
+
+                  <div class="fc-body">
+                    <a class="fc-title" href="{{ product.url }}">{{ product.title }}</a>
+
+                    <div
+                      class="yotpo-widget-instance"
+                      data-yotpo-instance-id="1200392"
+                      data-yotpo-product-id="{{ product.id }}"
+                      data-yotpo-section-id="{{ template.name }}"
+                      {% unless request.page_type == 'product' %}
+                        data-redirect-url="{{ product.url }}#product-reviews"
+                        data-click-reviews="1"
+                      {% endunless %}
+                    ></div>
+
+                    {% if product.price_varies %}
+                      <p class="fc-price">{{ product.price_min | money }} – {{ product.price_max | money }}</p>
+                    {% else %}
+                      <p class="fc-price">{{ product.price | money }}</p>
+                    {% endif %}
+
+                    <a class="fc-button" href="{{ product.url }}">SHOP NOW</a>
+                  </div>
+                </article>
+              {%- endif -%}
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </aside>
+
+    {%- comment -%} RIGHT: BUILDER BLOCKS + (optional) article body {%- endcomment -%}
+    <div class="blog-article__main">
+      {%- if section.settings.show_article_body -%}
+        <div class="rte" id="blog-article-body">
+          {{ article.content }}
+        </div>
+      {%- endif -%}
+
+      <div id="blog-builder">
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'heading' -%}
+              <{{ block.settings.tag }} class="blog-h" id="{{ block.id }}" {{ block.shopify_attributes }}>
+                {{ block.settings.text }}
+              </{{ block.settings.tag }}>
+
+            {%- when 'rich_text' -%}
+              <div class="blog-richtext rte" id="{{ block.id }}" {{ block.shopify_attributes }}>
+                {{ block.settings.content }}
+              </div>
+
+            {%- when 'iwr_snip' -%}
+              <div id="{{ block.id }}" {{ block.shopify_attributes }}>
+                {% render 'image-with-rich-text',
+                  image: block.settings.image,
+                  background_image: block.settings.background_image,
+                  kicker: block.settings.kicker,
+                  title: block.settings.title,
+                  text: block.settings.text,
+                  button_text: block.settings.button_text,
+                  button_link: block.settings.button_link,
+                  align: block.settings.align,
+                  overlay_opacity_pct: block.settings.overlay_opacity
+                %}
+              </div>
+
+            {%- when 'img_rich' -%}
+              <div
+                class="image-with-richtext"
+                id="{{ block.id }}"
+                {{ block.shopify_attributes }}
+                style="{% if block.settings.background_image %}--bg:url('{{ block.settings.background_image | image_url: width: 1400 }}'){% endif %};"
+              >
+                <div
+                  class="iwr-overlay"
+                  style="opacity: {{ block.settings.overlay_opacity | default: 35 | divided_by: 100.0 }}"
+                ></div>
+
+                <div class="iwr-inner iwr-{{ block.settings.align }}">
+                  {% if block.settings.kicker != blank %}
+                    <span class="iwr-kicker">{{ block.settings.kicker }}</span>
+                  {% endif %}
+                  {% if block.settings.title != blank %}
+                    <h2 class="iwr-title">{{ block.settings.title }}</h2>
+                  {% endif %}
+                  {% if block.settings.text != blank %}
+                    <div class="iwr-text rte">{{ block.settings.text }}</div>
+                  {% endif %}
+                  {% if block.settings.button_link != blank and block.settings.button_text != blank %}
+                    <a href="{{ block.settings.button_link }}" class="iwr-btn">{{ block.settings.button_text }}</a>
+                  {% endif %}
+                </div>
+                {% if block.settings.image %}
+                  <img
+                    class="iwr-image"
+                    src="{{ block.settings.image | image_url: width: 1200 }}"
+                    alt="{{ block.settings.title | escape }}"
+                    width="{{ block.settings.image.width | default: 1200 }}"
+                    height="{{ block.settings.image.height | default: 700 }}"
+                    loading="lazy"
+                  >
+                {% endif %}
+              </div>
+
+            {%- when 'image' -%}
+              {% if block.settings.image %}
+                <figure class="blog-image" id="{{ block.id }}" {{ block.shopify_attributes }}>
+                  <img
+                    src="{{ block.settings.image | image_url: width: 1400 }}"
+                    alt="{{ block.settings.alt | escape }}"
+                    width="{{ block.settings.image.width | default: 1400 }}"
+                    height="{{ block.settings.image.height | default: 800 }}"
+                    loading="lazy"
+                  >
+                  {% if block.settings.caption != blank %}
+                    <figcaption>{{ block.settings.caption }}</figcaption>
+                  {% endif %}
+                </figure>
+              {% endif %}
+
+            {%- when 'quote' -%}
+              <blockquote class="blog-quote" id="{{ block.id }}" {{ block.shopify_attributes }}>
+                {{ block.settings.quote }}
+                {% if block.settings.cite != blank -%}
+                  <cite>— {{ block.settings.cite }}</cite>
+                {%- endif %}
+              </blockquote>
+
+            {%- when 'button' -%}
+              {% if block.settings.link != blank and block.settings.text != blank %}
+                <p class="blog-btn-wrap" id="{{ block.id }}" {{ block.shopify_attributes }}>
+                  <a class="btn" href="{{ block.settings.link }}">{{ block.settings.text }}</a>
+                </p>
+              {% endif %}
+
+            {%- when 'divider' -%}
+              <hr class="blog-divider" id="{{ block.id }}" {{ block.shopify_attributes }}>
+
+            {%- when 'spacer' -%}
+              <div
+                class="blog-spacer"
+                id="{{ block.id }}"
+                style="height: {{ block.settings.height }}px"
+                {{ block.shopify_attributes }}
+              ></div>
+
+            {%- else -%}
+              {% comment %} ignore other types in right column {% endcomment %}
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+
+      {%- if section.settings.show_comments and blog.comments_enabled? -%}
+        {% render 'article-comments-custom' %}
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Hide duplicate image from article content if it matches the hero image
+    const heroImage = document.querySelector('.blog-hero__image img');
+    if (heroImage) {
+      const heroSrc = heroImage.src;
+      const articleBody = document.querySelector('#blog-article-body');
+      const blogBuilder = document.querySelector('#blog-builder');
+
+      // Check first image in article body or blog builder
+      const firstContentImage = articleBody?.querySelector('img') || blogBuilder?.querySelector('img');
+
+      if (firstContentImage) {
+        const contentSrc = firstContentImage.src;
+        // Compare image URLs (remove size parameters for comparison)
+        const heroBase = heroSrc
+          .split('?')[0]
+          .replace(/_(1600|800|large|medium|small)\.(jpg|jpeg|png|gif|webp)/i, '.$2');
+        const contentBase = contentSrc
+          .split('?')[0]
+          .replace(/_(1600|800|large|medium|small)\.(jpg|jpeg|png|gif|webp)/i, '.$2');
+
+        if (heroBase === contentBase || heroSrc === contentSrc) {
+          firstContentImage.style.display = 'none';
+        }
+      }
+    }
+
+    // Table of Contents
+    const containers = ['#blog-builder', '#blog-article-body'];
+    const toc = document.querySelector('#toc-list');
+    const tocSidebar = document.querySelector('.toc-sidebar');
+    if (toc) {
+      const headings = [];
+      containers.forEach((sel) => {
+        const el = document.querySelector(sel);
+        if (!el) return;
+        el.querySelectorAll('h2, h3').forEach((h) => headings.push(h));
+      });
+
+      if (headings.length === 0) {
+        // Hide TOC sidebar if no headings found
+        if (tocSidebar) tocSidebar.style.display = 'none';
+      } else {
+        headings.forEach((h, i) => {
+          const id = h.id && h.id.length ? h.id : 'section-' + i;
+          h.id = id;
+
+          const li = document.createElement('li');
+          if (h.tagName === 'H3') li.style.marginLeft = '1rem';
+
+          const a = document.createElement('a');
+          a.href = '#' + id;
+          a.textContent = h.innerText;
+
+          li.appendChild(a);
+          toc.appendChild(li);
+        });
+      }
+    }
+
+    // Featured Products - Extract from content
+    const featuredContainer = document.querySelector('[id^="featured-products-"]');
+    if (!featuredContainer) return;
+
+    const productList = featuredContainer.querySelector('.featured-products-list');
+    if (!productList) return;
+
+    // Extract product links from article content
+    const productLinks = [];
+    const contentContainers = [document.querySelector('#blog-builder'), document.querySelector('#blog-article-body')];
+
+    contentContainers.forEach((container) => {
+      if (!container) return;
+      const links = container.querySelectorAll('a[href*="/products/"]');
+      links.forEach((link) => {
+        const match = link.href.match(/\/products\/([^\/\?#]+)/);
+        if (match && match[1]) {
+          productLinks.push(match[1]);
+        }
+      });
+    });
+
+    // Remove duplicates (preserving order of first appearance)
+    const uniqueHandles = [...new Set(productLinks)];
+
+    // Get fallback products from manual settings
+    const fallbackProducts = [
+      featuredContainer.dataset.product1,
+      featuredContainer.dataset.product2,
+      featuredContainer.dataset.product3,
+      featuredContainer.dataset.product4,
+    ].filter((h) => h && h !== '');
+
+    // Combine extracted + fallbacks, limit to 4 total
+    const finalHandles = [...uniqueHandles];
+    fallbackProducts.forEach((handle) => {
+      if (finalHandles.length < 4 && !finalHandles.includes(handle)) {
+        finalHandles.push(handle);
+      }
+    });
+
+    // Check if we need to update (found products in content)
+    if (uniqueHandles.length > 0) {
+      // Show loading state
+      productList.style.opacity = '1';
+      productList.innerHTML = '<div class="loading-products">Loading featured products...</div>';
+
+      // Fetch product data for each handle
+      Promise.all(
+        finalHandles.map((handle) =>
+          fetch(`/products/${handle}.js`)
+            .then((res) => (res.ok ? res.json() : null))
+            .catch(() => null)
+        )
+      ).then((products) => {
+        // Keep products in order of appearance (filter out nulls but maintain order)
+        let validProducts = [];
+        products.forEach((product, index) => {
+          if (product !== null) {
+            validProducts.push({ product, originalIndex: index });
+          }
+        });
+
+        if (validProducts.length > 0) {
+          // Sort by original order of appearance, then limit to 4
+          validProducts.sort((a, b) => a.originalIndex - b.originalIndex);
+          validProducts = validProducts.slice(0, 4);
+
+          productList.innerHTML = '';
+          validProducts.forEach((item) => {
+            const card = createProductCard(item.product);
+            productList.appendChild(card);
+          });
+          productList.style.opacity = '1';
+        } else {
+          // If all fetches failed, show original content
+          productList.style.opacity = '1';
+        }
+      });
+    } else {
+      // No products found in content, show manual fallbacks
+      productList.style.opacity = '1';
+    }
+
+    function createProductCard(product) {
+      const article = document.createElement('article');
+      article.className = 'featured-card';
+      article.setAttribute('data-product-handle', product.handle);
+
+      const priceHTML = product.price_varies
+        ? `<p class="fc-price">${formatMoney(product.price_min)} – ${formatMoney(product.price_max)}</p>`
+        : `<p class="fc-price">${formatMoney(product.price)}</p>`;
+
+      article.innerHTML = `
+        <a class="fc-image" href="${product.url}">
+          ${
+            product.featured_image
+              ? `
+            <img
+              src="${product.featured_image}"
+              alt="${escapeHtml(product.title)}"
+              width="360"
+              height="360"
+              loading="lazy"
+            >
+          `
+              : ''
+          }
+        </a>
+        <div class="fc-body">
+          <a class="fc-title" href="${product.url}">${escapeHtml(product.title)}</a>
+          <div
+            class="yotpo-widget-instance"
+            data-yotpo-instance-id="1200392"
+            data-yotpo-product-id="${product.id}"
+            data-yotpo-section-id="${document.querySelector('[id^="shopify-section-"]')?.id || ''}"
+            data-redirect-url="${product.url}#product-reviews"
+            data-click-reviews="1"
+          ></div>
+          ${priceHTML}
+          <a class="fc-button" href="${product.url}">SHOP NOW</a>
+        </div>
+      `;
+
+      return article;
+    }
+
+    function formatMoney(cents) {
+      return '$' + (cents / 100).toFixed(2);
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Blog Article",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_article_body",
+      "label": "Show article body",
+      "default": true
+    },
+    { "type": "checkbox", "id": "show_comments", "label": "Show comments", "default": true }
+  ],
+  "blocks": [
+    {
+      "type": "feat_prods",
+      "name": "Sidebar featured",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Featured Gear" },
+        { "type": "product", "id": "product_1", "label": "Product 1" },
+        { "type": "product", "id": "product_2", "label": "Product 2" },
+        { "type": "product", "id": "product_3", "label": "Product 3" },
+        { "type": "product", "id": "product_4", "label": "Product 4" }
+      ]
+    },
+
+    {
+      "type": "heading",
+      "name": "Heading",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Heading text", "default": "TITLE" },
+        {
+          "type": "select",
+          "id": "tag",
+          "label": "HTML tag",
+          "default": "h2",
+          "options": [
+            { "value": "h2", "label": "H2" },
+            { "value": "h3", "label": "H3" }
+          ]
+        }
+      ]
+    },
+
+    {
+      "type": "rich_text",
+      "name": "Rich text",
+      "settings": [
+        { "type": "richtext", "id": "content", "label": "Text", "default": "<p>Write your content here…</p>" }
+      ]
+    },
+
+    {
+      "type": "img_rich",
+      "name": "Image + text",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Foreground image" },
+        { "type": "image_picker", "id": "background_image", "label": "Background image" },
+        { "type": "text", "id": "kicker", "label": "Kicker", "default": "Label" },
+        { "type": "text", "id": "title", "label": "Title", "default": "The Ultimate Tippet Shootout" },
+        { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Lorem ipsum dolor sit amet.</p>" },
+        { "type": "text", "id": "button_text", "label": "Button text", "default": "Read article" },
+        { "type": "url", "id": "button_link", "label": "Button link" },
+        {
+          "type": "range",
+          "id": "overlay_opacity",
+          "label": "Overlay opacity (%)",
+          "min": 0,
+          "max": 100,
+          "step": 5,
+          "default": 35
+        },
+        {
+          "type": "select",
+          "id": "align",
+          "label": "Content align",
+          "default": "left",
+          "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
+        }
+      ]
+    },
+
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "alt", "label": "Alt text" },
+        { "type": "text", "id": "caption", "label": "Caption" }
+      ]
+    },
+
+    {
+      "type": "quote",
+      "name": "Quote",
+      "settings": [
+        { "type": "richtext", "id": "quote", "label": "Quote", "default": "<p>“Your quote here.”</p>" },
+        { "type": "text", "id": "cite", "label": "Cite" }
+      ]
+    },
+
+    {
+      "type": "button",
+      "name": "Button",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Button text", "default": "Learn more" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    },
+    {
+      "type": "iwr_snip",
+      "name": "Image + text (snippet)",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Foreground image" },
+        { "type": "image_picker", "id": "background_image", "label": "Background image (optional)" },
+        { "type": "text", "id": "kicker", "label": "Kicker", "default": "Label" },
+        { "type": "text", "id": "title", "label": "Title", "default": "The Ultimate Tippet Shootout" },
+        { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Lorem ipsum dolor sit amet.</p>" },
+        { "type": "text", "id": "button_text", "label": "Button text", "default": "Read article" },
+        { "type": "url", "id": "button_link", "label": "Button link" },
+        {
+          "type": "range",
+          "id": "overlay_opacity",
+          "label": "Overlay opacity (%)",
+          "min": 0,
+          "max": 100,
+          "step": 5,
+          "default": 35
+        },
+        {
+          "type": "select",
+          "id": "align",
+          "label": "Content align",
+          "default": "left",
+          "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]
+        }
+      ]
+    },
+
+    { "type": "divider", "name": "Divider", "settings": [] },
+
+    {
+      "type": "spacer",
+      "name": "Spacer",
+      "settings": [
+        {
+          "type": "range",
+          "id": "overlay_opacity",
+          "label": "Overlay opacity",
+          "min": 0,
+          "max": 0.8,
+          "step": 0.1,
+          "default": 0.3
+        }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Blog Article" }]
+}
+{% endschema %}
+
+<style>
+  .blog-hero {
+    text-align: center;
+    margin-bottom: 40px;`
+    background: #e7e9eb;
+    margin-top: 60px;
+    position: relative;
+    padding-top: 40px;
+  }
+  .blog-hero-breadcrumbs {
+    position: absolute;
+    top: -20px;
+    left: 20px;
+    font-size: 14px;
+    max-width: calc(100% - 40px);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .blog-hero-breadcrumbs__home {
+    color: #666;
+    text-decoration: none;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .blog-hero-breadcrumbs__home:hover {
+    color: #000;
+  }
+  .blog-hero-breadcrumbs__home svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+  }
+  .blog-hero-breadcrumbs__separator {
+    color: #999;
+    user-select: none;
+  }
+  .blog-hero-breadcrumbs__item {
+    color: #666;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .blog-hero-breadcrumbs__item:hover {
+    color: #000;
+  }
+  .blog-hero-breadcrumbs__current {
+    color: #333;
+    font-weight: 500;
+  }
+
+  /* Mobile: Adjust positioning */
+  .blog-category {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: #000;
+    padding: 2px 10px;
+    border: 1px solid #000;
+    background: #f4f5f7;
+  }
+  .blog-title {
+    font-size: 74px;
+    margin: 10px 20% 12px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-weight: 400;
+    line-height: 66px;
+    font-style: normal;
+  }
+  .blog-subtitle {
+    max-width: 760px;
+    margin: 0 auto 10px;
+    color: #666;
+  }
+  .blog-meta-calendar {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+  }
+  .blog-meta-calendar-icon {
+  display: flex;
+  }
+  .blog-meta {
+    font-size: 0.95rem;
+    color: #000;
+    margin: 12px 0 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+  }
+  .blog-meta .dot {
+    margin: 0 6px;
+  }
+  .blog-hero__image img {
+    width: 100%;
+    max-height: 550px;
+    object-fit: contain;
+  }
+
+  .blog-article__grid {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    gap: 100px;
+    margin-top: 40px;
+    padding: 0 50px 50px;
+  }
+
+  .navigation {
+    border: 1px solid #eceff2;
+    border-radius: 10px;
+    padding: 16px;
+    background: #fff;
+    margin-bottom: 24px;
+  }
+  .navigation h3 {
+    margin: 0 0 12px;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+  .breadcrumb {
+    font-size: 0.875rem;
+    color: #666;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .breadcrumb a {
+    color: #8ab8d6;
+    text-decoration: none;
+  }
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+  .breadcrumb-current {
+    color: #333;
+    font-weight: 500;
+  }
+
+  .toc-sidebar {
+    border: 1px solid #eceff2;
+    border-radius: 10px;
+    padding: 16px;
+    background: #fff;
+    margin-bottom: 24px;
+  }
+  .toc-sidebar h3 {
+    margin: 0 0 12px;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+  .toc-sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .toc-sidebar li {
+    margin: 6px 0;
+  }
+  .toc-sidebar a {
+    color: #8ab8d6;
+    text-decoration: none;
+    font-size: 0.95rem;
+  }
+  .toc-sidebar a:hover {
+    text-decoration: underline;
+  }
+
+  /* Featured Gear cards */
+  .featured-products {
+    border: 1px solid #eceff2;
+    border-radius: 10px;
+    padding: 16px;
+    background: #fff;
+  }
+  .featured-products h3 {
+    margin: 0 0 12px;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .featured-card {
+    background: #fff;
+    border: 1px solid #e9eef3;
+    border-radius: 12px;
+    box-shadow: 0 1px 0 rgba(16, 24, 40, 0.02);
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .fc-image img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .fc-body {
+    padding: 12px 14px 16px;
+    text-align: center;
+  }
+  .fc-title {
+    display: block;
+    color: #2d3436;
+    text-decoration: none;
+    font-size: 0.95rem;
+    margin-bottom: 6px;
+  }
+  .fc-title:hover {
+    text-decoration: underline;
+  }
+
+  .fc-price {
+    font-weight: 700;
+    margin: 10px 0 12px;
+    font-size: 1rem;
+    color: #111827;
+  }
+
+  .fc-button {
+    display: block;
+    background: #0b88d6;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+  .fc-button:hover {
+    background: #0a78bf;
+  }
+
+  /* Yotpo tweaks you supplied */
+  @media screen and (min-width: 768px) {
+    .yotpo-reviews-star-ratings-widget .yotpo-sr-bottom-line-summary {
+      flex-direction: row !important;
+      align-items: center !important;
+    }
+    .yotpo-sr-bottom-line-summary {
+      flex-direction: row !important;
+      align-items: left !important;
+    }
+    .yotpo-reviews-star-ratings-widget {
+      justify-content: left !important;
+    }
+    .product-info__block-item .yotpo-reviews-star-ratings-widget {
+      justify-content: left !important;
+    }
+    .yotpo-reviews-star-ratings-widget .yotpo-sr-bottom-line-text {
+      font-size: 12px !important;
+      color: #08c !important;
+      font-weight: 400 !important;
+    }
+    .yotpo-sr-bottom-line-left-panel .yotpo-sr-bottom-line-score {
+      display: none !important;
+    }
+  }
+
+  .blog-h {
+    margin: 10px 0 10px;
+    font-weight: 400;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+  }
+  .blog-richtext {
+    margin: 12px 0 22px;
+    font-size: 18px;
+  }
+  .blog-image {
+    margin: 18px 0;
+  }
+  .blog-image img {
+    width: 100%;
+    border-radius: 12px;
+    display: block;
+  }
+  .blog-image figcaption {
+    text-align: center;
+    color: #666;
+    font-size: 0.9rem;
+    margin-top: 6px;
+  }
+  .blog-quote {
+    margin: 24px 0;
+    padding: 18px 22px;
+    background: #f6f7f9;
+    border-left: 4px solid #cfd6dd;
+    border-radius: 8px;
+  }
+  .blog-btn-wrap .btn {
+    display: inline-block;
+    padding: 10px 18px;
+    background: #1f2937;
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+  }
+  .blog-btn-wrap .btn:hover {
+    background: #111827;
+  }
+  .blog-divider {
+    border: 0;
+    height: 1px;
+    background: #eceff2;
+    margin: 24px 0;
+  }
+  .blog-spacer {
+    width: 100%;
+  }
+
+  .image-with-richtext {
+    position: relative;
+    margin: 26px 0;
+    overflow: hidden;
+    background: #000;
+    background-image: var(--bg);
+    background-size: cover;
+    background-position: center;
+  }
+  .image-with-richtext .iwr-image {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .iwr-overlay {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    pointer-events: none;
+  }
+  .iwr-inner {
+    position: absolute;
+    left: 64px;
+    right: 24px;
+    top: 64px;
+    color: #fff;
+
+  }
+  .iwr-inner.iwr-center {
+    text-align: center;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    max-width: min(90%, 760px);
+  }
+  .iwr-inner.iwr-right {
+    text-align: right;
+    left: auto;
+    right: 24px;
+  }
+  .iwr-kicker {
+    display: inline-block;
+    padding: 4px 10px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    font-size: 0.8rem;
+    margin-bottom: 8px;
+  }
+  .iwr-title {
+    font-weight: 400;
+    margin: 4px 0 8px;
+    font-size: 60px;
+    font-family: 'Bebas Neue', sans-serif;
+    max-width: 60%;
+    line-height: 1.0;
+  }
+  .iwr-text {
+    margin: 0 0 14px;
+  }
+
+  .iwr-text p {
+    color: #c8d4da;
+  }
+  .iwr-btn {
+    display: inline-block;
+    padding: 14px 60px;
+    background: #3e90c5;
+    color: #fff;
+    text-decoration: none;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+  }
+  .iwr-btn:hover {
+    background: #2563eb;
+  }
+
+  @media (min-width: 830px) {
+    .blog-title {
+      margin: 10px 32% 12px;
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .blog-article__grid {
+      grid-template-columns: 1fr;
+      padding: 0;
+    }
+    .blog-article__sidebar {
+      order: 2;
+      margin-top: 28px;
+    }
+    .iwr-inner{
+      position: absolute;
+    left: 40px;
+    right: 24px;
+    top: 40px;
+    color: #fff;
+    }
+
+    .iwr-title {
+      font-weight: 400;
+    margin: 4px 0 8px;
+    font-size: 2.2em;
+    font-family: 'Bebas Neue', sans-serif;
+    max-width: 66%;
+    line-height: 1.0;
+    }
+
+    .iwr-btn {
+          display: inline-block;
+    padding: 8px 20px;
+    background: #3e90c5;
+    color: #fff;
+    text-decoration: none;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2em;
+    font-weight: 400;
+    }
+
+    .blog-article__grid {
+      gap: 30px;
+    }
+
+    .blog-title {
+      margin: 20px 0 12px;
+    }
+  }
+  .blog-meta-author {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .blog-author-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 100px;
+    object-fit: cover;
+    display: block;
+  }
+</style>

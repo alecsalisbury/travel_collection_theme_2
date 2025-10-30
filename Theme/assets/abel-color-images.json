@@ -1,0 +1,982 @@
+[
+  {
+    "name": "Arapaima",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/arapiama_6.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/arapiama_6.jpg"
+    }
+  },
+  {
+    "name": "Atlantic Salmon",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/atlantic-salmon_6.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/atlantic-salmon_6.jpg"
+    }
+  },
+  {
+    "name": "Bahamas Flag Edition",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/bahama_13.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/bahama_13.jpg"
+    }
+  },
+  {
+    "name": "Baja Fade",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-baja-fade_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-baja-fade_2.jpg"
+    }
+  },
+  {
+    "name": "Ball and Buck",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/bb-swatch_3_3.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/bb-swatch_3_3.jpg"
+    }
+  },
+  {
+    "name": "Bass",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/largemouth-swatch_5.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/largemouth-swatch_5.jpg"
+    }
+  },
+  {
+    "name": "Black",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/black.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/black.jpg"
+    }
+  },
+  {
+    "name": "Black Blue Fade",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-black-blue_1_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-black-blue_1_2.jpg"
+    }
+  },
+  {
+    "name": "Black Green Fade",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-black-green_1_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-black-green_1_2.jpg"
+    }
+  },
+  {
+    "name": "Black Platinum Fade",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-black-platinum_1_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-black-platinum_1_2.jpg"
+    }
+  },
+  {
+    "name": "Black Red Fade",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-black-red_1_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-black-red_1_2.jpg"
+    }
+  },
+  {
+    "name": "Blank",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/blank.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/blank.jpg"
+    }
+  },
+  {
+    "name": "Blue",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-blue-iii_5.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-blue-iii_5.jpg"
+    }
+  },
+  {
+    "name": "Blue III",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-blue-iii.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-blue-iii.jpg"
+    }
+  },
+  {
+    "name": "Bonefish",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/bonefish_5_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/bonefish_5_2.jpg"
+    }
+  },
+  {
+    "name": "Bronze",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-bronze_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-bronze_4.jpg"
+    }
+  },
+  {
+    "name": "Chicago Flag Edition",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/chicago_15.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/chicago_15.jpg"
+    }
+  },
+  {
+    "name": "Chinook",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/chinook_9.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/chinook_9.jpg"
+    }
+  },
+  {
+    "name": "Chrome Steelhead",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/chrome-steelhead_5.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/chrome-steelhead_5.jpg"
+    }
+  },
+  {
+    "name": "Classic Atlantic Salmon",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/atlantic-salmon_18.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/atlantic-salmon_18.jpg"
+    }
+  },
+  {
+    "name": "Classic Brook Trout",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/brook_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/brook_4.jpg"
+    }
+  },
+  {
+    "name": "Classic Brown Trout",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/brown_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/brown_4.jpg"
+    }
+  },
+  {
+    "name": "Classic Dorado",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/dorado.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/dorado.jpg"
+    }
+  },
+  {
+    "name": "Classic Rainbow Trout",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/rainbow_4_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/rainbow_4_1.jpg"
+    }
+  },
+  {
+    "name": "CO Flag Edition",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/colorado_3_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/colorado_3_2.jpg"
+    }
+  },
+  {
+    "name": "Cuba Flag Edition",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/cuba_13.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/cuba_13.jpg"
+    }
+  },
+  {
+    "name": "Dark Brown",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-brown_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-brown_4.jpg"
+    }
+  },
+  {
+    "name": "Dark Olive",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-dark-olive_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-dark-olive_4.jpg"
+    }
+  },
+  {
+    "name": "Deep Blue",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-deep-blue_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-deep-blue_4.jpg"
+    }
+  },
+  {
+    "name": "Deep Green",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-deep-green.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-deep-green.jpg"
+    }
+  },
+  {
+    "name": "DeYoung Brook Flank",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/dy-brook_8.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/dy-brook_8.jpg"
+    }
+  },
+  {
+    "name": "DeYoung Brown Flank",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/dy-brown_9.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/dy-brown_9.jpg"
+    }
+  },
+  {
+    "name": "DeYoung Carp Flank",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/dy-carp_9.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/dy-carp_9.jpg"
+    }
+  },
+  {
+    "name": "DeYoung Cutthroat Flank",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/dy-cutthroat_8.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/dy-cutthroat_8.jpg"
+    }
+  },
+  {
+    "name": "DeYoung Looking Up",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/deyoung-lookingup-swatch_3.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/deyoung-lookingup-swatch_3.jpg"
+    }
+  },
+  {
+    "name": "DeYoung Missile Lock",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/deyoung-missle-swatch_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/deyoung-missle-swatch_2.jpg"
+    }
+  },
+  {
+    "name": "DeYoung Montana Brown",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/dy-montana-brown.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/dy-montana-brown.jpg"
+    }
+  },
+  {
+    "name": "DeYoung Montana Brown Flank",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/dy-montana-brown_7.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/dy-montana-brown_7.jpg"
+    }
+  },
+  {
+    "name": "DeYoung Particularly Good to Me",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/deyoung-particular-swatch_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/deyoung-particular-swatch_2.jpg"
+    }
+  },
+  {
+    "name": "Deyoung Rainbow Flank",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/dy-rainbow.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/dy-rainbow.jpg"
+    }
+  },
+  {
+    "name": "DeYoung Rainbow Flank",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/dy-rainbow_10.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/dy-rainbow_10.jpg"
+    }
+  },
+  {
+    "name": "Dorado",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/new-dorado_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/new-dorado_1.jpg"
+    }
+  },
+  {
+    "name": "Ebony",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/ebony_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/ebony_1.jpg"
+    }
+  },
+  {
+    "name": "False Albacore",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/albacore-title-1_3.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/albacore-title-1_3.jpg"
+    }
+  },
+  {
+    "name": "Flats Fade",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-flats-fade_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-flats-fade_2.jpg"
+    }
+  },
+  {
+    "name": "Fresh/Salt Combo",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/combo.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/combo.jpg"
+    }
+  },
+  {
+    "name": "Freshwater",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/fresh.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/fresh.jpg"
+    }
+  },
+  {
+    "name": "Golden Dorado",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/dorado-swatch_16.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/dorado-swatch_16.jpg"
+    }
+  },
+  {
+    "name": "Grass Green",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-grass-green_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-grass-green_4.jpg"
+    }
+  },
+  {
+    "name": "Grateful Dead",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gd-swatch_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gd-swatch_2.jpg"
+    }
+  },
+  {
+    "name": "Grayling",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/grayling-swatch_5.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/grayling-swatch_5.jpg"
+    }
+  },
+  {
+    "name": "Larko - Permit",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/larko-permit-swatch_3_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/larko-permit-swatch_3_1.jpg"
+    }
+  },
+  {
+    "name": "Larko - Steelhead Duet",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/larko-steelhead-swatch_3_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/larko-steelhead-swatch_3_1.jpg"
+    }
+  },
+  {
+    "name": "Larko - Trout",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/larko-trout-swatch_3_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/larko-trout-swatch_3_1.jpg"
+    }
+  },
+  {
+    "name": "Larko Bonefish",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/larko-bone_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/larko-bone_2.jpg"
+    }
+  },
+  {
+    "name": "Larko Bonefish Triptych",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/larko-bone-swatch_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/larko-bone-swatch_2.jpg"
+    }
+  },
+  {
+    "name": "Larko Brown Trout",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/larko-brown_3.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/larko-brown_3.jpg"
+    }
+  },
+  {
+    "name": "Larko Mirage Redfish",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-black_2_13.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-black_2_13.jpg"
+    }
+  },
+  {
+    "name": "Larko Portrait of a Permit",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/larko-permit-title-1_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/larko-permit-title-1_2.jpg"
+    }
+  },
+  {
+    "name": "Larko Rise Up Brown",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-black_2_12.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-black_2_12.jpg"
+    }
+  },
+  {
+    "name": "Larko Tarpon",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/larko-tarpon_1_3.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/larko-tarpon_1_3.jpg"
+    }
+  },
+  {
+    "name": "Lime Green",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-lime-green_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-lime-green_4.jpg"
+    }
+  },
+  {
+    "name": "Native Brook",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/native-brook_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/native-brook_4.jpg"
+    }
+  },
+  {
+    "name": "Native Brook Trout",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/native-brook_5.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/native-brook_5.jpg"
+    }
+  },
+  {
+    "name": "Native Brown",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/native-brown_5.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/native-brown_5.jpg"
+    }
+  },
+  {
+    "name": "Native Cutthroat",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/native-cutthroat_5.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/native-cutthroat_5.jpg"
+    }
+  },
+  {
+    "name": "Native Rainbow",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/native-rainbow_5.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/native-rainbow_5.jpg"
+    }
+  },
+  {
+    "name": "Native Tarpon",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/native-tarpon_1_3.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/native-tarpon_1_3.jpg"
+    }
+  },
+  {
+    "name": "Northern Lights Fade",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-northern-lights_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-northern-lights_2.jpg"
+    }
+  },
+  {
+    "name": "Olive",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/olive_2_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/olive_2_1.jpg"
+    }
+  },
+  {
+    "name": "Orange",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-orange_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-orange_4.jpg"
+    }
+  },
+  {
+    "name": "Osiris Tribal Grizzly",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/osiris-grizzly_5.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/osiris-grizzly_5.jpg"
+    }
+  },
+  {
+    "name": "Osiris Tribal Raven",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/osiris-raven_5.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/osiris-raven_5.jpg"
+    }
+  },
+  {
+    "name": "Peacock Bass",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/peacock-bass_12.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/peacock-bass_12.jpg"
+    }
+  },
+  {
+    "name": "Penumbra",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/penumbra-title-1_3.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/penumbra-title-1_3.jpg"
+    }
+  },
+  {
+    "name": "Pink",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/pink_2_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/pink_2_1.jpg"
+    }
+  },
+  {
+    "name": "Platinum",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/platinum.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/platinum.jpg"
+    }
+  },
+  {
+    "name": "Purple",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/purple_2_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/purple_2_1.jpg"
+    }
+  },
+  {
+    "name": "Rainbow Trout",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/rainbow_5.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/rainbow_5.jpg"
+    }
+  },
+  {
+    "name": "Rasta Fade",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-rasta_1_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-rasta_1_2.jpg"
+    }
+  },
+  {
+    "name": "Red",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-red.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-red.jpg"
+    }
+  },
+  {
+    "name": "Redfish",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/redfish_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/redfish_4.jpg"
+    }
+  },
+  {
+    "name": "Retro Caribbean",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/retro-caribean_12.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/retro-caribean_12.jpg"
+    }
+  },
+  {
+    "name": "Retro Carnival",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/retro-carnival_11.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/retro-carnival_11.jpg"
+    }
+  },
+  {
+    "name": "Retro Fire",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/retro-fire_12.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/retro-fire_12.jpg"
+    }
+  },
+  {
+    "name": "Retro Green Black",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/retro-green-black_1_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/retro-green-black_1_1.jpg"
+    }
+  },
+  {
+    "name": "Rooster Fish",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/roosterfish-swatch_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/roosterfish-swatch_1.jpg"
+    }
+  },
+  {
+    "name": "Rosewood",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/rosewood_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/rosewood_1.jpg"
+    }
+  },
+  {
+    "name": "Saltwater",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/salt.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/salt.jpg"
+    }
+  },
+  {
+    "name": "Satin Black",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-black_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-black_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Black Blue Fade",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-black-blue_1_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-black-blue_1_2.jpg"
+    }
+  },
+  {
+    "name": "Satin Black Green Fade",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-black-green_1_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-black-green_1_2.jpg"
+    }
+  },
+  {
+    "name": "Satin Blue III",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-blue-iii_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-blue-iii_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Bronze",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-bronze_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-bronze_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Dark Brown",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-brown_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-brown_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Dark Olive",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-dark-olive_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-dark-olive_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Deep Blue",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-deep-blue_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-deep-blue_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Deep Green",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-deep-green_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-deep-green_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Grass Green",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-grass-green_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-grass-green_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Lime Green",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-lime-green_3.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-lime-green_3.jpg"
+    }
+  },
+  {
+    "name": "Satin Olive",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-olive_6.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-olive_6.jpg"
+    }
+  },
+  {
+    "name": "Satin Orange",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-orange_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-orange_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Pink",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-pink_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-pink_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Platinum",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-platinum_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-platinum_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Purple",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-purple_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-purple_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Red",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-red_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-red_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Slate",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-slate_4.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-slate_4.jpg"
+    }
+  },
+  {
+    "name": "Satin Slate Gray",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-slate_6.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-slate_6.jpg"
+    }
+  },
+  {
+    "name": "Satin Teal",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/satin-teal_9.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/satin-teal_9.jpg"
+    }
+  },
+  {
+    "name": "Slate",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/slate_2_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/slate_2_1.jpg"
+    }
+  },
+  {
+    "name": "Slate Gray",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-slate_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-slate_2.jpg"
+    }
+  },
+  {
+    "name": "Striper",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/striper_6_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/striper_6_1.jpg"
+    }
+  },
+  {
+    "name": "Sunset Fade",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gloss-sunset-fade_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gloss-sunset-fade_2.jpg"
+    }
+  },
+  {
+    "name": "Tarpon",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/tarpon_2_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/tarpon_2_2.jpg"
+    }
+  },
+  {
+    "name": "Teal",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/teal_6_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/teal_6_1.jpg"
+    }
+  },
+  {
+    "name": "Texas Flag Edition",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/texas_3_3.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/texas_3_3.jpg"
+    }
+  },
+  {
+    "name": "Tiger Trout",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/tiger-trout_12.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/tiger-trout_12.jpg"
+    }
+  },
+  {
+    "name": "TX Flag Edition",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/texas_5.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/texas_5.jpg"
+    }
+  },
+  {
+    "name": "Underwood - Drift",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/underwood-drift.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/underwood-drift.jpg"
+    }
+  },
+  {
+    "name": "Underwood - Mayfly Flurry",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/mayfly-swatch_1_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/mayfly-swatch_1_1.jpg"
+    }
+  },
+  {
+    "name": "Underwood - Moondance",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/moondace-swatch_1_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/moondace-swatch_1_1.jpg"
+    }
+  },
+  {
+    "name": "Underwood - Ridge Risers",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/riser-swatch_1_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/riser-swatch_1_1.jpg"
+    }
+  },
+  {
+    "name": "Underwood - Salt",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/underwood-salt.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/underwood-salt.jpg"
+    }
+  },
+  {
+    "name": "Underwood - Slammin",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/grand-slam-swatch_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/grand-slam-swatch_2.jpg"
+    }
+  },
+  {
+    "name": "Underwood - Sunrise Blitz",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/underwood-bass-swatches.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/underwood-bass-swatches.jpg"
+    }
+  },
+  {
+    "name": "Underwood - Swing",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/underwood-swing.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/underwood-swing.jpg"
+    }
+  },
+  {
+    "name": "Underwood - Tailing Bones",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/bonefishsds-1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/bonefishsds-1.jpg"
+    }
+  },
+  {
+    "name": "Underwood Cruising Carp",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/carp.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/carp.jpg"
+    }
+  },
+  {
+    "name": "Underwood Cutty Feast",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/cutthroat.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/cutthroat.jpg"
+    }
+  },
+  {
+    "name": "Underwood GT Frenzy",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/gt.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/gt.jpg"
+    }
+  },
+  {
+    "name": "Underwood Red Dawn",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/redfish_5.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/redfish_5.jpg"
+    }
+  },
+  {
+    "name": "Underwood Timber Smallies",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/smallie.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/smallie.jpg"
+    }
+  },
+  {
+    "name": "USA Flag Edition",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/usa_3.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/usa_3.jpg"
+    }
+  },
+  {
+    "name": "USA Flag Fade",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/usa-new-swatch_3.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/usa-new-swatch_3.jpg"
+    }
+  },
+  {
+    "name": "USA Flag Solid Blue",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/usa-solid_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/usa-solid_1.jpg"
+    }
+  },
+  {
+    "name": "Walnut",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/walnut_3.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/walnut_3.jpg"
+    }
+  },
+  {
+    "name": "Wild Trout",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/wild-trout_6_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/wild-trout_6_2.jpg"
+    }
+  },
+  {
+    "name": "Yamame",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/yamame_4_1.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/yamame_4_1.jpg"
+    }
+  },
+  {
+    "name": "Zia",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/zia_13.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/zia_13.jpg"
+    }
+  },
+  {
+    "name": "Zia Sun NM Flag Edition",
+    "swatches": {
+      "30x30": "https://abelreels.com/media/catalog/custom_options/cache/30x30/zia_2.jpg",
+      "100x100": "https://abelreels.com/media/catalog/custom_options/cache/100x100/zia_2.jpg"
+    }
+  }
+]

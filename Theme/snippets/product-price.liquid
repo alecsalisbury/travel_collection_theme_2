@@ -1,0 +1,198 @@
+{%- assign selected_variant = product.selected_or_first_available_variant -%}
+
+<div class="product-form__info-list">
+  {%- if product.selected_or_first_available_variant != null -%}
+    <div class="product-form__info-item">
+      {% comment %}
+        <span class="product-form__info-title text--strong">{{ 'product.form.price' | t }}:</span>
+      {% endcomment %}
+      <div
+        class="product-form__info-content"
+        role="region"
+        aria-live="polite"
+        data-price-block="{{ block.id }}"
+        data-section-id="{{ section.id }}"
+      >
+        <div class="price-list">
+          {%- if selected_variant.compare_at_price > selected_variant.price -%}
+            <div class="price-list-compare">
+            <span class="price price--highlight">
+              <span class="visually-hidden">{{ 'product.general.sale_price' | t }}</span>
+
+              {%- if settings.currency_code_enabled -%}
+                {{- selected_variant.price | money_with_currency -}}
+              {%- else -%}
+                {{- selected_variant.price | money -}}
+              {%- endif -%}
+            </span>
+
+            <span class="price price--compare">
+              <span class="visually-hidden">{{ 'product.general.regular_price' | t }}</span>
+
+              {%- if settings.currency_code_enabled -%}
+                {{- selected_variant.compare_at_price | money_with_currency -}}
+              {%- else -%}
+                {{- selected_variant.compare_at_price | money -}}
+              {%- endif -%}
+            </span>
+          </div>
+            {%- capture product_labels -%}
+              {%- assign custom_badges = product.metafields.custom.badges.value -%}
+              {%- assign product_labels_has_content = false -%}
+          
+              {%- for badge in custom_badges -%}
+                <span class="product-label product-label--custom1">{{ badge }}</span>
+                {%- assign visible_labels = visible_labels | plus: 1 -%}
+              {%- endfor -%}
+          
+              {%- for tag in product.tags -%}
+                {%- if tag contains '__label:' -%}
+                  <span class="product-label product-label--custom1">{{ tag | split: '__label:' | last }}</span>
+                  {%- assign product_labels_has_content = true -%}
+                {%- endif -%}
+          
+                {%- if tag contains '__label1:' -%}
+                  <span class="product-label product-label--custom1">{{ tag | split: '__label1:' | last }}</span>
+                  {%- assign product_labels_has_content = true -%}
+                {%- endif -%}
+          
+                {%- if tag contains '__label2:' -%}
+                  <span class="product-label product-label--custom2">{{ tag | split: '__label2:' | last }}</span>
+                  {%- assign product_labels_has_content = true -%}
+                {%- endif -%}
+              {%- endfor -%}
+          
+              {%- if settings.show_discount -%}
+                {%- assign savings = 0 -%}
+          
+                {%- if settings.discount_mode == 'percentage' -%}
+                  {%- assign savings = selected_variant.compare_at_price | minus: selected_variant.price | times: 100.0 | divided_by: selected_variant.compare_at_price | round | append: '%' -%}
+                {%- else -%}
+                  {%- capture savings -%}<span>{{ selected_variant.compare_at_price | minus: selected_variant.price | money }}</span>{%- endcapture -%}
+                {%- endif -%}
+          
+                <span class="product-label product-label--on-sale" {% unless selected_variant.price < selected_variant.compare_at_price %}style="display: none"{% endunless %}>
+                  {{ 'collection.product.discount_html' | t: savings: savings }}
+                </span>
+                {%- if selected_variant.price < selected_variant.compare_at_price -%}
+                  {%- assign product_labels_has_content = true -%}
+                {%- endif -%}
+              {%- endif -%}
+            {%- endcapture -%}
+
+            {%- if product_labels != blank and product_labels_has_content -%}
+              <div class="product-meta__label-list">
+                {{- product_labels -}}
+              </div>
+            {%- endif -%}
+          {%- else -%}
+            <span class="price">
+              <span class="visually-hidden">{{ 'product.general.sale_price' | t }}</span>
+
+              {%- if settings.currency_code_enabled -%}
+                {{- selected_variant.price | money_with_currency -}}
+              {%- else -%}
+                {{- selected_variant.price | money -}}
+              {%- endif -%}
+            </span>
+          {%- endif -%}
+        </div>
+        <div id="affirm-under-price" class="affirm-anchor" aria-live="polite"></div>
+
+        <div
+          class="product-form__price-info"
+          style="display: {% if selected_variant.unit_price_measurement %}block{% else %}none{% endif %}"
+        >
+          <div class="unit-price-measurement">
+            <span class="unit-price-measurement__price">{{ selected_variant.unit_price | money }}</span>
+            <span class="unit-price-measurement__separator">/ </span>
+
+            <span
+              class="unit-price-measurement__reference-value"
+              {%- if selected_variant.unit_price_measurement.reference_value == 1 -%}
+                style="display: none"
+              {% endif %}
+            >
+              {{- selected_variant.unit_price_measurement.reference_value -}}
+            </span>
+
+            <span class="unit-price-measurement__reference-unit">
+              {{- selected_variant.unit_price_measurement.reference_unit -}}
+            </span>
+          </div>
+        </div>
+
+        {{- form | payment_terms -}}
+
+        {%- if block.settings.show_taxes_included -%}
+          {%- if cart.taxes_included or shop.shipping_policy.body != blank -%}
+            <p class="product-form__price-info">
+              {%- if cart.taxes_included -%}
+                {{ 'product.general.include_taxes' | t }}
+              {%- endif -%}
+
+              {%- if shop.shipping_policy.body != blank -%}
+                {{ 'product.general.shipping_policy_html' | t: link: shop.shipping_policy.url }}
+              {%- endif -%}
+            </p>
+          {%- endif -%}
+        {%- endif -%}
+      </div>
+    </div>
+  {%- endif -%}
+</div>
+
+<script>
+  (function() {
+    var container = document.querySelector('[data-price-block="{{ block.id }}"][data-section-id="{{ section.id }}"]');
+    if (!container) return;
+
+    function replacePrice(html) {
+      // 1) keep a ref to the current Affirm widget (so it survives the innerHTML swap)
+      var existingAffirm = container.querySelector('.affirm-as-low-as');
+
+      var temp = document.createElement('div');
+      temp.innerHTML = html;
+
+      var fresh = temp.querySelector('[data-price-block="{{ block.id }}"][data-section-id="{{ section.id }}"]');
+      if (!fresh) return;
+
+      // 2) replace the price block content
+      container.innerHTML = fresh.innerHTML;
+
+      // 3) put the old widget back into the new anchor (if the app created it elsewhere originally)
+      var anchor = container.querySelector('#affirm-under-price');
+      if (anchor && existingAffirm) {
+        anchor.appendChild(existingAffirm);
+      }
+
+      // 4) notify the rest of the page & re-run Affirm
+      try { document.dispatchEvent(new Event('product:rerendered')); } catch (e) {}
+      if (window.affirm && affirm.ui && typeof affirm.ui.refresh === 'function') {
+        try { setTimeout(function(){ affirm.ui.refresh(); }, 0); } catch (e) {}
+      }
+    }
+
+    function refreshPrice(variantId) {
+      try {
+        var url = new URL(window.location.href);
+        url.searchParams.set('section_id', '{{ section.id }}');
+        url.searchParams.set('variant', String(variantId));
+        fetch(url.toString(), { credentials: 'same-origin' })
+          .then(function(r) { return r.text(); })
+          .then(replacePrice)
+          .catch(function() {});
+      } catch (e) {}
+    }
+
+    function onVariant(e) {
+      var v = e && e.detail && e.detail.variant;
+      if (v && v.id) refreshPrice(v.id);
+    }
+
+    document.addEventListener('product:variant:change', onVariant);
+    document.addEventListener('variant:changed', onVariant);
+  })();
+</script>
+
+  

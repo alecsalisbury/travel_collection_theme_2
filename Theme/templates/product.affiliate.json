@@ -1,0 +1,123 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "product_meta": {
+          "type": "product_meta",
+          "settings": {
+            "show_vendor": false,
+            "show_sku": false,
+            "show_reviews_badge": false,
+            "show_share_buttons": false
+          }
+        },
+        "yotpo_product_reviews_star_rating_n9pKrk": {
+          "type": "shopify://apps/yotpo-product-reviews/blocks/star-rating/eb7dfd7d-db44-4334-bc49-c893b51b36cf",
+          "settings": {
+            "product": "{{product}}"
+          }
+        },
+        "variant_selector_RxpR3T": {
+          "type": "variant_selector",
+          "settings": {
+            "selector_mode": "block",
+            "color_mode": "swatch",
+            "variant_image_options": ""
+          }
+        },
+        "button_eq6Qpg": {
+          "type": "button",
+          "settings": {
+            "text": "Buy Direct",
+            "link": "{{ product.metafields.custom.affiliate_url.value }}"
+          }
+        },
+        "description": {
+          "type": "description",
+          "settings": {
+            "display_mode": "show_all"
+          }
+        },
+        "liquid_WY7gcN": {
+          "type": "liquid",
+          "settings": {
+            "title": "⚠️   PFAS Notice",
+            "liquid": "{%- comment -%}\n  PFAS NOTICE\n  -----------\n  • Shows if ANY variant has variant metafield custom.pfas == true\n  • No extra styling, just plain text\n{%- endcomment -%}\n\n{%- assign has_pfas_variant = false -%}\n{%- for v in product.variants -%}\n  {%- if v.metafields.custom.pfas and v.metafields.custom.pfas.value == true -%}\n    {%- assign has_pfas_variant = true -%}\n    {%- break -%}\n  {%- endif -%}\n{%- endfor -%}\n\n{%- if has_pfas_variant -%}\n  <p><strong>This Product May Contain PFAS substances.</strong></p>\n{%- endif -%}",
+            "display_mode": "show_all"
+          }
+        },
+        "affirm_pay_over_time_messaging_product_block_J7BNbJ": {
+          "type": "shopify://apps/affirm-pay-over-time-messaging/blocks/product-block/6dce54be-130d-4d13-9636-1e8f611b3071",
+          "settings": {
+            "logo_align": "left",
+            "font_size": 16,
+            "logo_color": "blue",
+            "logo_type": "logo",
+            "public_api_key": "",
+            "price_selector": ""
+          }
+        },
+        "value_props_n4qqGb": {
+          "type": "value_props",
+          "settings": {
+            "shipping_text": "Free Shipping over $49*",
+            "show_shipping_link": false,
+            "shipping_link": "",
+            "price_text": "Low Price Guarantee",
+            "show_price_link": false,
+            "price_link": "",
+            "returns_text": "Easy Returns",
+            "show_returns_link": false,
+            "returns_link": ""
+          }
+        }
+      },
+      "block_order": [
+        "product_meta",
+        "yotpo_product_reviews_star_rating_n9pKrk",
+        "variant_selector_RxpR3T",
+        "button_eq6Qpg",
+        "description",
+        "liquid_WY7gcN",
+        "affirm_pay_over_time_messaging_product_block_J7BNbJ",
+        "value_props_n4qqGb"
+      ],
+      "settings": {
+        "image_size": "large",
+        "enable_video_looping": false,
+        "enable_image_zoom": true,
+        "zoom_effect": "popup",
+        "carousel_effect": "fade"
+      }
+    },
+    "product-recommendations": {
+      "type": "product-recommendations",
+      "settings": {
+        "heading": "You may also like",
+        "show_quick_buy": false
+      }
+    },
+    "recently-viewed-products": {
+      "type": "recently-viewed-products",
+      "settings": {
+        "title": "Recently viewed",
+        "show_quick_buy": false
+      }
+    }
+  },
+  "order": [
+    "main",
+    "product-recommendations",
+    "recently-viewed-products"
+  ]
+}

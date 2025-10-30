@@ -1,0 +1,346 @@
+{% unless section.settings.hide_on_url_contains != blank and request.path contains section.settings.hide_on_url_contains %}
+<style>
+  #shopify-section-{{ section.id }},
+  #shopify-section-{{ section.id }} :is(.heading, .rte h1, .rte h2, .rte h3, .rte h4, .rte h5, .rte h6) {
+    color: {{ section.settings.color }};
+  }
+
+  #shopify-section-{{ section.id }} .page__header--image {
+    min-height: {{ section.settings.banner_height_mobile }}px;
+  }
+
+  @media screen and (min-width: 641px) {
+    #shopify-section-{{ section.id }} .page__title {
+      font-size: {{ section.settings.title_font_size }}px;
+    }
+    
+    #shopify-section-{{ section.id }} .page__description {
+      font-size: {{ section.settings.content_font_size }}px;
+    }
+    
+    #shopify-section-{{ section.id }} .page__header--image {
+      min-height: {{ section.settings.banner_height_desktop }}px;
+    }
+  }
+
+  {% if section.settings.title_font_family == "condensed" %}
+    #shopify-section-{{ section.id }} .page__title {
+      font-family: "Roboto Condensed", sans-serif;
+    }
+  {% endif %}
+
+  /* Content positioning styles */
+  #shopify-section-{{ section.id }} .page__header--image {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @media screen and (min-width: 641px) {
+    /* Vertical positioning */
+    #shopify-section-{{ section.id }} .page__header--top-left,
+    #shopify-section-{{ section.id }} .page__header--top-center,
+    #shopify-section-{{ section.id }} .page__header--top-right {
+      justify-content: flex-start;
+      align-items: flex-start;
+      padding-top: 60px;
+    }
+
+    #shopify-section-{{ section.id }} .page__header--middle-left,
+    #shopify-section-{{ section.id }} .page__header--middle-center,
+    #shopify-section-{{ section.id }} .page__header--middle-right {
+      justify-content: center;
+      align-items: center;
+    }
+
+    #shopify-section-{{ section.id }} .page__header--bottom-left,
+    #shopify-section-{{ section.id }} .page__header--bottom-center,
+    #shopify-section-{{ section.id }} .page__header--bottom-right {
+      justify-content: flex-end;
+      align-items: flex-end;
+      padding-bottom: 60px;
+    }
+
+    /* Horizontal positioning */
+    #shopify-section-{{ section.id }} .page__header--top-left,
+    #shopify-section-{{ section.id }} .page__header--middle-left,
+    #shopify-section-{{ section.id }} .page__header--bottom-left {
+      text-align: left;
+      align-items: flex-start;
+    }
+
+    #shopify-section-{{ section.id }} .page__header--top-center,
+    #shopify-section-{{ section.id }} .page__header--middle-center,
+    #shopify-section-{{ section.id }} .page__header--bottom-center {
+      text-align: center;
+      align-items: center;
+    }
+
+    #shopify-section-{{ section.id }} .page__header--top-right,
+    #shopify-section-{{ section.id }} .page__header--middle-right,
+    #shopify-section-{{ section.id }} .page__header--bottom-right {
+      text-align: right;
+      align-items: flex-end;
+    }
+
+    /* Content container adjustments */
+    #shopify-section-{{ section.id }} .page__header--top-left .page__header-content,
+    #shopify-section-{{ section.id }} .page__header--middle-left .page__header-content,
+    #shopify-section-{{ section.id }} .page__header--bottom-left .page__header-content {
+      margin-left: 0;
+      margin-right: auto;
+    }
+
+    #shopify-section-{{ section.id }} .page__header--top-right .page__header-content,
+    #shopify-section-{{ section.id }} .page__header--middle-right .page__header-content,
+    #shopify-section-{{ section.id }} .page__header--bottom-right .page__header-content {
+      margin-right: 0;
+      margin-left: auto;
+    }
+  }
+
+  /* Button styling */
+  #shopify-section-{{ section.id }} .button {
+    color: {{ section.settings.button_text_color }};
+    background: {{ section.settings.button_background }};
+  }
+
+  #shopify-section-{{ section.id }} .button:hover {
+    background: {{ section.settings.button_background | color_modify: 'alpha', 0.8 }};
+  }
+
+  {% if section.settings.disable_margin %}
+  #shopify-section-{{ section.id }} .page__header {
+    margin: 0;
+  }
+  {% endif %}
+</style>
+
+{%- capture banner_content -%}
+  {%- if section.settings.image != blank -%}
+    {{- section.settings.image | image_url: width: section.settings.width | image_tag: loading: 'lazy', widths: '300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000', class: 'page__header-image' -}}
+  {%- else -%}
+    {{ 'lifestyle-1' | placeholder_svg_tag: 'page__header-image page__header-image--placeholder' }}
+  {%- endif -%}
+
+  {%- if section.settings.content != blank or section.settings.title != blank -%}
+    <div class="page__header-content container--narrow">
+      {%- if section.settings.title != blank -%}
+        <h1 class="page__title heading h1">{{ section.settings.title | escape }}</h1>
+      {%- endif -%}
+      {%- if section.settings.content != blank -%}
+        <div class="page__description rte">
+          {{ section.settings.content }}
+        </div>
+      {%- endif -%}
+      {%- if section.settings.button_link != blank and section.settings.button_text != blank -%}
+        <div class="page__button-action">
+          <a href="{{ section.settings.button_link }}" class="button button--primary">{{ section.settings.button_text | escape }}</a>
+        </div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- if section.settings.button_link != blank and section.settings.button_text == blank -%}
+  <a href="{{ section.settings.button_link }}" class="page__header page__header--stack page__header--image page__header--{{ section.settings.content_position | replace: '_', '-' }} {% if section.settings.show_image_overlay %}page__header--overlay{% endif %}" {% if settings.enable_banner_max_width %}style="max-width: {{ settings.banner_max_width }}px; margin-left: auto; margin-right: auto;"{% endif %}>
+    {{- banner_content -}}
+  </a>
+{%- else -%}
+  <header class="page__header page__header--stack page__header--image page__header--{{ section.settings.content_position | replace: '_', '-' }} {% if section.settings.show_image_overlay %}page__header--overlay{% endif %}" {% if settings.enable_banner_max_width %}style="max-width: {{ settings.banner_max_width }}px; margin-left: auto; margin-right: auto;"{% endif %}>
+    {{- banner_content -}}
+  </header>
+{%- endif -%}
+{% endunless %}
+
+{% schema %}
+{
+  "name": "Rich text banner",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Image will be dynamically resized to fit into the box. To prevent image cut, please use Slideshow section instead."
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image",
+      "info": "2000 x 650px .jpg recommended"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Rich text banner"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "min": 12,
+      "max": 96,
+      "step": 2,
+      "unit": "px",
+      "label": "Title size",
+      "default": 32
+    },
+    {
+      "type": "select",
+      "id": "title_font_family",
+      "label": "Title font family",
+      "options": [
+        {
+          "value": "normal",
+          "label": "Normal"
+        },
+        {
+          "value": "condensed",
+          "label": "Condensed"
+        }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "Content",
+      "default": "<p>Use overlay text to give your customers insight into your brand. Select imagery and text that relates to your style and story.</p>"
+    },
+    {
+      "type": "range",
+      "id": "content_font_size",
+      "min": 12,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Content size",
+      "default": 16
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image_overlay",
+      "label": "Show image overlay",
+      "info": "Increase text readability on busy images.",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "color",
+      "label": "Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "banner_height_mobile",
+      "min": 200,
+      "max": 800,
+      "step": 20,
+      "unit": "px",
+      "label": "Banner height (mobile)",
+      "default": 400
+    },
+    {
+      "type": "range",
+      "id": "banner_height_desktop",
+      "min": 300,
+      "max": 1000,
+      "step": 20,
+      "unit": "px",
+      "label": "Banner height (desktop)",
+      "default": 500
+    },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "Content position",
+      "info": "On mobile, content is always centered.",
+      "options": [
+        {
+          "value": "top_left",
+          "label": "Top left"
+        },
+        {
+          "value": "top_center",
+          "label": "Top center"
+        },
+        {
+          "value": "top_right",
+          "label": "Top right"
+        },
+        {
+          "value": "middle_left",
+          "label": "Middle left"
+        },
+        {
+          "value": "middle_center",
+          "label": "Middle center"
+        },
+        {
+          "value": "middle_right",
+          "label": "Middle right"
+        },
+        {
+          "value": "bottom_left",
+          "label": "Bottom left"
+        },
+        {
+          "value": "bottom_center",
+          "label": "Bottom center"
+        },
+        {
+          "value": "bottom_right",
+          "label": "Bottom right"
+        }
+      ],
+      "default": "middle_center"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Text",
+      "default": "#000000"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Text"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Link",
+      "info": "If no text is set for button, the whole image becomes clickable."
+    },
+    {
+      "type": "text",
+      "id": "hide_on_url_contains",
+      "label": "Hide when URL contains",
+      "info": "Enter text to hide this section when the URL contains that text. Leave blank to disable."
+    },
+    {
+      "type": "checkbox",
+      "id": "disable_margin",
+      "label": "Disable margin",
+      "info": "Remove all margins from this section",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "category": "Image",
+      "name": "Rich text banner",
+      "settings": {}
+    }
+  ]
+}
+{% endschema %}

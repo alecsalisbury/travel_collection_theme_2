@@ -1,0 +1,387 @@
+{% comment %}
+  Trip Resources & Downloads Section
+  4-column grid with downloadable PDFs
+{% endcomment %}
+
+{% assign has_resources_data = false %}
+{% if section.settings.use_metafield and product.metafields.trip.resources != blank %}
+  {% assign has_resources_data = true %}
+{% elsif section.blocks.size > 0 %}
+  {% assign has_resources_data = true %}
+{% endif %}
+
+{% if has_resources_data %}
+<section id="trip-resources-{{ section.id }}" class="trip-resources">
+  <div id="resources" style="position: absolute; top: -70px;"></div>
+  <div class="container">
+    {% if section.settings.title != blank %}
+      <h2 class="trip-resources__title">{{ section.settings.title }}</h2>
+    {% endif %}
+
+    <div class="trip-resources__grid">
+      {% if section.settings.use_metafield and product.metafields.trip.resources != blank %}
+        {% assign resources = product.metafields.trip.resources.value %}
+        {% for resource in resources %}
+          {% comment %} Determine icon type based on filename {% endcomment %}
+          {% comment %} Try to access the URL from the file reference {% endcomment %}
+          {% assign resource_url = '' %}
+          {% if resource.url %}
+            {% assign resource_url = resource.url %}
+          {% elsif resource %}
+            {% assign resource_url = resource | file_url %}
+          {% endif %}
+
+          {% comment %} Extract the actual filename from the URL {% endcomment %}
+          {% comment %} Split URL by / to get the filename part {% endcomment %}
+          {% assign url_parts = resource_url | split: '/' %}
+          {% assign filename_with_params = url_parts | last %}
+          {% comment %} Remove query parameters (everything after ?) {% endcomment %}
+          {% assign filename_parts = filename_with_params | split: '?' %}
+          {% assign filename_with_ext = filename_parts | first | downcase %}
+          {% comment %} Remove .pdf extension {% endcomment %}
+          {% assign filename = filename_with_ext | replace: '.pdf', '' | replace: '_', ' ' | replace: '-', ' ' %}
+
+          {% assign icon_type = 'document' %}
+          {% assign card_title = filename %}
+          {% assign card_description = '' %}
+
+          {% if filename contains 'packet' or filename contains 'trip packet' %}
+            {% assign icon_type = 'packet' %}
+            {% assign card_title = 'Complete Trip Packet' %}
+            {% assign card_description = 'Detailed information, maps, and preparation guide.' %}
+          {% elsif filename contains 'packing' or filename contains 'checklist' %}
+            {% assign icon_type = 'checklist' %}
+            {% assign card_title = 'Packing Checklist' %}
+            {% assign card_description = 'Essential items and recommended gear.' %}
+          {% elsif filename contains 'species' or filename contains 'guide' or filename contains 'fish' %}
+            {% assign icon_type = 'species' %}
+            {% assign card_title = 'Species Guide' %}
+            {% assign card_description = 'Full-color guide to local game fish.' %}
+          {% elsif filename contains 'map' %}
+            {% assign icon_type = 'maps' %}
+            {% assign card_title = 'Detailed Maps' %}
+            {% assign card_description = 'Fishing locations and area maps.' %}
+          {% endif %}
+
+          <div class="resource-card">
+            <div class="resource-card__content">
+              <div class="resource-card__icon resource-card__icon--{{ icon_type }}">
+                {% case icon_type %}
+                  {% when 'packet' %}
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                      <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20M9,13V19H7V13H9M15,15V19H13V15H15M11,11V19H9V11H11Z"/>
+                    </svg>
+                  {% when 'checklist' %}
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                      <path d="M20,6H4V4H20V6M4,10V8H20V10H4M20,14V12H4V14H20M4,18V16H20V18H4M18,20H6V22H18V20Z"/>
+                    </svg>
+                  {% when 'species' %}
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                      <path d="M21,17H7V3H21M21,1H7A2,2 0 0,0 5,3V17A2,2 0 0,0 7,19H21A2,2 0 0,0 23,17V3A2,2 0 0,0 21,1M3,5H1V21A2,2 0 0,0 3,23H19V21H3M15.96,10.29L13.21,13.83L11.25,11.47L8.5,15H19.5L15.96,10.29Z"/>
+                    </svg>
+                  {% when 'maps' %}
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                      <path d="M15,19L9,16.89V5L15,7.11M20.5,3C20.44,3 20.39,3 20.34,3L15,5.1L9,3L3.36,4.9C3.15,4.97 3,5.15 3,5.38V20.5A0.5,0.5 0 0,0 3.5,21C3.55,21 3.61,21 3.66,20.97L9,18.9L15,21L20.64,19.1C20.85,19 21,18.85 21,18.62V3.5A0.5,0.5 0 0,0 20.5,3Z"/>
+                    </svg>
+                  {% else %}
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                      <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                    </svg>
+                {% endcase %}
+              </div>
+              <h3 class="resource-card__title">{{ card_title }}</h3>
+              {% if card_description != blank %}
+                <p class="resource-card__description">{{ card_description }}</p>
+              {% endif %}
+              <div class="resource-card__meta">
+                <span class="resource-card__type">PDF</span>
+              </div>
+            </div>
+            <a href="{{ resource_url }}" class="resource-card__button" download>DOWNLOAD</a>
+          </div>
+        {% endfor %}
+      {% else %}
+        {% comment %} Fallback to blocks {% endcomment %}
+        {% for block in section.blocks %}
+          {% if block.type == 'resource' %}
+            <div class="resource-card">
+              <div class="resource-card__content">
+                <div class="resource-card__icon resource-card__icon--{{ block.settings.icon_type }}">
+                  {% case block.settings.icon_type %}
+                    {% when 'packet' %}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20M9,13V19H7V13H9M15,15V19H13V15H15M11,11V19H9V11H11Z"/>
+                      </svg>
+                    {% when 'checklist' %}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                        <path d="M20,6H4V4H20V6M4,10V8H20V10H4M20,14V12H4V14H20M4,18V16H20V18H4M18,20H6V22H18V20Z"/>
+                      </svg>
+                    {% when 'species' %}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                        <path d="M21,17H7V3H21M21,1H7A2,2 0 0,0 5,3V17A2,2 0 0,0 7,19H21A2,2 0 0,0 23,17V3A2,2 0 0,0 21,1M3,5H1V21A2,2 0 0,0 3,23H19V21H3M15.96,10.29L13.21,13.83L11.25,11.47L8.5,15H19.5L15.96,10.29Z"/>
+                      </svg>
+                    {% when 'maps' %}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                        <path d="M15,19L9,16.89V5L15,7.11M20.5,3C20.44,3 20.39,3 20.34,3L15,5.1L9,3L3.36,4.9C3.15,4.97 3,5.15 3,5.38V20.5A0.5,0.5 0 0,0 3.5,21C3.55,21 3.61,21 3.66,20.97L9,18.9L15,21L20.64,19.1C20.85,19 21,18.85 21,18.62V3.5A0.5,0.5 0 0,0 20.5,3Z"/>
+                      </svg>
+                    {% else %}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                      </svg>
+                  {% endcase %}
+                </div>
+                <h3 class="resource-card__title">{{ block.settings.resource_title }}</h3>
+                <p class="resource-card__description">{{ block.settings.resource_description }}</p>
+                <div class="resource-card__meta">
+                  <span class="resource-card__type">PDF</span>
+                  <span class="resource-card__size">{{ block.settings.file_size }}</span>
+                </div>
+              </div>
+              <a href="{{ block.settings.file_url }}" class="resource-card__button" download>DOWNLOAD</a>
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .trip-resources {
+    padding: 80px 0;
+    background-color: #e8e8e8;
+  }
+
+  .trip-resources__title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #000000;
+    text-align: left;
+    margin-bottom: 3rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+  }
+
+  .trip-resources__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .resource-card {
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    overflow: hidden;
+  }
+
+  .resource-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .resource-card__content {
+    padding: 32px 28px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .resource-card__icon {
+    width: 56px;
+    height: 56px;
+    background: #4a9fd8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    color: #ffffff;
+  }
+
+  .resource-card__title {
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: #000000;
+    margin-bottom: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.3;
+  }
+
+  .resource-card__description {
+    font-size: 0.95rem;
+    color: #000000;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    flex: 1;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .resource-card__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: #666666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .resource-card__button {
+    background: #000000;
+    color: #ffffff;
+    text-align: center;
+    padding: 18px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    display: block;
+  }
+
+  .resource-card__button:hover {
+    background: #333333;
+  }
+
+  @media screen and (max-width: 1200px) {
+    .trip-resources__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .trip-resources {
+      padding: 60px 0;
+    }
+
+    .trip-resources__title {
+      font-size: 2.5rem;
+    }
+
+    .trip-resources__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .resource-card__title {
+      font-size: 1.2rem;
+    }
+  }
+</style>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Trip Resources",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Trip Resources & Downloads"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_metafield",
+      "label": "Use Product Metafield",
+      "default": true,
+      "info": "Pull resources from product.metafields.trip.resources (list of files). Icon type auto-detected from filename."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "resource",
+      "name": "Resource File",
+      "settings": [
+        {
+          "type": "text",
+          "id": "resource_title",
+          "label": "Resource Title",
+          "default": "Complete Trip Packet"
+        },
+        {
+          "type": "textarea",
+          "id": "resource_description",
+          "label": "Resource Description",
+          "default": "Detailed information, maps, and preparation guide."
+        },
+        {
+          "type": "url",
+          "id": "file_url",
+          "label": "File URL"
+        },
+        {
+          "type": "text",
+          "id": "file_size",
+          "label": "File Size",
+          "default": "2.4 MB"
+        },
+        {
+          "type": "select",
+          "id": "icon_type",
+          "label": "Icon Type",
+          "options": [
+            { "value": "packet", "label": "Trip Packet" },
+            { "value": "checklist", "label": "Checklist" },
+            { "value": "species", "label": "Species Guide" },
+            { "value": "maps", "label": "Maps" },
+            { "value": "document", "label": "Document" }
+          ],
+          "default": "packet"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trip Resources",
+      "blocks": [
+        {
+          "type": "resource",
+          "settings": {
+            "resource_title": "Complete Trip Packet",
+            "resource_description": "Detailed information, maps, and preparation guide.",
+            "file_size": "2.4 MB",
+            "icon_type": "packet"
+          }
+        },
+        {
+          "type": "resource",
+          "settings": {
+            "resource_title": "Packing Checklist",
+            "resource_description": "Essential items and recommended gear list.",
+            "file_size": "580 KB",
+            "icon_type": "checklist"
+          }
+        },
+        {
+          "type": "resource",
+          "settings": {
+            "resource_title": "Species Guide",
+            "resource_description": "Full-color guide to Alaska game fish.",
+            "file_size": "3.1 MB",
+            "icon_type": "species"
+          }
+        },
+        {
+          "type": "resource",
+          "settings": {
+            "resource_title": "Detailed Maps",
+            "resource_description": "Fishing locations and lodge area maps.",
+            "file_size": "1.8 MB",
+            "icon_type": "maps"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
