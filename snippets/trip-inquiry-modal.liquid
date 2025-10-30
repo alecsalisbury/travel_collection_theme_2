@@ -546,6 +546,12 @@
         if (hiddenInput) {
           hiddenInput.value = `Trip Inquiry: ${tripName}`;
         }
+
+        // Pre-populate destination field if clicking from a specific trip
+        const destinationInput = document.getElementById('ModalContactForm-destination');
+        if (destinationInput && tripName !== 'Travel Collection') {
+          destinationInput.value = tripName;
+        }
       }
 
       // Initialize date picker if not already done
@@ -560,6 +566,18 @@
     window.closeTripInquiryModal = function() {
       modal.style.display = 'none';
       document.body.style.overflow = '';
+
+      // Reset form when closing
+      const form = document.getElementById('TripInquiryModalForm');
+      if (form) {
+        form.reset();
+      }
+
+      // Clear any status messages
+      const statusMessages = document.getElementById('modal-form-status-messages');
+      if (statusMessages) {
+        statusMessages.innerHTML = '';
+      }
     };
 
     // Close button click
