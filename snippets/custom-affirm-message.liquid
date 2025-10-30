@@ -145,18 +145,19 @@
     if (affirmAnchor && skeletonLoader) {
       const customPriceElement = document.querySelector('.custom-affirm-message__price');
       const customLogoContainer = document.querySelector('#custom-affirm-logo-container');
+      const customAffirmSuffix = document.querySelector('#custom-affirm-suffix');
 
       // Function to extract and display the monthly price
       function updateMonthlyPrice() {
         const affirmPriceElement = affirmAnchor.querySelector('.affirm-ala-price');
-        const affirmLogoElement = affirmAnchor.querySelector('.__affirm-logo');
+        const affirmLogoElement = affirmAnchor.querySelector('.__affirm-logo.__processed');
 
         console.log('[AFFIRM SKELETON DEBUG] Checking for price...');
         console.log('[AFFIRM SKELETON DEBUG] affirmPriceElement:', affirmPriceElement);
         console.log('[AFFIRM SKELETON DEBUG] affirmPriceElement text:', affirmPriceElement?.textContent);
-        console.log('[AFFIRM SKELETON DEBUG] affirmLogoElement:', affirmLogoElement);
+        console.log('[AFFIRM SKELETON DEBUG] affirmLogoElement (processed):', affirmLogoElement);
 
-        if (affirmPriceElement && affirmPriceElement.textContent.trim()) {
+        if (affirmPriceElement && affirmPriceElement.textContent.trim() && affirmLogoElement) {
           const monthlyPrice = affirmPriceElement.textContent.trim();
           console.log('[AFFIRM SKELETON DEBUG] Extracted monthly price:', monthlyPrice);
 
@@ -167,34 +168,23 @@
             customPriceElement.style.display = 'inline';
           }
 
-          // Replace with Affirm logo if available
-          if (affirmLogoElement && customLogoContainer) {
-            console.log('[AFFIRM SKELETON DEBUG] Logo element found, attempting to clone...');
-            console.log('[AFFIRM SKELETON DEBUG] Logo HTML:', affirmLogoElement.outerHTML);
-            console.log('[AFFIRM SKELETON DEBUG] Logo computed styles:', window.getComputedStyle(affirmLogoElement));
+          // Show the "/mo with" text
+          if (customAffirmSuffix) {
+            customAffirmSuffix.style.display = 'inline';
+          }
 
-            // Clone the logo with deep copy to get all styles
+          // Replace with processed Affirm logo
+          if (customLogoContainer) {
+            console.log('[AFFIRM SKELETON DEBUG] Logo element found and processed, cloning...');
+            console.log('[AFFIRM SKELETON DEBUG] Logo HTML:', affirmLogoElement.outerHTML);
+
+            // Clone the fully processed logo
             const logoClone = affirmLogoElement.cloneNode(true);
             customLogoContainer.innerHTML = '';
             customLogoContainer.appendChild(logoClone);
-            customLogoContainer.style.visibility = 'visible';
-            customLogoContainer.style.display = 'inline';
 
             console.log('[AFFIRM SKELETON DEBUG] Replaced with Affirm logo!');
             console.log('[AFFIRM SKELETON DEBUG] Container HTML after:', customLogoContainer.innerHTML);
-
-            // Give logo styles a moment to apply
-            setTimeout(function() {
-              console.log('[AFFIRM SKELETON DEBUG] Logo final state:', customLogoContainer.innerHTML);
-              console.log('[AFFIRM SKELETON DEBUG] Logo visibility:', window.getComputedStyle(customLogoContainer).visibility);
-            }, 100);
-          } else {
-            console.log('[AFFIRM SKELETON DEBUG] Logo not found, keeping text. customLogoContainer:', customLogoContainer);
-            // Fallback: show text if logo not available
-            if (customLogoContainer) {
-              customLogoContainer.innerHTML = '<span class="__affirm-logo __affirm-logo-blue">Affirm</span>';
-              customLogoContainer.style.visibility = 'visible';
-            }
           }
 
           console.log('[AFFIRM SKELETON DEBUG] Updated custom message with monthly price!');
