@@ -89,14 +89,17 @@
 </style>
 
 <div class="custom-affirm-message" data-product-price="{{ price }}">
-  <div class="custom-affirm-message__main affirm-modal-trigger"
-       data-page-type="product"
-       data-amount="{{ price }}">
+  <div class="custom-affirm-message__main">
     <span class="custom-affirm-message__text">
-      or 4 interest-free payments of
-      <span class="custom-affirm-message__price">{{ installment | money }}</span>
-      with
-      <span class="custom-affirm-message__logo-text">Affirm</span>
+      4 interest-free payments or as low as
+      <span class="custom-affirm-message__skeleton" id="affirm-skeleton-loader">
+        <span class="skeleton-price-text"></span>
+      </span>
+      <span class="custom-affirm-message__price" style="display: none;"></span>
+      /mo with
+      <span class="custom-affirm-message__logo-text affirm-modal-trigger"
+            data-page-type="product"
+            data-amount="{{ price }}">Affirm</span>
     </span>
   </div>
   <a class="custom-affirm-message__link affirm-modal-trigger"
@@ -117,6 +120,43 @@
   document.addEventListener('DOMContentLoaded', function() {
     console.log('[AFFIRM DEBUG] DOM loaded, checking Affirm again...');
     console.log('[AFFIRM DEBUG] window.affirm:', window.affirm);
+
+    // Watch for Affirm's dynamic price to appear and hide skeleton
+    const affirmAnchor = document.querySelector('#affirm-under-price');
+    const skeletonLoader = document.querySelector('#affirm-skeleton-loader');
+
+    if (affirmAnchor && skeletonLoader) {
+      // Use MutationObserver to watch for Affirm adding content
+      const observer = new MutationObserver(function(mutations) {
+        const affirmPrice = affirmAnchor.querySelector('.affirm-ala-price');
+        if (affirmPrice) {
+          // Affirm has loaded, hide skeleton
+          skeletonLoader.classList.add('hidden');
+          observer.disconnect();
+        }
+      });
+
+      observer.observe(affirmAnchor, {
+        childList: true,
+        subtree: true,
+        characterData: true
+      });
+
+      // Fallback: also check periodically
+      const checkAffirmPrice = setInterval(function() {
+        const affirmPrice = affirmAnchor.querySelector('.affirm-ala-price');
+        if (affirmPrice) {
+          skeletonLoader.classList.add('hidden');
+          clearInterval(checkAffirmPrice);
+        }
+      }, 500);
+
+      // Stop checking after 10 seconds
+      setTimeout(function() {
+        clearInterval(checkAffirmPrice);
+        // Keep skeleton if Affirm never loaded
+      }, 10000);
+    }
 
     // Check if Affirm triggers exist
     const triggers = document.querySelectorAll('.affirm-modal-trigger');
