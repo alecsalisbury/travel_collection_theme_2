@@ -6965,6 +6965,13 @@ select option {
     display: block;
     position: relative;
     left: 0;
+    min-height: 54px;
+    opacity: 0;
+    transition: opacity 0.3s ease-in;
+  }
+
+  .nav-bar.loaded {
+    opacity: 1;
   }
 
   .nav-bar:after {

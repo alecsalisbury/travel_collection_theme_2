@@ -442,7 +442,21 @@
 </style>
 
 <script>
-  document.documentElement.style.setProperty('--header-height', document.getElementById('shopify-section-{{ section.id }}').clientHeight + 'px');
+  (function() {
+    var headerSection = document.getElementById('shopify-section-{{ section.id }}');
+    document.documentElement.style.setProperty('--header-height', headerSection.clientHeight + 'px');
+
+    // Fade in the nav-bar after render to prevent layout shift
+    var navBar = headerSection.querySelector('.nav-bar');
+    if (navBar) {
+      // Use requestAnimationFrame to ensure DOM is fully painted
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          navBar.classList.add('loaded');
+        });
+      });
+    }
+  })();
 </script>
 
 {% schema %}
