@@ -7,7 +7,50 @@
 {%- assign selected_variant = product.selected_or_first_available_variant -%}
 {%- assign price = selected_variant.price -%}
 
+<style>
+  .affirm-skeleton {
+    display: inline-block;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: affirm-skeleton-loading 1.5s ease-in-out infinite;
+    border-radius: 4px;
+    height: 20px;
+    width: 300px;
+  }
+
+  @keyframes affirm-skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .affirm-skeleton-container {
+    min-height: 24px;
+  }
+
+  .affirm-skeleton-container.loaded .affirm-skeleton {
+    display: none;
+  }
+
+  /* Fix for Affirm logo rendering */
+  .__affirm-logo {
+    display: inline-block !important;
+    vertical-align: middle !important;
+  }
+
+  .__affirm-logo svg {
+    display: inline-block !important;
+    height: auto !important;
+  }
+</style>
+
 <div class="affirm-widget-container" style="margin: 12px 0;">
+  {%- comment -%}
+    Skeleton loader - shown until Affirm widget loads
+  {%- endcomment -%}
+  <div class="affirm-skeleton-container" id="affirm-skeleton-container">
+    <div class="affirm-skeleton"></div>
+  </div>
+
   {%- comment -%}
     Affirm's official promotional messaging widget
     - Automatically displays accurate monthly payment from Affirm's API
@@ -43,6 +86,40 @@
   var lastPrice = {{ price }};
   var isRefreshing = false;
   var hasListeners = false;
+
+  // Hide skeleton once Affirm content loads
+  function hideSkeleton() {
+    var skeleton = document.getElementById('affirm-skeleton-container');
+    if (skeleton) {
+      skeleton.classList.add('loaded');
+    }
+  }
+
+  // Check if Affirm widget has rendered content
+  function checkAffirmLoaded() {
+    var widget = document.querySelector('.affirm-as-low-as');
+    if (widget && (widget.children.length > 0 || widget.textContent.trim() !== '')) {
+      hideSkeleton();
+      return true;
+    }
+    return false;
+  }
+
+  // Poll for Affirm to finish loading
+  var loadCheckAttempts = 0;
+  var loadCheckInterval = setInterval(function() {
+    loadCheckAttempts++;
+
+    if (checkAffirmLoaded()) {
+      clearInterval(loadCheckInterval);
+      console.log('[AFFIRM WIDGET] Content loaded, hiding skeleton');
+    } else if (loadCheckAttempts >= 50) {
+      // Timeout after 5 seconds (50 * 100ms)
+      clearInterval(loadCheckInterval);
+      hideSkeleton();
+      console.log('[AFFIRM WIDGET] Load check timeout');
+    }
+  }, 100);
 
   // Debounced refresh to prevent multiple rapid calls
   function debounceRefresh(newPrice) {
