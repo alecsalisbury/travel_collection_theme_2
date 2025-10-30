@@ -143,6 +143,37 @@
       const customPriceElement = document.querySelector('.custom-affirm-message__price');
       const customLogoContainer = document.querySelector('#custom-affirm-logo-container');
       const customAffirmSuffix = document.querySelector('#custom-affirm-suffix');
+      const customStarRating = document.querySelector('.custom-star-rating');
+
+      let affirmReady = false;
+      let starRatingReady = false;
+
+      // Function to check if we should show everything
+      function checkIfReadyToShow() {
+        console.log('[AFFIRM SKELETON DEBUG] Checking if ready to show...');
+        console.log('[AFFIRM SKELETON DEBUG] affirmReady:', affirmReady);
+        console.log('[AFFIRM SKELETON DEBUG] starRatingReady:', starRatingReady);
+
+        // If star rating exists, wait for both. If not, just wait for Affirm
+        const shouldWaitForStars = customStarRating !== null;
+        const readyToShow = affirmReady && (!shouldWaitForStars || starRatingReady);
+
+        if (readyToShow) {
+          console.log('[AFFIRM SKELETON DEBUG] Ready to show! Revealing content...');
+          // Hide skeleton and show the price
+          skeletonLoader.classList.add('hidden');
+          if (customPriceElement) {
+            customPriceElement.style.display = 'inline';
+          }
+
+          // Show the "/mo with" text
+          if (customAffirmSuffix) {
+            customAffirmSuffix.style.display = 'inline';
+          }
+        }
+
+        return readyToShow;
+      }
 
       // Function to extract and display the monthly price
       function updateMonthlyPrice() {
@@ -169,19 +200,12 @@
           const monthlyPrice = affirmPriceElement.textContent.trim();
           console.log('[AFFIRM SKELETON DEBUG] Extracted monthly price:', monthlyPrice);
 
-          // Hide skeleton and show the price
-          skeletonLoader.classList.add('hidden');
+          // Store the price (but don't show yet)
           if (customPriceElement) {
             customPriceElement.textContent = monthlyPrice;
-            customPriceElement.style.display = 'inline';
           }
 
-          // Show the "/mo with" text
-          if (customAffirmSuffix) {
-            customAffirmSuffix.style.display = 'inline';
-          }
-
-          // Replace with Affirm logo
+          // Clone the logo (but don't show yet)
           if (customLogoContainer) {
             console.log('[AFFIRM SKELETON DEBUG] Logo element found, cloning...');
             console.log('[AFFIRM SKELETON DEBUG] Logo HTML:', affirmLogoElement.outerHTML);
@@ -195,10 +219,48 @@
             console.log('[AFFIRM SKELETON DEBUG] Container HTML after:', customLogoContainer.innerHTML);
           }
 
-          console.log('[AFFIRM SKELETON DEBUG] Updated custom message with monthly price!');
+          console.log('[AFFIRM SKELETON DEBUG] Affirm data ready!');
+          affirmReady = true;
+          checkIfReadyToShow();
           return true;
         }
         return false;
+      }
+
+      // Watch for star rating to finish loading
+      if (customStarRating) {
+        console.log('[AFFIRM SKELETON DEBUG] Star rating element found, watching for load...');
+        const starRatingObserver = new MutationObserver(function() {
+          if (customStarRating.classList.contains('loaded')) {
+            console.log('[AFFIRM SKELETON DEBUG] Star rating loaded!');
+            starRatingReady = true;
+            checkIfReadyToShow();
+            starRatingObserver.disconnect();
+          }
+        });
+
+        starRatingObserver.observe(customStarRating, {
+          attributes: true,
+          attributeFilter: ['class']
+        });
+
+        // Check if already loaded
+        if (customStarRating.classList.contains('loaded')) {
+          console.log('[AFFIRM SKELETON DEBUG] Star rating already loaded!');
+          starRatingReady = true;
+        }
+
+        // Timeout: show after 5 seconds even if star rating not loaded
+        setTimeout(function() {
+          if (!starRatingReady) {
+            console.log('[AFFIRM SKELETON DEBUG] Star rating timeout reached, proceeding anyway...');
+            starRatingReady = true;
+            checkIfReadyToShow();
+          }
+        }, 5000);
+      } else {
+        console.log('[AFFIRM SKELETON DEBUG] No star rating element found, not waiting for it');
+        starRatingReady = true;
       }
 
       // Use MutationObserver to watch for Affirm adding content
