@@ -13349,25 +13349,11 @@ button[name="add"][disabled] {
 .uppercase {
   text-transform: uppercase;
 }
-/* Fix Globo Mega Menu - Make blue bar extend full width */
-.gm-menu .gm-item.gm-active > .gm-target,
-.gm-menu .gm-heading > .gm-target {
-  display: block !important;
-  width: 100% !important;
+
+/* Fix Globo Mega Menu - Make blue bar extend full width for tab links */
+ul.gm-tab-links > li.gm-item.gm-has-submenu.gm-active > .gm-target {
   margin-left: -32px !important;
   margin-right: -32px !important;
   padding-left: 32px !important;
-  padding-right: 32px !important;
-}
-
-.gm-menu .gm-grid-item:first-child .gm-item.gm-active > .gm-target,
-.gm-menu .gm-grid-item:first-child .gm-heading > .gm-target {
-  margin-left: 0 !important;
-  padding-left: 32px !important;
-}
-
-.gm-menu .gm-grid-item:last-child .gm-item.gm-active > .gm-target,
-.gm-menu .gm-grid-item:last-child .gm-heading > .gm-target {
-  margin-right: 0 !important;
   padding-right: 32px !important;
 }
