@@ -13377,6 +13377,7 @@ button[name="add"][disabled] {
 
 /* Hide slow-loading Affirm app block - using custom fast version instead */
 .product-info__block-item[data-block-id*="affirm"],
-[data-block-id="affirm_pay_over_time_messaging_product_block_hdP8mr"] {
+[data-block-id="affirm_pay_over_time_messaging_product_block_hdP8mr"],
+#affirm-under-price {
   display: none !important;
 }
