@@ -1,35 +1,19 @@
 {% comment %}
   Custom Star Rating Display
-  Uses Yotpo metafields for instant loading without external JS
+  Extracts data from Yotpo widget on the page
   Scrolls to full reviews section when clicked
 {% endcomment %}
-
-{%- assign reviews_count = product.metafields.yotpo.reviews_count | default: 0 -%}
-{%- assign reviews_average = product.metafields.yotpo.reviews_average | default: 0 -%}
-
-<!-- DEBUG: Reviews count: {{ reviews_count }}, Average: {{ reviews_average }} -->
-
-<!-- VISIBLE DEBUG (remove after testing) -->
-<div style="padding: 10px; background: #fff3cd; border: 1px solid #ffc107; margin: 10px 0;">
-  <strong>DEBUG - Yotpo:</strong> Reviews count: {{ reviews_count }} | Average: {{ reviews_average }}
-  <br>Yotpo namespace: {{ product.metafields.yotpo }}
-  <br><br>
-  <strong>DEBUG - Shopify Native Reviews:</strong>
-  <br>Rating value: {{ product.metafields.reviews.rating.value }}
-  <br>Rating count: {{ product.metafields.reviews.rating_count.value }}
-  <br><br>
-  <strong>DEBUG - All metafield namespaces:</strong>
-  <br>{% for metafield in product.metafields %}{{ metafield[0] }}, {% endfor %}
-</div>
-
-{% if reviews_count > 0 %}
 <style>
   .custom-star-rating {
-    display: flex;
+    display: none; /* Hidden until populated by JS */
     align-items: center;
     gap: 8px;
     cursor: pointer;
     margin: 8px 0;
+  }
+
+  .custom-star-rating.loaded {
+    display: flex;
   }
 
   .custom-star-rating:hover .custom-star-rating__text {
@@ -71,28 +55,93 @@
 </svg>
 
 <div class="custom-star-rating" onclick="document.querySelector('.yotpo-main-widget, .yotpo-reviews-carousel, [id*=yotpo]')?.scrollIntoView({ behavior: 'smooth', block: 'start' })">
-  <div class="custom-star-rating__stars">
-    {%- assign rating = reviews_average | times: 1.0 -%}
-    {%- for i in (1..5) -%}
-      {%- assign star_value = i | times: 1.0 -%}
-      {%- assign half_star_threshold = star_value | minus: 0.5 -%}
-      {%- if rating >= star_value -%}
-        <svg class="custom-star-rating__star filled" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-        </svg>
-      {%- elsif rating >= half_star_threshold -%}
-        <svg class="custom-star-rating__star half" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-        </svg>
-      {%- else -%}
-        <svg class="custom-star-rating__star" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-        </svg>
-      {%- endif -%}
-    {%- endfor -%}
-  </div>
-  <span class="custom-star-rating__text">
-    {{ reviews_average }} ({{ reviews_count }} {% if reviews_count == 1 %}review{% else %}reviews{% endif %})
-  </span>
+  <div class="custom-star-rating__stars"></div>
+  <span class="custom-star-rating__text"></span>
 </div>
-{% endif %}
+
+<script>
+(function() {
+  function extractYotpoData() {
+    // Look for Yotpo bottom line text (e.g., "Based on 8 reviews")
+    const yotpoText = document.querySelector('.yotpo-bottomline .text-m, .yotpo-bottom-line-basic-text, .yotpo-bottomline-box-1 .text-m');
+
+    if (!yotpoText) return null;
+
+    const text = yotpoText.textContent || yotpoText.innerText;
+    const countMatch = text.match(/(\d+)\s+review/i);
+
+    if (!countMatch) return null;
+
+    const reviewCount = parseInt(countMatch[1], 10);
+
+    // Extract rating from aria-label or data attributes
+    let rating = 0;
+    const ratingElement = document.querySelector('.yotpo-bottomline [aria-label*="stars"], .yotpo-bottomline .sr-only, .yotpo-icon-star[class*="yotpo-icon-"]');
+
+    if (ratingElement) {
+      const ariaLabel = ratingElement.getAttribute('aria-label') || '';
+      const ratingMatch = ariaLabel.match(/([\d.]+)\s+star/i);
+      if (ratingMatch) {
+        rating = parseFloat(ratingMatch[1]);
+      }
+    }
+
+    // Fallback: count filled stars
+    if (!rating) {
+      const filledStars = document.querySelectorAll('.yotpo-bottomline .yotpo-icon-star.rating-star:not(.yotpo-icon-empty-star)');
+      const halfStars = document.querySelectorAll('.yotpo-bottomline .yotpo-icon-half-star');
+      rating = filledStars.length + (halfStars.length * 0.5);
+    }
+
+    return { rating, reviewCount };
+  }
+
+  function renderStars(rating) {
+    const starsHtml = [];
+    for (let i = 1; i <= 5; i++) {
+      const starClass = rating >= i ? 'filled' : (rating >= i - 0.5 ? 'half' : '');
+      starsHtml.push(`
+        <svg class="custom-star-rating__star ${starClass}" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+      `);
+    }
+    return starsHtml.join('');
+  }
+
+  function updateCustomRating() {
+    const data = extractYotpoData();
+
+    if (!data || data.reviewCount === 0) return;
+
+    const customRating = document.querySelector('.custom-star-rating');
+    if (!customRating) return;
+
+    const starsContainer = customRating.querySelector('.custom-star-rating__stars');
+    const textContainer = customRating.querySelector('.custom-star-rating__text');
+
+    if (starsContainer && textContainer) {
+      starsContainer.innerHTML = renderStars(data.rating);
+      textContainer.textContent = `${data.rating.toFixed(1)} (${data.reviewCount} ${data.reviewCount === 1 ? 'review' : 'reviews'})`;
+      customRating.classList.add('loaded');
+    }
+  }
+
+  // Try immediately
+  updateCustomRating();
+
+  // Try after DOM loaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', updateCustomRating);
+  }
+
+  // Try after a delay for Yotpo to load
+  setTimeout(updateCustomRating, 500);
+  setTimeout(updateCustomRating, 1000);
+  setTimeout(updateCustomRating, 2000);
+
+  // Listen for Yotpo events
+  document.addEventListener('yotpo.bottomline.loaded', updateCustomRating);
+  window.addEventListener('yotpo.initialized', updateCustomRating);
+})();
+</script>
