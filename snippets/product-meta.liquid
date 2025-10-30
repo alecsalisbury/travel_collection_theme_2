@@ -65,9 +65,6 @@
     </h3>
   {%- endif -%}
 
-  {%- comment -%}Custom fast-loading star rating{%- endcomment -%}
-  {%- render 'custom-star-rating', product: product -%}
-
   {% comment %} {%- capture product_labels -%}
     {%- assign custom_badges = product.metafields.custom.badges.value -%}
     {%- assign product_labels_has_content = false -%}
