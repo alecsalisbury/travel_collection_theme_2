@@ -172,13 +172,26 @@
       if (window.affirm && affirm.ui && typeof affirm.ui.refresh === 'function') {
         try {
           affirm.ui.refresh();
-          // After Affirm refreshes, wait a bit and update the custom Affirm message
-          setTimeout(function() {
-            if (window.updateAffirmPrice) {
-              console.log('[PRODUCT-PRICE] Triggering Affirm price update after refresh');
-              window.updateAffirmPrice();
-            }
-          }, 500);
+          // After Affirm refreshes, wait and poll for price change
+          if (window.updateAffirmPrice) {
+            // Poll for up to 2 seconds, checking if price changed
+            var attempts = 0;
+            var maxAttempts = 10;
+            var pollInterval = setInterval(function() {
+              attempts++;
+              console.log('[PRODUCT-PRICE] Polling for Affirm price change, attempt', attempts);
+
+              if (window.updateAffirmPrice(true)) {
+                // Price changed successfully
+                console.log('[PRODUCT-PRICE] Affirm price updated successfully');
+                clearInterval(pollInterval);
+              } else if (attempts >= maxAttempts) {
+                // Timeout, stop polling
+                console.log('[PRODUCT-PRICE] Affirm price poll timeout');
+                clearInterval(pollInterval);
+              }
+            }, 200);
+          }
         } catch (e) {}
       }
     }
