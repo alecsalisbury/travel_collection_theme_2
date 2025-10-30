@@ -224,11 +224,26 @@
   }
 
   let hasLoaded = false;
+  let attemptsMade = 0;
+  const maxAttempts = 8; // Total attempts before giving up
 
   function updateCustomRating() {
     if (hasLoaded) return;
 
+    attemptsMade++;
+
     const data = extractYotpoData();
+
+    // If no data and we've tried enough times, hide the placeholder
+    if ((!data || data.reviewCount === 0) && attemptsMade >= maxAttempts) {
+      const customRating = document.querySelector('.custom-star-rating');
+      if (customRating) {
+        customRating.style.display = 'none';
+      }
+      hasLoaded = true;
+      return;
+    }
+
     if (!data || data.reviewCount === 0) return;
 
     const customRating = document.querySelector('.custom-star-rating');
