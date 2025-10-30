@@ -13538,6 +13538,20 @@ button[name="add"][disabled] {
   margin-bottom: 0 !important;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
+  line-height: 1 !important;
+}
+
+/* Remove all spacing from Yotpo widget elements */
+.product-info__block-item--@app .yotpo-reviews-star-ratings-widget,
+.product-info__block-item--@app #yotpo-reviews-star-ratings-widget {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.product-info__block-item--@app .shopify-block,
+.product-info__block-item--@app .shopify-app-block {
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* Hide slow-loading Affirm app block visually but keep scripts loaded */
