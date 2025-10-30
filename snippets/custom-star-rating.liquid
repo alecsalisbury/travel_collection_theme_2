@@ -436,12 +436,17 @@
         const yotpoAdded = Array.from(mutation.addedNodes).some(node =>
           node.nodeType === 1 && (
             node.classList?.contains('yotpo-bottomline') ||
-            node.querySelector?.('.yotpo-bottomline')
+            node.classList?.contains('yotpo-bottom-line-basic-text') ||
+            node.classList?.contains('yotpo-bottom-line-score') ||
+            node.querySelector?.('.yotpo-bottomline') ||
+            node.querySelector?.('.yotpo-bottom-line-basic-text') ||
+            node.querySelector?.('.yotpo-bottom-line-score')
           )
         );
 
         if (yotpoAdded) {
-          setTimeout(updateCustomRating, 100);
+          // Give Yotpo a tiny moment to fully render, then check
+          setTimeout(updateCustomRating, 50);
           break;
         }
       }
