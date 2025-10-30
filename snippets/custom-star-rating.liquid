@@ -437,7 +437,7 @@
         );
 
         if (yotpoAdded) {
-          // Give Yotpo a moment to fully render, then check for reviews
+          // Wait 1 second for Yotpo to fully populate data, then check
           setTimeout(function() {
             const data = extractYotpoData();
             if (data && data.reviewCount > 0) {
@@ -446,7 +446,7 @@
               showNoReviews();
             }
             observer.disconnect();
-          }, 100);
+          }, 1000);
           break;
         }
       }
@@ -459,18 +459,12 @@
     subtree: true
   });
 
-  // After 3 seconds (when reviews are normally found), check one final time
-  // If still no reviews, show "No reviews yet"
+  // Fallback: After 5 seconds, if Yotpo never loaded, show "No reviews yet"
   setTimeout(function() {
-    if (!hasLoaded) {
-      const data = extractYotpoData();
-      if (data && data.reviewCount > 0) {
-        updateCustomRating();
-      } else {
-        showNoReviews();
-      }
+    if (!hasLoaded && !hasShownNoReviews) {
+      showNoReviews();
     }
     observer.disconnect();
-  }, 3000);
+  }, 5000);
 })();
 </script>
