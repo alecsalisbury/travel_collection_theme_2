@@ -166,27 +166,30 @@
 </div>
 
 <script>
-console.log('[CUSTOM RATING DEBUG] ========== SCRIPT FILE LOADED ==========');
 (function() {
-  console.log('[CUSTOM RATING DEBUG] Script starting...');
+  console.log('[CUSTOM RATING API] Script starting...');
+
+  // Yotpo API configuration
+  const YOTPO_APP_KEY = 'OoIPsp7sWXUEAUt03yK0HAtt';
+  const productId = {{ product.id | json }};
+  const shopDomain = {{ shop.permanent_domain | json }};
 
   // Store loaded state globally to persist across variant changes
   if (!window.customRatingState) {
     window.customRatingState = {
       loaded: false,
       html: null,
-      observer: null
+      data: null
     };
-    console.log('[CUSTOM RATING DEBUG] Initialized customRatingState');
+    console.log('[CUSTOM RATING API] Initialized customRatingState');
   } else {
-    console.log('[CUSTOM RATING DEBUG] customRatingState already exists:', window.customRatingState);
+    console.log('[CUSTOM RATING API] customRatingState already exists');
   }
 
   // If already loaded, instantly restore the saved HTML
   if (window.customRatingState.loaded && window.customRatingState.html) {
-    console.log('[CUSTOM RATING] Already loaded, instantly restoring saved state');
+    console.log('[CUSTOM RATING API] Already loaded, instantly restoring saved state');
 
-    // Use requestAnimationFrame to ensure DOM is ready, then restore immediately
     requestAnimationFrame(function() {
       const container = document.querySelector('.custom-star-rating');
       if (container && !container.classList.contains('loaded')) {
@@ -196,196 +199,80 @@ console.log('[CUSTOM RATING DEBUG] ========== SCRIPT FILE LOADED ==========');
 
         if (savedElement) {
           container.replaceWith(savedElement);
-
-          // Re-attach click handler
-          savedElement.addEventListener('click', function() {
-            const reviewsSelectors = [
-              '#yotpo-app',
-              '.yotpo-main-widget',
-              '#yotpo-reviews-widget',
-              '[id*="yotpo-reviews"]',
-              '[class*="yotpo"][class*="widget"]:not([class*="star-ratings"])',
-              '.yotpo-reviews-carousel'
-            ];
-
-            let reviewsSection = null;
-            for (let selector of reviewsSelectors) {
-              const element = document.querySelector(selector);
-              if (element && element.offsetHeight > 50) {
-                reviewsSection = element;
-                break;
-              }
-            }
-
-            if (reviewsSection) {
-              const offset = 80;
-              const elementPosition = reviewsSection.getBoundingClientRect().top;
-              const offsetPosition = elementPosition + window.scrollY - offset;
-
-              window.scrollTo({
-                top: offsetPosition,
-                behavior: 'smooth'
-              });
-            }
-          });
+          attachClickHandler(savedElement);
         }
       }
     });
     return;
   }
 
-  function extractYotpoData() {
-    console.log('[YOTPO EXTRACTION] Starting extraction...');
-
-    let reviewCount = 0;
-    let rating = 0;
-
-    // STEP 1: Extract review count - try multiple methods
-    // Method 1: Look for data attributes (most reliable)
-    const dataElements = document.querySelectorAll('[data-reviews-count], [data-review-count], [data-total-reviews]');
-    for (let el of dataElements) {
-      const count = el.getAttribute('data-reviews-count') ||
-                    el.getAttribute('data-review-count') ||
-                    el.getAttribute('data-total-reviews');
-      if (count && !isNaN(count)) {
-        reviewCount = parseInt(count, 10);
-        console.log('[YOTPO EXTRACTION] Found count in data attribute:', reviewCount);
-        break;
-      }
-    }
-
-    // Method 2: Look for Yotpo bottomline elements
-    if (!reviewCount) {
-      const selectors = [
-        '.yotpo-bottomline',
-        '.yotpo-bottom-line',
-        '[class*="yotpo"][class*="bottomline"]',
-        '[class*="yotpo"][class*="bottom-line"]'
+  // Attach click handler to scroll to reviews
+  function attachClickHandler(element) {
+    element.addEventListener('click', function() {
+      const reviewsSelectors = [
+        '#yotpo-app',
+        '.yotpo-main-widget',
+        '#yotpo-reviews-widget',
+        '[id*="yotpo-reviews"]',
+        '[class*="yotpo"][class*="widget"]:not([class*="star-ratings"])',
+        '.yotpo-reviews-carousel'
       ];
 
-      for (let selector of selectors) {
-        const elements = document.querySelectorAll(selector);
-        for (let element of elements) {
-          const text = element.textContent || element.innerText || '';
-          // Match patterns like "123 reviews", "Based on 123 reviews", etc.
-          const matches = text.match(/(\d+)\s*(?:review|Review)/);
-          if (matches) {
-            reviewCount = parseInt(matches[1], 10);
-            console.log('[YOTPO EXTRACTION] Found count in bottomline text:', reviewCount);
-            break;
-          }
-        }
-        if (reviewCount) break;
-      }
-    }
-
-    // Method 3: Search all Yotpo elements for review count
-    if (!reviewCount) {
-      const allYotpo = document.querySelectorAll('[class*="yotpo"], [id*="yotpo"]');
-      for (let element of allYotpo) {
-        const text = (element.textContent || '').trim();
-        // More aggressive pattern matching
-        const matches = text.match(/(\d+)\s*(?:review|Review)/);
-        if (matches) {
-          const count = parseInt(matches[1], 10);
-          // Sanity check: review count should be reasonable (0-100000)
-          if (count >= 0 && count <= 100000) {
-            reviewCount = count;
-            console.log('[YOTPO EXTRACTION] Found count in general search:', reviewCount);
-            break;
-          }
-        }
-      }
-    }
-
-    // STEP 2: Extract rating - try multiple methods
-    // Method 1: Look for data attributes
-    const ratingDataElements = document.querySelectorAll('[data-score], [data-rating], [data-score-value]');
-    for (let el of ratingDataElements) {
-      const scoreAttr = el.getAttribute('data-score') ||
-                        el.getAttribute('data-rating') ||
-                        el.getAttribute('data-score-value');
-      if (scoreAttr && !isNaN(scoreAttr)) {
-        const parsedRating = parseFloat(scoreAttr);
-        if (parsedRating >= 0 && parsedRating <= 5) {
-          rating = parsedRating;
-          console.log('[YOTPO EXTRACTION] Found rating in data attribute:', rating);
+      let reviewsSection = null;
+      for (let selector of reviewsSelectors) {
+        const element = document.querySelector(selector);
+        if (element && element.offsetHeight > 50) {
+          reviewsSection = element;
           break;
         }
       }
-    }
 
-    // Method 2: Try to find rating in the bottom-line score text
-    if (!rating) {
-      const scoreSelectors = [
-        '.yotpo-bottom-line-score',
-        '.yotpo-sr-bottom-line-score',
-        '[class*="bottom-line"][class*="score"]',
-        '[class*="bottomline"][class*="score"]'
-      ];
+      if (reviewsSection) {
+        const offset = 80;
+        const elementPosition = reviewsSection.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.scrollY - offset;
 
-      for (let selector of scoreSelectors) {
-        const scoreElement = document.querySelector(selector);
-        if (scoreElement) {
-          const scoreText = (scoreElement.textContent || '').trim();
-          const scoreMatch = scoreText.match(/([\d.]+)/);
-          if (scoreMatch) {
-            const parsedRating = parseFloat(scoreMatch[1]);
-            if (parsedRating >= 0 && parsedRating <= 5) {
-              rating = parsedRating;
-              console.log('[YOTPO EXTRACTION] Found rating in score element:', rating);
-              break;
-            }
-          }
-        }
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
       }
-    }
+    });
+  }
 
-    // Method 3: Try aria-label
-    if (!rating) {
-      const ariaElements = document.querySelectorAll('[aria-label*="star"], [aria-label*="Star"], [aria-label*="rating"], [aria-label*="Rating"]');
-      for (let el of ariaElements) {
-        const ariaLabel = el.getAttribute('aria-label') || '';
-        const ratingMatch = ariaLabel.match(/([\d.]+)\s*(?:out|star|rating)/i);
-        if (ratingMatch) {
-          const parsedRating = parseFloat(ratingMatch[1]);
-          if (parsedRating >= 0 && parsedRating <= 5) {
-            rating = parsedRating;
-            console.log('[YOTPO EXTRACTION] Found rating in aria-label:', rating);
-            break;
-          }
-        }
+  // Fetch rating data from Yotpo API
+  async function fetchYotpoData() {
+    console.log('[CUSTOM RATING API] Fetching data for product:', productId);
+
+    try {
+      // Yotpo API endpoint for product bottomline (star rating summary)
+      const apiUrl = `https://api.yotpo.com/v1/widget/${YOTPO_APP_KEY}/products/${productId}/bottomline`;
+
+      const response = await fetch(apiUrl);
+
+      if (!response.ok) {
+        console.error('[CUSTOM RATING API] API request failed:', response.status);
+        return null;
       }
-    }
 
-    // Method 4: Count filled stars
-    if (!rating) {
-      const starSelectors = [
-        '.yotpo-icon-star.yotpo-icon-full-star',
-        '.yotpo-icon-star:not(.yotpo-icon-empty-star)',
-        '[class*="star"][class*="filled"]',
-        '.yotpo-star.filled'
-      ];
+      const data = await response.json();
+      console.log('[CUSTOM RATING API] Received data:', data);
 
-      for (let selector of starSelectors) {
-        const filledStars = document.querySelectorAll(selector);
-        if (filledStars.length > 0 && filledStars.length <= 5) {
-          rating = filledStars.length;
-          console.log('[YOTPO EXTRACTION] Found rating by counting stars:', rating);
-          break;
-        }
+      if (data && data.response && data.response.bottomline) {
+        const bottomline = data.response.bottomline;
+        const rating = parseFloat(bottomline.average_score) || 0;
+        const reviewCount = parseInt(bottomline.total_reviews) || 0;
+
+        console.log('[CUSTOM RATING API] Parsed data:', { rating, reviewCount });
+
+        return reviewCount > 0 ? { rating, reviewCount } : null;
       }
+
+      return null;
+    } catch (error) {
+      console.error('[CUSTOM RATING API] Error fetching data:', error);
+      return null;
     }
-
-    // Final fallback: default to 5.0 if we have reviews but no rating
-    if (!rating && reviewCount > 0) {
-      rating = 5.0;
-      console.log('[YOTPO EXTRACTION] Using fallback rating of 5.0');
-    }
-
-    console.log('[YOTPO EXTRACTION] Final result:', { rating, reviewCount });
-
-    return reviewCount > 0 ? { rating, reviewCount } : null;
   }
 
   function renderStars(rating) {
@@ -430,98 +317,45 @@ console.log('[CUSTOM RATING DEBUG] ========== SCRIPT FILE LOADED ==========');
     return starsHtml.join('');
   }
 
-  let hasLoaded = false;
-  let hasShownNoReviews = false;
-
-  function showNoReviews() {
-    if (hasLoaded || hasShownNoReviews) return;
-
+  // Update the custom rating display with data
+  async function updateCustomRating(data) {
     const customRating = document.querySelector('.custom-star-rating');
     if (!customRating) return;
 
     const starsContainer = customRating.querySelector('.custom-star-rating__stars');
     const textContainer = customRating.querySelector('.custom-star-rating__text');
 
-    if (starsContainer && textContainer) {
+    if (!starsContainer || !textContainer) return;
+
+    if (!data || data.reviewCount === 0) {
+      // No reviews
       starsContainer.innerHTML = renderStars(0);
       textContainer.textContent = 'No reviews yet';
       customRating.classList.add('loaded');
       customRating.style.cursor = 'default';
       customRating.style.opacity = '0.6';
-      hasShownNoReviews = true;
-    }
-  }
-
-  function updateCustomRating() {
-    if (hasLoaded) return;
-
-    const data = extractYotpoData();
-
-    if (!data || data.reviewCount === 0) return;
-
-    const customRating = document.querySelector('.custom-star-rating');
-    if (!customRating) return;
-
-    const starsContainer = customRating.querySelector('.custom-star-rating__stars');
-    const textContainer = customRating.querySelector('.custom-star-rating__text');
-
-    if (starsContainer && textContainer) {
+    } else {
+      // Has reviews
       starsContainer.innerHTML = renderStars(data.rating);
       textContainer.textContent = `${data.rating.toFixed(1)} (${data.reviewCount} ${data.reviewCount === 1 ? 'review' : 'reviews'})`;
       customRating.classList.add('loaded');
       customRating.style.cursor = 'pointer';
       customRating.style.opacity = '1';
-      hasLoaded = true;
-      hasShownNoReviews = false;
 
       // Save the loaded state and HTML
       window.customRatingState.loaded = true;
       window.customRatingState.html = customRating.outerHTML;
+      window.customRatingState.data = data;
 
       // Add click handler to scroll to reviews
-      customRating.addEventListener('click', function() {
-        // Find the reviews section (not the star rating widget)
-        const reviewsSelectors = [
-          '#yotpo-app',
-          '.yotpo-main-widget',
-          '#yotpo-reviews-widget',
-          '[id*="yotpo-reviews"]',
-          '[class*="yotpo"][class*="widget"]:not([class*="star-ratings"])',
-          '.yotpo-reviews-carousel'
-        ];
+      attachClickHandler(customRating);
 
-        let reviewsSection = null;
-        for (let selector of reviewsSelectors) {
-          const element = document.querySelector(selector);
-          if (element && element.offsetHeight > 50) { // Make sure it exists and is visible
-            reviewsSection = element;
-            break;
-          }
-        }
-
-        if (reviewsSection) {
-          const offset = 80;
-          const elementPosition = reviewsSection.getBoundingClientRect().top;
-          const offsetPosition = elementPosition + window.scrollY - offset;
-
-          window.scrollTo({
-            top: offsetPosition,
-            behavior: 'smooth'
-          });
-        } else {
-          console.log('Reviews section not found');
-        }
-      });
-
-      // Hide the original Yotpo star rating widget and its parent container
+      // Hide the original Yotpo star rating widget
       const productForm = document.querySelector('product-form, .product-form');
       if (productForm) {
-        // Hide Yotpo widgets
         const yotpoWidgets = productForm.querySelectorAll('.yotpo-reviews-star-ratings-widget, .yotpo-widget-instance');
         yotpoWidgets.forEach(el => {
           el.style.display = 'none';
-
-          // Also hide the parent app block container
           const parentBlock = el.closest('.product-info__block-item[data-block-type="@app"]');
           if (parentBlock) {
             parentBlock.style.display = 'none';
@@ -531,98 +365,19 @@ console.log('[CUSTOM RATING DEBUG] ========== SCRIPT FILE LOADED ==========');
     }
   }
 
-  // Try immediate extraction first (data might already be in DOM)
-  console.log('[YOTPO IMMEDIATE] Attempting immediate extraction...');
-  console.log('[CUSTOM RATING DEBUG] About to call extractYotpoData()');
-  const immediateData = extractYotpoData();
-  console.log('[CUSTOM RATING DEBUG] extractYotpoData() returned:', immediateData);
-  if (immediateData && immediateData.reviewCount > 0) {
-    console.log('[YOTPO IMMEDIATE] Success! Found review data immediately:', immediateData);
-    updateCustomRating();
-    return; // Exit early, no need for observer
-  } else {
-    console.log('[CUSTOM RATING DEBUG] No immediate data found, will set up observer');
-  }
+  // Initialize: Fetch data from API and display
+  (async function init() {
+    console.log('[CUSTOM RATING API] Initializing...');
 
-  // If immediate extraction didn't work, watch for Yotpo to load in the DOM
-  const observer = new MutationObserver(function(mutations) {
-    if (hasLoaded || hasShownNoReviews) {
-      observer.disconnect();
-      return;
+    const data = await fetchYotpoData();
+
+    if (data) {
+      console.log('[CUSTOM RATING API] Successfully loaded rating data:', data);
+      await updateCustomRating(data);
+    } else {
+      console.log('[CUSTOM RATING API] No rating data found, showing "No reviews yet"');
+      await updateCustomRating(null);
     }
-
-    // Check if Yotpo elements were added - look for both bottomline AND main app
-    for (let mutation of mutations) {
-      if (mutation.addedNodes.length > 0) {
-        const yotpoAdded = Array.from(mutation.addedNodes).some(node =>
-          node.nodeType === 1 && (
-            node.id === 'yotpo-app' ||
-            node.classList?.contains('yotpo-bottomline') ||
-            node.classList?.contains('yotpo-bottom-line-basic-text') ||
-            node.classList?.contains('yotpo-bottom-line-score') ||
-            node.querySelector?.('#yotpo-app') ||
-            node.querySelector?.('.yotpo-bottomline') ||
-            node.querySelector?.('.yotpo-bottom-line-basic-text') ||
-            node.querySelector?.('.yotpo-bottom-line-score')
-          )
-        );
-
-        if (yotpoAdded) {
-          console.log('[YOTPO OBSERVER] Yotpo element detected, trying immediate extraction...');
-
-          // Try immediate extraction first
-          const data = extractYotpoData();
-          if (data && data.reviewCount > 0) {
-            console.log('[YOTPO OBSERVER] Success! Found review data:', data);
-            updateCustomRating();
-            observer.disconnect();
-            return;
-          }
-
-          // If immediate didn't work, try with minimal delays
-          let attempts = 0;
-          const maxAttempts = 3;
-          const tryExtraction = function() {
-            attempts++;
-            console.log('[YOTPO OBSERVER] Extraction attempt', attempts, 'of', maxAttempts);
-
-            const data = extractYotpoData();
-            if (data && data.reviewCount > 0) {
-              console.log('[YOTPO OBSERVER] Success! Found review data:', data);
-              updateCustomRating();
-              observer.disconnect();
-            } else if (attempts >= maxAttempts) {
-              console.log('[YOTPO OBSERVER] Max attempts reached, showing no reviews');
-              showNoReviews();
-              observer.disconnect();
-            } else {
-              // Shorter delays: 100ms, 200ms
-              const nextDelay = attempts * 100;
-              console.log('[YOTPO OBSERVER] No data found yet, retrying in', nextDelay, 'ms');
-              setTimeout(tryExtraction, nextDelay);
-            }
-          };
-
-          // Start first attempt after 100ms instead of 500ms
-          setTimeout(tryExtraction, 100);
-          break;
-        }
-      }
-    }
-  });
-
-  // Start observing
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true
-  });
-
-  // Fallback: After 3 seconds instead of 5, if Yotpo never loaded, show "No reviews yet"
-  setTimeout(function() {
-    if (!hasLoaded && !hasShownNoReviews) {
-      showNoReviews();
-    }
-    observer.disconnect();
-  }, 3000);
+  })();
 })();
 </script>
