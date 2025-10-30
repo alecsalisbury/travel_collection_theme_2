@@ -207,37 +207,42 @@
 
     const reviewCount = parseInt(countMatch[1], 10);
 
-    // Extract rating from aria-label or data attributes
+    // Extract rating - PRIORITIZE the score element as it's most reliable
     let rating = 0;
 
-    // Try to find rating in aria-label
-    const ariaElements = document.querySelectorAll('[aria-label*="star"]');
-    for (let el of ariaElements) {
-      const ariaLabel = el.getAttribute('aria-label') || '';
-      const ratingMatch = ariaLabel.match(/([\d.]+)\s+star/i);
-      if (ratingMatch) {
-        rating = parseFloat(ratingMatch[1]);
-        break;
+    // FIRST: Try to find rating in the bottom-line score text (most reliable)
+    const scoreSelectors = [
+      '.yotpo-bottom-line-score',
+      '.yotpo-sr-bottom-line-score',
+      '[class*="bottom-line"][class*="score"]'
+    ];
+
+    for (let selector of scoreSelectors) {
+      const scoreElement = document.querySelector(selector);
+      if (scoreElement) {
+        const scoreText = (scoreElement.textContent || '').trim();
+        // Match any number with optional decimal (e.g., "4.9", "5", "3.5")
+        const scoreMatch = scoreText.match(/([\d.]+)/);
+        if (scoreMatch) {
+          const parsedRating = parseFloat(scoreMatch[1]);
+          // Validate rating is between 0 and 5
+          if (parsedRating >= 0 && parsedRating <= 5) {
+            rating = parsedRating;
+            break;
+          }
+        }
       }
     }
 
-    // Try to find rating in the bottom-line score text
+    // SECOND: Try to find rating in aria-label as fallback
     if (!rating) {
-      const scoreSelectors = [
-        '.yotpo-bottom-line-score',
-        '.yotpo-sr-bottom-line-score',
-        '[class*="bottom-line"][class*="score"]'
-      ];
-
-      for (let selector of scoreSelectors) {
-        const scoreElement = document.querySelector(selector);
-        if (scoreElement) {
-          const scoreText = (scoreElement.textContent || '').trim();
-          const scoreMatch = scoreText.match(/^([\d.]+)$/);
-          if (scoreMatch) {
-            rating = parseFloat(scoreMatch[1]);
-            break;
-          }
+      const ariaElements = document.querySelectorAll('[aria-label*="star"]');
+      for (let el of ariaElements) {
+        const ariaLabel = el.getAttribute('aria-label') || '';
+        const ratingMatch = ariaLabel.match(/([\d.]+)\s+(?:out|star)/i);
+        if (ratingMatch) {
+          rating = parseFloat(ratingMatch[1]);
+          break;
         }
       }
     }
