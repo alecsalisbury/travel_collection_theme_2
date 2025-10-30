@@ -5,11 +5,9 @@
 
 {%- liquid
   assign summary_content = collection.metafields.travel.summary
-  assign has_custom_format = false
-  assign heading_part = ''
-  assign summary_part = ''
+  assign heading_part = section.settings.default_heading
 
-  # Check if metafield exists and has value
+  # Check if metafield exists and has value - try to extract custom heading if present
   if summary_content.value != blank
     # Check if it's a rich_text_field type with structured content
     if summary_content.type == 'rich_text_field'
@@ -18,55 +16,21 @@
 
       # Check if first node is a heading
       if first_node.type == 'heading'
-        assign has_custom_format = true
         # Extract heading text from first node
+        assign custom_heading = ''
         for child in first_node.children
-          assign heading_part = heading_part | append: child.value
+          assign custom_heading = custom_heading | append: child.value
         endfor
-
-        # Get remaining content as summary
-        assign summary_html = summary_content | metafield_tag
-        assign summary_part = summary_html | strip_html | strip
-        # Remove the heading from summary
-        assign summary_part = summary_part | remove_first: heading_part | strip
+        if custom_heading != blank
+          assign heading_part = custom_heading
+        endif
       endif
     endif
-
-    # Fallback: Check if using custom format with markers
-    unless has_custom_format
-      # Get the text content from metafield
-      assign summary_text = summary_content | metafield_text | strip
-
-      if summary_text contains 'Heading:' and summary_text contains 'Summary:'
-        assign has_custom_format = true
-
-        # Split on "Heading:" first to isolate the heading section
-        assign heading_split = summary_text | split: 'Heading:'
-        # Get everything after "Heading:"
-        assign after_heading_marker = heading_split[1]
-
-        # Now split on "Summary:" to separate heading from summary
-        assign parts = after_heading_marker | split: 'Summary:'
-
-        # Extract heading (everything before "Summary:")
-        assign heading_part = parts[0] | strip
-
-        # Extract summary content (everything after "Summary:")
-        assign summary_part = parts[1] | strip
-      endif
-    endunless
   endif
-
-  # Use defaults if not using custom format
-  unless has_custom_format
-    assign heading_part = section.settings.default_heading
-    # Store raw metafield for proper rendering
-    assign use_metafield_tag = true
-  endunless
 
   # Determine if section should be shown
   assign show_section = false
-  if summary_part != blank or section.settings.default_content != blank or summary_content.value != blank
+  if summary_content.value != blank or section.settings.default_content != blank
     assign show_section = true
   endif
 -%}
