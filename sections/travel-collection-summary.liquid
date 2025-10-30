@@ -141,20 +141,32 @@
     {% if has_custom_format and summary_html != blank %}
       <div class="travel-summary__content">
         {{ summary_html }}
+
+        {% if section.settings.show_callout %}
+          <div class="travel-summary__callout">
+            {{ section.settings.callout_text }}
+          </div>
+        {% endif %}
       </div>
     {% elsif summary_content.value != blank %}
       <div class="travel-summary__content">
         {{ summary_content | metafield_tag }}
+
+        {% if section.settings.show_callout %}
+          <div class="travel-summary__callout">
+            {{ section.settings.callout_text }}
+          </div>
+        {% endif %}
       </div>
     {% elsif section.settings.default_content != blank %}
       <div class="travel-summary__content">
         {{ section.settings.default_content }}
-      </div>
-    {% endif %}
 
-    {% if section.settings.show_callout %}
-      <div class="travel-summary__callout">
-        {{ section.settings.callout_text }}
+        {% if section.settings.show_callout %}
+          <div class="travel-summary__callout">
+            {{ section.settings.callout_text }}
+          </div>
+        {% endif %}
       </div>
     {% endif %}
 
