@@ -13325,7 +13325,6 @@ section>nav.nav-bar>div.nav-bar__inner .nav-bar__linklist.gm-menu .gm-links>li:n
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 5px;
   height: 28px;
   line-height: 28px;
   transition: opacity 0.3s ease-out;
