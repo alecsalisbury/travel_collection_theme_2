@@ -174,13 +174,21 @@
 
     // Try to find rating in the bottom-line score text
     if (!rating) {
-      const scoreElements = document.querySelectorAll('.yotpo-bottom-line-score, .yotpo-sr-bottom-line-score, [class*="score"]');
-      for (let el of scoreElements) {
-        const scoreText = (el.textContent || '').trim();
-        const scoreMatch = scoreText.match(/^([\d.]+)$/);
-        if (scoreMatch) {
-          rating = parseFloat(scoreMatch[1]);
-          break;
+      const scoreSelectors = [
+        '.yotpo-bottom-line-score',
+        '.yotpo-sr-bottom-line-score',
+        '[class*="bottom-line"][class*="score"]'
+      ];
+
+      for (let selector of scoreSelectors) {
+        const scoreElement = document.querySelector(selector);
+        if (scoreElement) {
+          const scoreText = (scoreElement.textContent || '').trim();
+          const scoreMatch = scoreText.match(/^([\d.]+)$/);
+          if (scoreMatch) {
+            rating = parseFloat(scoreMatch[1]);
+            break;
+          }
         }
       }
     }
