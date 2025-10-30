@@ -13532,6 +13532,14 @@ button[name="add"][disabled] {
   display: none !important;
 } */
 
+/* Reduce spacing for Yotpo app block */
+.product-info__block-item--@app:has(.yotpo-widget-instance) {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
 /* Hide slow-loading Affirm app block visually but keep scripts loaded */
 .product-info__block-item[data-block-id*="affirm"],
 [data-block-id="affirm_pay_over_time_messaging_product_block_hdP8mr"] {
