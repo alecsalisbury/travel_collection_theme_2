@@ -12,7 +12,9 @@
     margin: 12px 0;
     font-size: 14px;
     line-height: 1.5;
-    min-height: 1.5em;
+    /* Reserve space to prevent layout shift - final size is 379x42 */
+    min-height: 42px;
+    max-width: 379px;
   }
 
   .affirm-promo-wrapper {
@@ -67,11 +69,22 @@
 
   console.log('[AFFIRM PROMO] Initializing for section:', SECTION_ID, 'price:', INITIAL_PRICE);
 
-  // Create component immediately (before DOM is fully ready)
+  // Create component with exponential backoff for better performance
+  var createRetryCount = 0;
+  var createMaxRetries = 20; // Max 2 seconds (100ms + 150ms + 200ms + ... up to 300ms)
+
   function createPromoComponent(price) {
     if (!window.affirm || !window.affirm.ui || !window.affirm.ui.components) {
-      console.log('[AFFIRM PROMO] Affirm.js not ready yet, retrying...');
-      setTimeout(function() { createPromoComponent(price); }, 100);
+      if (createRetryCount >= createMaxRetries) {
+        console.log('[AFFIRM PROMO] Max retries reached, giving up');
+        if (skeleton) skeleton.classList.add('hidden');
+        return;
+      }
+
+      createRetryCount++;
+      var delay = Math.min(100 + (createRetryCount * 10), 300); // Exponential backoff up to 300ms
+      console.log('[AFFIRM PROMO] Affirm.js not ready, retry', createRetryCount, 'in', delay, 'ms');
+      setTimeout(function() { createPromoComponent(price); }, delay);
       return;
     }
 
@@ -86,11 +99,13 @@
       });
 
       console.log('[AFFIRM PROMO] Component created successfully');
+      createRetryCount = 0; // Reset counter
 
       // Try to render if DOM is already ready
       renderComponent();
     } catch (error) {
       console.error('[AFFIRM PROMO] Error creating component:', error);
+      if (skeleton) skeleton.classList.add('hidden');
     }
   }
 

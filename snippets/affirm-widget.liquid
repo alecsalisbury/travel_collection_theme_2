@@ -156,20 +156,30 @@
     return false;
   }
 
-  // Poll for Affirm to finish loading and extract content
+  // Poll for Affirm with exponential backoff for better performance
   var loadCheckAttempts = 0;
-  var loadCheckInterval = setInterval(function() {
+  var maxLoadAttempts = 25; // Reduced from 50
+
+  function checkAffirmContent() {
     loadCheckAttempts++;
 
     if (updateAffirmContent()) {
-      clearInterval(loadCheckInterval);
       console.log('[AFFIRM WIDGET] Successfully loaded Affirm content');
-    } else if (loadCheckAttempts >= 50) {
-      // Timeout after 5 seconds (50 * 100ms)
-      clearInterval(loadCheckInterval);
-      console.log('[AFFIRM WIDGET] Affirm content timeout');
+      return;
     }
-  }, 100);
+
+    if (loadCheckAttempts >= maxLoadAttempts) {
+      console.log('[AFFIRM WIDGET] Affirm content timeout after', loadCheckAttempts, 'attempts');
+      return;
+    }
+
+    // Exponential backoff: 150ms, 200ms, 250ms, up to 500ms
+    var delay = Math.min(150 + (loadCheckAttempts * 50), 500);
+    setTimeout(checkAffirmContent, delay);
+  }
+
+  // Start checking
+  checkAffirmContent();
 
   // Debounced refresh to prevent multiple rapid calls
   function debounceRefresh(newPrice) {
@@ -245,15 +255,24 @@
     // Debounced refresh, then extract actual content
     debounceRefresh(newPrice);
 
-    // Poll for updated Affirm content after refresh
+    // Poll for updated Affirm content with exponential backoff
     setTimeout(function() {
       var attempts = 0;
-      var contentCheckInterval = setInterval(function() {
+      var maxAttempts = 15; // Reduced from 20
+
+      function checkUpdatedContent() {
         attempts++;
-        if (updateAffirmContent() || attempts >= 20) {
-          clearInterval(contentCheckInterval);
+        if (updateAffirmContent()) {
+          return;
         }
-      }, 100);
+        if (attempts >= maxAttempts) {
+          return;
+        }
+        var delay = Math.min(150 + (attempts * 50), 500);
+        setTimeout(checkUpdatedContent, delay);
+      }
+
+      checkUpdatedContent();
     }, 300);
   }
 
