@@ -98,6 +98,9 @@
       console.log('[AFFIRM DEBUG] Setting up trigger', index, trigger);
 
       trigger.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
         console.log('[AFFIRM DEBUG] Trigger clicked!', index);
         console.log('[AFFIRM DEBUG] window.affirm at click time:', window.affirm);
         console.log('[AFFIRM DEBUG] window.affirm.ui:', window.affirm?.ui);
@@ -105,23 +108,44 @@
         // Try manual modal trigger
         if (window.affirm && window.affirm.ui) {
           console.log('[AFFIRM DEBUG] Attempting to open modal...');
+          console.log('[AFFIRM DEBUG] Available affirm.ui methods:', Object.keys(window.affirm.ui));
 
-          // Try method 1: affirm.ui.error.modal
-          if (window.affirm.ui.error && window.affirm.ui.error.modal) {
+          const price = trigger.getAttribute('data-amount');
+          console.log('[AFFIRM DEBUG] Price:', price);
+
+          // Try method 1: openModal (most common)
+          if (typeof window.affirm.ui.openModal === 'function') {
+            console.log('[AFFIRM DEBUG] Using affirm.ui.openModal');
+            try {
+              window.affirm.ui.openModal();
+            } catch(err) {
+              console.error('[AFFIRM DEBUG] Error calling openModal:', err);
+            }
+          }
+          // Try method 2: prequal (prequalification modal)
+          else if (typeof window.affirm.ui.prequal === 'function') {
+            console.log('[AFFIRM DEBUG] Using affirm.ui.prequal');
+            try {
+              window.affirm.ui.prequal.show();
+            } catch(err) {
+              console.error('[AFFIRM DEBUG] Error calling prequal:', err);
+            }
+          }
+          // Try method 3: error.modal
+          else if (window.affirm.ui.error && window.affirm.ui.error.modal) {
             console.log('[AFFIRM DEBUG] Using affirm.ui.error.modal');
             try {
               window.affirm.ui.error.modal();
             } catch(err) {
-              console.error('[AFFIRM DEBUG] Error calling affirm.ui.error.modal:', err);
+              console.error('[AFFIRM DEBUG] Error calling error.modal:', err);
             }
           }
-          // Try method 2: Check for other modal methods
           else {
-            console.log('[AFFIRM DEBUG] Available affirm.ui methods:', Object.keys(window.affirm.ui));
+            console.error('[AFFIRM DEBUG] No known modal method found!');
+            window.open('https://www.affirm.com/how-it-works', '_blank');
           }
         } else {
           console.error('[AFFIRM DEBUG] Affirm not loaded yet!');
-          // Fallback
           window.open('https://www.affirm.com/how-it-works', '_blank');
         }
       });
