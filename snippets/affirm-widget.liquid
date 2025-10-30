@@ -17,7 +17,7 @@
      data-page-type="product"
      data-amount="{{ price }}"
      data-affirm-color="blue"
-     style="font-size: 14px; line-height: 1.5;">
+     data-learnmore-show="false">
   </p>
 
   {%- comment -%}
@@ -37,6 +37,36 @@
 <script>
 (function() {
   console.log('[AFFIRM WIDGET] Initialized with price:', {{ price }});
+
+  var refreshTimer = null;
+  var lastPrice = {{ price }};
+
+  // Debounced refresh to prevent multiple rapid calls
+  function debounceRefresh(newPrice) {
+    // Skip if price hasn't changed
+    if (newPrice === lastPrice) {
+      console.log('[AFFIRM WIDGET] Price unchanged, skipping refresh');
+      return;
+    }
+
+    lastPrice = newPrice;
+
+    // Clear any pending refresh
+    if (refreshTimer) {
+      clearTimeout(refreshTimer);
+    }
+
+    // Schedule refresh
+    refreshTimer = setTimeout(function() {
+      console.log('[AFFIRM WIDGET] Refreshing UI for price:', newPrice);
+      if (window.affirm && window.affirm.ui && window.affirm.ui.refresh) {
+        affirm.ui.ready(function() {
+          affirm.ui.refresh();
+        });
+      }
+      refreshTimer = null;
+    }, 100); // Wait 100ms before refreshing
+  }
 
   // Update Affirm widget when variant changes
   function updateAffirmWidget(newPrice) {
@@ -59,36 +89,23 @@
       };
     }
 
-    // Refresh Affirm UI to show new payment amount
-    if (window.affirm && window.affirm.ui && window.affirm.ui.refresh) {
-      affirm.ui.ready(function() {
-        affirm.ui.refresh();
-        console.log('[AFFIRM WIDGET] UI refreshed');
-      });
-    }
+    // Debounced refresh
+    debounceRefresh(newPrice);
   }
 
-  // Listen for variant changes
-  document.addEventListener('variant:changed', function(e) {
+  // Listen for variant changes (only need one listener)
+  var variantHandler = function(e) {
     if (e.detail && e.detail.variant && e.detail.variant.price) {
       updateAffirmWidget(e.detail.variant.price);
     }
-  });
+  };
 
-  document.addEventListener('product:variant:change', function(e) {
-    if (e.detail && e.detail.variant && e.detail.variant.price) {
-      updateAffirmWidget(e.detail.variant.price);
-    }
-  });
+  document.addEventListener('variant:changed', variantHandler);
+  document.addEventListener('product:variant:change', variantHandler);
 
-  // Re-initialize after DOM changes
+  // Re-initialize after DOM changes (debounced)
   document.addEventListener('product:rerendered', function() {
-    console.log('[AFFIRM WIDGET] Product rerendered, refreshing...');
-    if (window.affirm && window.affirm.ui && window.affirm.ui.refresh) {
-      affirm.ui.ready(function() {
-        affirm.ui.refresh();
-      });
-    }
+    debounceRefresh(lastPrice);
   });
 })();
 </script>
