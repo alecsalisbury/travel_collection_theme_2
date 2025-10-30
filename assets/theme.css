@@ -13563,9 +13563,27 @@ button[name="add"][disabled] {
 /* Remove Affirm modal overlay background */
 .affirm-modal-overlay,
 [class*="affirm"][class*="overlay"],
-.affirm-lightbox-overlay {
+.affirm-lightbox-overlay,
+div[class*="affirm-"][class*="-overlay"],
+div[id*="affirm"][id*="overlay"],
+.affirm-overlay,
+.__affirm-modal-overlay,
+.__affirm-overlay {
   background-color: transparent !important;
   backdrop-filter: none !important;
+  background: transparent !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Ensure modal itself is still visible and clickable */
+.affirm-modal-container,
+[class*="affirm"][class*="modal"],
+.affirm-lightbox,
+.__affirm-modal,
+div[class*="affirm-"][class*="-modal"] {
+  opacity: 1 !important;
+  pointer-events: auto !important;
 }
 
 /* Ensure Affirm modal appears above everything */
