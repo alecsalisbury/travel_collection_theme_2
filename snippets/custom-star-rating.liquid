@@ -5,16 +5,20 @@
   Click to scroll to full reviews section
 {% endcomment %}
 <style>
+  /* Hide Yotpo widget in product-meta area to prevent duplicate stars */
+  .product-meta .yotpo-widget-instance,
+  .product-meta .yotpo-bottomline,
+  .product-meta [class*="yotpo-bottom-line"] {
+    display: none !important;
+  }
+
   .custom-star-rating {
-    display: none; /* Hidden until populated by JS */
+    display: flex; /* Show immediately with placeholder */
     align-items: center;
     gap: 8px;
     cursor: pointer;
     margin: 8px 0;
-  }
-
-  .custom-star-rating.loaded {
-    display: flex;
+    min-height: 20px; /* Prevent layout shift */
   }
 
   .custom-star-rating:hover .custom-star-rating__text {
@@ -44,6 +48,44 @@
     font-size: 14px;
     color: #666;
   }
+
+  /* Skeleton placeholder animation */
+  .custom-star-rating__placeholder {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .custom-star-rating__skeleton-stars {
+    display: flex;
+    gap: 2px;
+  }
+
+  .custom-star-rating__skeleton-star {
+    width: 16px;
+    height: 16px;
+    background: #e0e0e0;
+    border-radius: 2px;
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+  }
+
+  .custom-star-rating__skeleton-text {
+    width: 100px;
+    height: 14px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes skeleton-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  /* Hide placeholder when loaded */
+  .custom-star-rating.loaded .custom-star-rating__placeholder {
+    display: none;
+  }
 </style>
 
 <svg style="display: none;">
@@ -56,24 +98,23 @@
 </svg>
 
 <div class="custom-star-rating" onclick="document.querySelector('.yotpo-main-widget, .yotpo-reviews-carousel, [id*=yotpo]')?.scrollIntoView({ behavior: 'smooth', block: 'start' })">
+  <div class="custom-star-rating__placeholder">
+    <div class="custom-star-rating__skeleton-stars">
+      <div class="custom-star-rating__skeleton-star"></div>
+      <div class="custom-star-rating__skeleton-star"></div>
+      <div class="custom-star-rating__skeleton-star"></div>
+      <div class="custom-star-rating__skeleton-star"></div>
+      <div class="custom-star-rating__skeleton-star"></div>
+    </div>
+    <div class="custom-star-rating__skeleton-text"></div>
+  </div>
   <div class="custom-star-rating__stars"></div>
   <span class="custom-star-rating__text"></span>
 </div>
 
 <script>
 (function() {
-  const debugPanel = document.getElementById('debug-log');
-
-  function debugLog(message) {
-    if (debugPanel) {
-      debugPanel.innerHTML += message + '<br>';
-    }
-    console.log(message);
-  }
-
   function extractYotpoData() {
-    debugLog('⏳ Attempting to extract Yotpo data...');
-
     // Try multiple selectors to find the review text
     let yotpoText = null;
     const selectors = [
@@ -87,75 +128,35 @@
     for (let selector of selectors) {
       yotpoText = document.querySelector(selector);
       if (yotpoText && yotpoText.textContent.toLowerCase().includes('review')) {
-        debugLog('✅ Found review text with selector: ' + selector);
         break;
-      } else if (yotpoText) {
-        debugLog('⚠️ Found element with ' + selector + ' but no review text: "' + (yotpoText.textContent || '').substring(0, 50) + '"');
+      } else {
         yotpoText = null;
       }
     }
 
     // If still not found, search all Yotpo elements for review text
     if (!yotpoText) {
-      debugLog('⚠️ Specific selectors failed, searching all Yotpo elements...');
       const allYotpo = document.querySelectorAll('[class*="yotpo"]');
-      debugLog('Total elements with "yotpo" in class: ' + allYotpo.length);
-
-      // Log sample elements to see what we're dealing with
-      let loggedCount = 0;
-      let foundBottomLine = false;
 
       for (let element of allYotpo) {
         const text = (element.textContent || '').trim();
-        const classes = element.className || '';
 
-        // Check if this is the bottom-line element we're looking for
-        if (classes.includes('bottom-line')) {
-          foundBottomLine = true;
-          debugLog('  🎯 Found bottom-line element: "' + classes.substring(0, 50) + '"');
-          debugLog('     Text content (' + text.length + ' chars): "' + text.substring(0, 100) + '"');
-        }
-
-        // Show sample of what we're finding
-        if (loggedCount < 5) {
-          debugLog('  [' + loggedCount + '] "' + classes.substring(0, 40) + '...": "' + text.substring(0, 40) + '"');
-          loggedCount++;
-        }
-
-        // Look for review text more loosely
+        // Look for review text
         if (text.toLowerCase().includes('review')) {
           yotpoText = element;
-          debugLog('✅ Found review text in element with classes: ' + element.className);
-          debugLog('📝 Text content: "' + text + '"');
           break;
         }
       }
-
-      if (!yotpoText) {
-        debugLog('❌ No element found containing "review" in text');
-        if (!foundBottomLine) {
-          debugLog('⚠️ Also did not find any element with "bottom-line" in class name');
-        }
-      }
     }
 
-    if (!yotpoText) {
-      debugLog('❌ Cannot find Yotpo review text anywhere on page');
-      return null;
-    }
+    if (!yotpoText) return null;
 
     const text = yotpoText.textContent || yotpoText.innerText;
-    debugLog('📝 Yotpo text content: "' + text + '"');
-
     const countMatch = text.match(/(\d+)\s+review/i);
 
-    if (!countMatch) {
-      debugLog('❌ No review count match found in text');
-      return null;
-    }
+    if (!countMatch) return null;
 
     const reviewCount = parseInt(countMatch[1], 10);
-    debugLog('✅ Review count extracted: ' + reviewCount);
 
     // Extract rating from aria-label or data attributes
     let rating = 0;
@@ -167,7 +168,6 @@
       const ratingMatch = ariaLabel.match(/([\d.]+)\s+star/i);
       if (ratingMatch) {
         rating = parseFloat(ratingMatch[1]);
-        debugLog('⭐ Rating from aria-label: ' + rating);
         break;
       }
     }
@@ -180,7 +180,6 @@
         const scoreMatch = scoreText.match(/^([\d.]+)$/);
         if (scoreMatch) {
           rating = parseFloat(scoreMatch[1]);
-          debugLog('⭐ Rating from score text: ' + rating);
           break;
         }
       }
@@ -198,7 +197,6 @@
         const filledStars = document.querySelectorAll(selector);
         if (filledStars.length > 0 && filledStars.length <= 5) {
           rating = filledStars.length;
-          debugLog('⭐ Rating from counting stars (' + selector + '): ' + rating);
           break;
         }
       }
@@ -207,10 +205,8 @@
     // Final fallback: default to 5.0 if we have reviews but no rating
     if (!rating && reviewCount > 0) {
       rating = 5.0;
-      debugLog('⭐ Using default rating of 5.0 (could not extract from page)');
     }
 
-    debugLog('✅ Final extracted data: rating=' + rating + ', count=' + reviewCount);
     return { rating, reviewCount };
   }
 
@@ -228,32 +224,15 @@
   }
 
   let hasLoaded = false;
-  let attemptCount = 0;
 
   function updateCustomRating() {
-    attemptCount++;
-    debugLog('---');
-    debugLog('🔄 Attempt #' + attemptCount + ' - updateCustomRating called');
-    debugLog('hasLoaded: ' + hasLoaded);
-
-    if (hasLoaded) {
-      debugLog('⏭️ Already loaded, skipping');
-      return;
-    }
+    if (hasLoaded) return;
 
     const data = extractYotpoData();
-
-    if (!data || data.reviewCount === 0) {
-      debugLog('⚠️ No data or reviewCount is 0, will try again later');
-      return;
-    }
+    if (!data || data.reviewCount === 0) return;
 
     const customRating = document.querySelector('.custom-star-rating');
-    debugLog('Custom rating container found: ' + (customRating ? '✅ YES' : '❌ NO'));
-    if (!customRating) {
-      debugLog('❌ Cannot find .custom-star-rating element');
-      return;
-    }
+    if (!customRating) return;
 
     const starsContainer = customRating.querySelector('.custom-star-rating__stars');
     const textContainer = customRating.querySelector('.custom-star-rating__text');
@@ -263,28 +242,24 @@
       textContainer.textContent = `${data.rating.toFixed(1)} (${data.reviewCount} ${data.reviewCount === 1 ? 'review' : 'reviews'})`;
       customRating.classList.add('loaded');
       hasLoaded = true;
-      debugLog('🎉 SUCCESS! Custom stars loaded and displayed!');
-      debugLog('---');
-    } else {
-      debugLog('❌ Stars or text container not found inside .custom-star-rating');
+
+      // Hide the original Yotpo widget
+      const yotpoWidget = document.querySelector('.yotpo-widget-instance, .yotpo-bottomline, [class*="yotpo-bottom-line"]');
+      if (yotpoWidget) {
+        yotpoWidget.style.display = 'none';
+      }
     }
   }
 
   // Try immediately
-  debugLog('🚀 Script started');
   updateCustomRating();
 
   // Try after DOM loaded
   if (document.readyState === 'loading') {
-    debugLog('⏳ Waiting for DOM to load...');
-    document.addEventListener('DOMContentLoaded', function() {
-      debugLog('✅ DOM loaded');
-      updateCustomRating();
-    });
+    document.addEventListener('DOMContentLoaded', updateCustomRating);
   }
 
   // Watch for Yotpo widget to appear in DOM
-  debugLog('👀 Starting MutationObserver to watch for Yotpo...');
   const observer = new MutationObserver(function(mutations) {
     if (hasLoaded) {
       observer.disconnect();
@@ -293,7 +268,6 @@
 
     for (let mutation of mutations) {
       if (mutation.addedNodes.length > 0) {
-        // Check if Yotpo bottomline was added
         const yotpoAdded = Array.from(mutation.addedNodes).some(node =>
           node.nodeType === 1 && (
             node.classList?.contains('yotpo-bottomline') ||
@@ -302,8 +276,7 @@
         );
 
         if (yotpoAdded) {
-          debugLog('🔔 MutationObserver detected Yotpo widget added!');
-          setTimeout(updateCustomRating, 100); // Small delay for Yotpo to fully render
+          setTimeout(updateCustomRating, 100);
           break;
         }
       }
@@ -316,40 +289,17 @@
     subtree: true
   });
 
-  // Fallback timeouts in case MutationObserver misses it
-  debugLog('⏰ Setting fallback timeouts at 500ms, 1500ms, 3000ms, and 5000ms...');
-  setTimeout(function() {
-    debugLog('⏰ 500ms timeout triggered');
-    updateCustomRating();
-  }, 500);
-  setTimeout(function() {
-    debugLog('⏰ 1500ms timeout triggered');
-    updateCustomRating();
-  }, 1500);
-  setTimeout(function() {
-    debugLog('⏰ 3000ms timeout triggered');
-    updateCustomRating();
-  }, 3000);
-  setTimeout(function() {
-    debugLog('⏰ 5000ms timeout triggered (final attempt)');
-    updateCustomRating();
-  }, 5000);
+  // Fallback timeouts
+  setTimeout(updateCustomRating, 500);
+  setTimeout(updateCustomRating, 1500);
+  setTimeout(updateCustomRating, 3000);
+  setTimeout(updateCustomRating, 5000);
 
   // Listen for Yotpo events
-  debugLog('👂 Listening for Yotpo events...');
-  document.addEventListener('yotpo.bottomline.loaded', function() {
-    debugLog('🔔 yotpo.bottomline.loaded event fired!');
-    updateCustomRating();
-  });
-  window.addEventListener('yotpo.initialized', function() {
-    debugLog('🔔 yotpo.initialized event fired!');
-    updateCustomRating();
-  });
+  document.addEventListener('yotpo.bottomline.loaded', updateCustomRating);
+  window.addEventListener('yotpo.initialized', updateCustomRating);
 
   // Cleanup observer after 10 seconds
-  setTimeout(() => {
-    observer.disconnect();
-    debugLog('🛑 MutationObserver stopped after 10 seconds');
-  }, 10000);
+  setTimeout(() => observer.disconnect(), 10000);
 })();
 </script>
