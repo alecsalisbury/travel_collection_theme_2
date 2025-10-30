@@ -529,12 +529,13 @@
         customAffirmSuffix.style.display = 'none';
       }
 
-      // Wait for Affirm widget to update and extract the new price
+       // The product-price.liquid script will handle updating after Affirm refreshes
+      // But we'll try a quick check just in case
       setTimeout(function() {
         if (window.updateAffirmPrice) {
           window.updateAffirmPrice();
         }
-      }, 100);
+      }, 50);
     }
   });
 
@@ -567,12 +568,13 @@
         customAffirmSuffix.style.display = 'none';
       }
 
-      // Wait for Affirm widget to update and extract the new price
+      // The product-price.liquid script will handle updating after Affirm refreshes
+      // But we'll try a quick check just in case
       setTimeout(function() {
         if (window.updateAffirmPrice) {
           window.updateAffirmPrice();
         }
-      }, 100);
+      }, 50);
     }
   });
 

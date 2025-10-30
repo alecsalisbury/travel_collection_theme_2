@@ -170,7 +170,16 @@
       // 4) notify the rest of the page & re-run Affirm
       try { document.dispatchEvent(new Event('product:rerendered')); } catch (e) {}
       if (window.affirm && affirm.ui && typeof affirm.ui.refresh === 'function') {
-        try { setTimeout(function(){ affirm.ui.refresh(); }, 0); } catch (e) {}
+        try {
+          affirm.ui.refresh();
+          // After Affirm refreshes, wait a bit and update the custom Affirm message
+          setTimeout(function() {
+            if (window.updateAffirmPrice) {
+              console.log('[PRODUCT-PRICE] Triggering Affirm price update after refresh');
+              window.updateAffirmPrice();
+            }
+          }, 500);
+        } catch (e) {}
       }
     }
 
