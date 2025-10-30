@@ -71,7 +71,9 @@
 </style>
 
 <div class="custom-affirm-message" data-product-price="{{ price }}">
-  <div class="custom-affirm-message__main" onclick="openAffirmModal(event)">
+  <div class="custom-affirm-message__main affirm-modal-trigger"
+       data-page-type="product"
+       data-amount="{{ price }}">
     <span class="custom-affirm-message__text">
       or 4 interest-free payments of
       <span class="custom-affirm-message__price">{{ installment | money }}</span>
@@ -80,60 +82,68 @@
     </span>
   </div>
   <a class="custom-affirm-message__link affirm-modal-trigger"
-     aria-label="Check your purchasing power - Learn more about Affirm Financing (opens in modal)"
-     href="javascript:void(0)"
-     onclick="openAffirmModal(event)">
+     data-page-type="product"
+     data-amount="{{ price }}"
+     aria-label="Check your purchasing power - Learn more about Affirm Financing (opens in modal)">
     Check your purchasing power
   </a>
 </div>
 
 <script>
-  function openAffirmModal(e) {
-    e.preventDefault();
+  // Update price when variant changes
+  document.addEventListener('variant:changed', function(e) {
+    if (e.detail && e.detail.variant && e.detail.variant.price) {
+      const newPrice = e.detail.variant.price;
+      const installment = Math.floor(newPrice / 4);
 
-    // Get current product price
-    const priceElement = document.querySelector('.custom-affirm-message');
-    const price = priceElement ? priceElement.getAttribute('data-product-price') : 0;
+      // Update displayed price
+      const priceElement = document.querySelector('.custom-affirm-message__price');
+      if (priceElement) {
+        const formatted = new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: '{{ shop.currency }}'
+        }).format(installment / 100);
+        priceElement.textContent = formatted;
+      }
 
-    // Try to trigger Affirm's native modal if loaded
-    if (window.affirm && window.affirm.ui) {
-      // Method 1: Try Affirm's promo modal (most common)
-      if (typeof window.affirm.ui.error === 'object' && typeof window.affirm.ui.error.modal === 'function') {
-        window.affirm.ui.error.modal({
-          title: 'Flexible Financing',
-          message: 'Pay over time with Affirm',
-          type: 'promo'
-        });
+      // Update data attributes for Affirm
+      const messageElement = document.querySelector('.custom-affirm-message');
+      if (messageElement) {
+        messageElement.setAttribute('data-product-price', newPrice);
       }
-      // Method 2: Try opening Affirm's info modal with pricing
-      else if (typeof window.affirm.ui.ready === 'function') {
-        window.affirm.ui.ready(function() {
-          // Trigger Affirm modal programmatically
-          if (window.affirm.ui.modal) {
-            window.affirm.ui.modal.open({
-              amount: price,
-              type: 'promo'
-            });
-          } else {
-            // Fallback to website
-            window.open('https://www.affirm.com/how-it-works', '_blank', 'noopener,noreferrer');
-          }
-        });
-      } else {
-        // Affirm is loaded but modal not available - open website
-        window.open('https://www.affirm.com/how-it-works', '_blank', 'noopener,noreferrer');
-      }
-    } else {
-      // Affirm not loaded yet - wait a bit and retry, or open website
-      setTimeout(function() {
-        if (window.affirm && window.affirm.ui) {
-          openAffirmModal(e);
-        } else {
-          window.open('https://www.affirm.com/how-it-works', '_blank', 'noopener,noreferrer');
-        }
-      }, 500);
+
+      // Update all affirm triggers
+      document.querySelectorAll('.custom-affirm-message .affirm-modal-trigger').forEach(function(el) {
+        el.setAttribute('data-amount', newPrice);
+      });
     }
-  }
+  });
+
+  // Also listen for product:variant:change event
+  document.addEventListener('product:variant:change', function(e) {
+    if (e.detail && e.detail.variant && e.detail.variant.price) {
+      const newPrice = e.detail.variant.price;
+      const installment = Math.floor(newPrice / 4);
+
+      const priceElement = document.querySelector('.custom-affirm-message__price');
+      if (priceElement) {
+        const formatted = new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: '{{ shop.currency }}'
+        }).format(installment / 100);
+        priceElement.textContent = formatted;
+      }
+
+      const messageElement = document.querySelector('.custom-affirm-message');
+      if (messageElement) {
+        messageElement.setAttribute('data-product-price', newPrice);
+      }
+
+      document.querySelectorAll('.custom-affirm-message .affirm-modal-trigger').forEach(function(el) {
+        el.setAttribute('data-amount', newPrice);
+      });
+    }
+  });
 
   // Update price when variant changes
   document.addEventListener('variant:changed', function(e) {
