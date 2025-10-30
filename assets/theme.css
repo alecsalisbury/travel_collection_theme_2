@@ -13375,6 +13375,11 @@ button[name="add"][disabled] {
   padding-left: 8px !important;
 }
 
+/* Hide slow-loading Yotpo star rating app block - replaced with custom fast-loading version */
+.product-info__block-item[data-block-id*="yotpo_product_reviews_star_rating"] {
+  display: none !important;
+}
+
 /* Hide slow-loading Affirm app block visually but keep scripts loaded */
 .product-info__block-item[data-block-id*="affirm"],
 [data-block-id="affirm_pay_over_time_messaging_product_block_hdP8mr"] {
