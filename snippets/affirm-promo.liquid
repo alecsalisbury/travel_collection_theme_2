@@ -106,8 +106,12 @@
       return;
     }
 
-    container = document.getElementById('affirm-promo-' + SECTION_ID);
-    skeleton = document.getElementById('affirm-promo-skeleton-' + SECTION_ID);
+    // Check if container exists before rendering
+    var containerId = 'affirm-promo-' + SECTION_ID;
+    var skeletonId = 'affirm-promo-skeleton-' + SECTION_ID;
+
+    container = document.getElementById(containerId);
+    skeleton = document.getElementById(skeletonId);
 
     if (!container) {
       console.log('[AFFIRM PROMO] Container not ready yet, will retry');
@@ -115,9 +119,10 @@
     }
 
     try {
-      console.log('[AFFIRM PROMO] Rendering component to container');
+      console.log('[AFFIRM PROMO] Rendering component with selector:', '#' + containerId);
 
-      promoComponent.render(container);
+      // Affirm's render() expects a CSS selector string, not a DOM element
+      promoComponent.render('#' + containerId);
       isRendered = true;
 
       // Hide skeleton once rendered
