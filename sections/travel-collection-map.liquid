@@ -191,9 +191,10 @@
       return !isNaN(product.lat) && !isNaN(product.lng);
     });
 
-    // Initialize map with scroll wheel zoom disabled
+    // Initialize map with scroll wheel zoom disabled and dragging enabled
     const map = L.map('travel-collection-map', {
-      scrollWheelZoom: false
+      scrollWheelZoom: false,
+      dragging: true
     });
 
     // Add tile layer
@@ -279,15 +280,16 @@
       overlay.classList.remove('visible');
     });
 
-    mapContainer.addEventListener('wheel', function() {
+    mapContainer.addEventListener('wheel', function(e) {
       if (!commandPressed) {
+        // Allow page scroll to continue, don't let map capture the event
         overlay.classList.add('visible');
         clearTimeout(overlayTimeout);
         overlayTimeout = setTimeout(function() {
           overlay.classList.remove('visible');
         }, 2000);
       }
-    });
+    }, { passive: true });
 
     // Hide overlay when key is pressed
     document.addEventListener('keydown', function(e) {
