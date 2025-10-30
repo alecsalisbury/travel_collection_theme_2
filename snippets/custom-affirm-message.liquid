@@ -168,6 +168,27 @@
     }
   }
 
+  // Re-initialize after DOM changes (e.g., when price block is replaced)
+  function reinitAfterDOMChange() {
+    const messageContainer = document.querySelector('.custom-affirm-message');
+    if (!messageContainer) return;
+
+    const priceInCents = parseInt(messageContainer.getAttribute('data-product-price')) || 0;
+    const priceElement = document.querySelector('.custom-affirm-message__price');
+    const logoContainer = document.querySelector('#custom-affirm-logo-container');
+
+    if (priceElement && logoContainer) {
+      const monthlyPrice = calculateMonthlyPayment(priceInCents);
+      priceElement.textContent = monthlyPrice;
+      logoContainer.innerHTML = affirmLogoSvg;
+
+      // Re-setup modal triggers after reinit
+      setupModalTriggers();
+
+      console.log('[AFFIRM] Re-initialized after DOM change with price:', monthlyPrice);
+    }
+  }
+
   // Initialize when DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
@@ -190,6 +211,12 @@
     if (e.detail && e.detail.variant && e.detail.variant.price) {
       updatePriceOnVariantChange(e.detail.variant.price);
     }
+  });
+
+  // Listen for DOM changes (when price block is replaced)
+  document.addEventListener('product:rerendered', function() {
+    console.log('[AFFIRM] Product rerendered, re-initializing...');
+    reinitAfterDOMChange();
   });
 
 })();
