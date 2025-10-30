@@ -107,14 +107,24 @@
       const allYotpo = document.querySelectorAll('[class*="yotpo"]');
       debugLog('Total elements with "yotpo" in class: ' + allYotpo.length);
 
-      // Log first 10 elements to see what we're dealing with
+      // Log sample elements to see what we're dealing with
       let loggedCount = 0;
+      let foundBottomLine = false;
+
       for (let element of allYotpo) {
         const text = (element.textContent || '').trim();
+        const classes = element.className || '';
 
-        // Show what we're finding
-        if (loggedCount < 10 && text.length > 0 && text.length < 100) {
-          debugLog('  Element "' + element.className.substring(0, 30) + '...": "' + text.substring(0, 50) + '"');
+        // Check if this is the bottom-line element we're looking for
+        if (classes.includes('bottom-line')) {
+          foundBottomLine = true;
+          debugLog('  🎯 Found bottom-line element: "' + classes.substring(0, 50) + '"');
+          debugLog('     Text content (' + text.length + ' chars): "' + text.substring(0, 100) + '"');
+        }
+
+        // Show sample of what we're finding
+        if (loggedCount < 5) {
+          debugLog('  [' + loggedCount + '] "' + classes.substring(0, 40) + '...": "' + text.substring(0, 40) + '"');
           loggedCount++;
         }
 
@@ -129,6 +139,9 @@
 
       if (!yotpoText) {
         debugLog('❌ No element found containing "review" in text');
+        if (!foundBottomLine) {
+          debugLog('⚠️ Also did not find any element with "bottom-line" in class name');
+        }
       }
     }
 
@@ -278,7 +291,7 @@
   });
 
   // Fallback timeouts in case MutationObserver misses it
-  debugLog('⏰ Setting fallback timeouts at 500ms and 1500ms...');
+  debugLog('⏰ Setting fallback timeouts at 500ms, 1500ms, 3000ms, and 5000ms...');
   setTimeout(function() {
     debugLog('⏰ 500ms timeout triggered');
     updateCustomRating();
@@ -287,6 +300,14 @@
     debugLog('⏰ 1500ms timeout triggered');
     updateCustomRating();
   }, 1500);
+  setTimeout(function() {
+    debugLog('⏰ 3000ms timeout triggered');
+    updateCustomRating();
+  }, 3000);
+  setTimeout(function() {
+    debugLog('⏰ 5000ms timeout triggered (final attempt)');
+    updateCustomRating();
+  }, 5000);
 
   // Listen for Yotpo events
   debugLog('👂 Listening for Yotpo events...');
