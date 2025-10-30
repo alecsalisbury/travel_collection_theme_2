@@ -13372,13 +13372,16 @@ section>nav.nav-bar>div.nav-bar__inner .nav-bar__linklist.gm-menu .gm-links>li:n
 
 .app-skeleton__stars {
   display: flex;
-  gap: 2px;
+  gap: 3.5px;
+  align-items: center;
+  height: 28px;
 }
 
 .app-skeleton__star {
   width: 15px;
   height: 15px;
   display: flex;
+  align-items: center;
 }
 
 .app-skeleton__star svg {
@@ -13414,10 +13417,11 @@ section>nav.nav-bar>div.nav-bar__inner .nav-bar__linklist.gm-menu .gm-links>li:n
 
 .app-skeleton__text {
   width: 80px;
-  height: 14px;
+  height: 16px;
   background: #e0e0e0;
   border-radius: 3px;
   opacity: 0.5;
+  margin-top: 2px;
 }
 
 @keyframes star-fill {
