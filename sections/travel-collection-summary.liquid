@@ -134,15 +134,19 @@
       <h2 class="travel-summary__heading">{{ heading_part }}</h2>
     </div>
 
-    <div class="travel-summary__content">
-      {% if has_custom_format and summary_html != blank %}
+    {% if has_custom_format and summary_html != blank %}
+      <div class="travel-summary__content">
         {{ summary_html }}
-      {% elsif summary_content.value != blank %}
+      </div>
+    {% elsif summary_content.value != blank %}
+      <div class="travel-summary__content">
         {{ summary_content | metafield_tag }}
-      {% elsif section.settings.default_content != blank %}
+      </div>
+    {% elsif section.settings.default_content != blank %}
+      <div class="travel-summary__content">
         {{ section.settings.default_content }}
-      {% endif %}
-    </div>
+      </div>
+    {% endif %}
 
     {% if section.settings.show_callout %}
       <div class="travel-summary__callout">
