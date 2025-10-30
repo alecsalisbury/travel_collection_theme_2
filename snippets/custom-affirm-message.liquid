@@ -222,16 +222,21 @@
 
           // Clone the logo (but don't show yet)
           if (customLogoContainer) {
-            console.log('[AFFIRM SKELETON DEBUG] Logo element found, cloning...');
+            console.log('[AFFIRM SKELETON DEBUG] Logo element found, will clone after delay...');
             console.log('[AFFIRM SKELETON DEBUG] Logo HTML:', affirmLogoElement.outerHTML);
 
-            // Clone the logo
-            const logoClone = affirmLogoElement.cloneNode(true);
-            customLogoContainer.innerHTML = '';
-            customLogoContainer.appendChild(logoClone);
-
-            console.log('[AFFIRM SKELETON DEBUG] Replaced with Affirm logo!');
-            console.log('[AFFIRM SKELETON DEBUG] Container HTML after:', customLogoContainer.innerHTML);
+            // Wait 100ms for Affirm's JS to fully process the logo element
+            setTimeout(function() {
+              const freshLogoElement = affirmAnchor.querySelector('.__affirm-logo');
+              if (freshLogoElement) {
+                console.log('[AFFIRM SKELETON DEBUG] Cloning logo after delay...');
+                const logoClone = freshLogoElement.cloneNode(true);
+                customLogoContainer.innerHTML = '';
+                customLogoContainer.appendChild(logoClone);
+                console.log('[AFFIRM SKELETON DEBUG] Replaced with Affirm logo!');
+                console.log('[AFFIRM SKELETON DEBUG] Container HTML after:', customLogoContainer.innerHTML);
+              }
+            }, 100);
           }
 
           console.log('[AFFIRM SKELETON DEBUG] Affirm data ready!');
