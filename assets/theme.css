@@ -13355,10 +13355,6 @@ section>nav.nav-bar>div.nav-bar__inner .nav-bar__linklist.gm-menu .gm-links>li:n
   width: 100%;
 }
 
-.the-app-wrapper.loaded .app-skeleton {
-  display: none;
-}
-
 .app-skeleton__stars {
   display: flex;
   gap: 2px;
