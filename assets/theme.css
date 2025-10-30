@@ -6971,6 +6971,11 @@ select option {
     position: relative;
     left: 0;
     min-height: 54px;
+    opacity: 0;
+  }
+
+  .nav-bar.font-loaded {
+    opacity: 1;
   }
 
   .nav-bar__linklist {
