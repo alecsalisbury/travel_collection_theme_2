@@ -107,7 +107,7 @@
       /mo with
       <span class="custom-affirm-message__logo-text affirm-modal-trigger"
             data-page-type="product"
-            data-amount="{{ price }}" id="custom-affirm-logo-container">Affirm</span>
+            data-amount="{{ price }}" id="custom-affirm-logo-container" style="visibility: hidden;"></span>
     </span>
   </div>
   <a class="custom-affirm-message__link affirm-modal-trigger"
@@ -162,12 +162,13 @@
             customPriceElement.style.display = 'inline';
           }
 
-          // Replace text "Affirm" with logo if available
+          // Replace with Affirm logo if available
           if (affirmLogoElement && customLogoContainer) {
             const logoClone = affirmLogoElement.cloneNode(true);
             customLogoContainer.innerHTML = '';
             customLogoContainer.appendChild(logoClone);
-            console.log('[AFFIRM SKELETON DEBUG] Replaced text with Affirm logo!');
+            customLogoContainer.style.visibility = 'visible';
+            console.log('[AFFIRM SKELETON DEBUG] Replaced with Affirm logo!');
           }
 
           console.log('[AFFIRM SKELETON DEBUG] Updated custom message with monthly price!');
