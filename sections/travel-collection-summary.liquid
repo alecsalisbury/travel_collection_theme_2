@@ -6,28 +6,20 @@
 {%- liquid
   assign summary_content = collection.metafields.travel.summary
 
-  # Get the HTML content from the rich text metafield
-  assign summary_html = summary_content.value
-
   # Convert to plain text for parsing the structure
   assign summary_text = summary_content | metafield_text
 
   # Parse summary metafield if it contains "Heading:" and "Summary:" markers
   if summary_text contains 'Heading:' and summary_text contains 'Summary:'
-    # For heading, extract from plain text
+    # Extract heading from plain text
     assign heading_split = summary_text | split: 'Summary:'
     assign heading_part = heading_split[0] | remove: 'Heading:' | strip
 
-    # For summary content, extract from HTML to preserve formatting and decode entities
-    assign summary_html_split = summary_html | split: 'Summary:'
-    if summary_html_split.size > 1
-      assign summary_part = summary_html_split[1] | strip
-    else
-      assign summary_part = heading_split[1] | strip
-    endif
+    # Extract summary text (with entities decoded)
+    assign summary_part = heading_split[1] | strip
   else
     assign heading_part = section.settings.default_heading
-    assign summary_part = summary_html
+    assign summary_part = summary_text
   endif
 -%}
 
