@@ -123,10 +123,35 @@
 
       // Check if promos API is available
       console.log('[AFFIRM API DEBUG] window.affirm.ui.promos exists?', !!window.affirm.ui.promos);
-      console.log('[AFFIRM API DEBUG] window.affirm.ui.promos.request exists?', !!(window.affirm.ui.promos && window.affirm.ui.promos.request));
+      console.log('[AFFIRM API DEBUG] window.affirm.ui.prequal exists?', !!window.affirm.ui.prequal);
 
-      // Fetch promo data
-      if (window.affirm.ui.promos && window.affirm.ui.promos.request) {
+      // Try prequal API (newer method)
+      if (window.affirm.ui.prequal && window.affirm.ui.prequal.refresh) {
+        console.log('[AFFIRM API DEBUG] Using prequal.refresh method');
+        console.log('[AFFIRM API DEBUG] Calling affirm.ui.prequal.refresh with params:', {
+          amount: priceInCents,
+          page_type: 'product'
+        });
+
+        try {
+          // Use prequal.refresh to get promo data
+          window.affirm.ui.prequal.refresh({
+            amount: priceInCents,
+            page_type: 'product'
+          });
+
+          // The prequal API doesn't provide a direct callback, so we'll use the fallback
+          console.log('[AFFIRM API DEBUG] prequal.refresh called, but no direct data access available');
+          console.log('[AFFIRM API DEBUG] Using fallback calculation');
+          callback(null);
+        } catch (error) {
+          console.error('[AFFIRM API DEBUG] Error calling prequal.refresh:', error);
+          callback(null);
+        }
+      }
+      // Try legacy promos API
+      else if (window.affirm.ui.promos && window.affirm.ui.promos.request) {
+        console.log('[AFFIRM API DEBUG] Using legacy promos.request method');
         console.log('[AFFIRM API DEBUG] Calling affirm.ui.promos.request with params:', {
           amount: priceInCents,
           page_type: 'product'
@@ -142,7 +167,6 @@
             console.error('[AFFIRM API DEBUG] Error fetching promo:', error);
             console.error('[AFFIRM API DEBUG] Error type:', typeof error);
             console.error('[AFFIRM API DEBUG] Error stringified:', JSON.stringify(error));
-            // Fallback to simple calculation
             callback(null);
             return;
           }
@@ -164,7 +188,6 @@
 
           // Extract the monthly payment from promo data
           if (data && data.promo && data.promo.ala) {
-            // Get the "as low as" monthly payment
             const monthlyPayment = data.promo.ala.display_value;
             console.log('[AFFIRM API DEBUG] ✓ Monthly payment from API:', monthlyPayment);
             callback(monthlyPayment);
@@ -175,7 +198,7 @@
           }
         });
       } else {
-        console.log('[AFFIRM API DEBUG] ✗ Promos API not available');
+        console.log('[AFFIRM API DEBUG] ✗ Neither prequal nor promos API available');
         console.log('[AFFIRM API DEBUG] Available ui methods:', Object.keys(window.affirm.ui));
         callback(null);
       }
