@@ -94,10 +94,12 @@
 
   // Fetch actual payment amount from Affirm Promo API
   function fetchAffirmPromo(priceInCents, callback) {
-    console.log('[AFFIRM] Fetching promo for price:', priceInCents);
+    console.log('[AFFIRM API DEBUG] ========== STARTING PROMO FETCH ==========');
+    console.log('[AFFIRM API DEBUG] Fetching promo for price:', priceInCents);
+    console.log('[AFFIRM API DEBUG] Price in dollars:', priceInCents / 100);
 
     if (!window.affirm || !window.affirm.ui || !window.affirm.ui.ready) {
-      console.log('[AFFIRM] Affirm.js not ready yet, will retry...');
+      console.log('[AFFIRM API DEBUG] Affirm.js not ready yet, will retry...');
       // Retry after a short delay
       setTimeout(function() {
         fetchAffirmPromo(priceInCents, callback);
@@ -105,42 +107,76 @@
       return;
     }
 
+    console.log('[AFFIRM API DEBUG] Affirm.js is ready');
+    console.log('[AFFIRM API DEBUG] window.affirm object:', window.affirm);
+    console.log('[AFFIRM API DEBUG] window.affirm.ui object:', window.affirm.ui);
+
     window.affirm.ui.ready(function() {
+      console.log('[AFFIRM API DEBUG] Inside affirm.ui.ready callback');
+
       // Use Affirm's promo API to get actual payment amount
       if (window.affirm.ui.error && window.affirm.ui.error.on) {
         window.affirm.ui.error.on('promo-request-error', function(error) {
-          console.error('[AFFIRM] Promo request error:', error);
+          console.error('[AFFIRM API DEBUG] Promo request error event:', error);
         });
       }
 
+      // Check if promos API is available
+      console.log('[AFFIRM API DEBUG] window.affirm.ui.promos exists?', !!window.affirm.ui.promos);
+      console.log('[AFFIRM API DEBUG] window.affirm.ui.promos.request exists?', !!(window.affirm.ui.promos && window.affirm.ui.promos.request));
+
       // Fetch promo data
       if (window.affirm.ui.promos && window.affirm.ui.promos.request) {
+        console.log('[AFFIRM API DEBUG] Calling affirm.ui.promos.request with params:', {
+          amount: priceInCents,
+          page_type: 'product'
+        });
+
         window.affirm.ui.promos.request({
           amount: priceInCents,
           page_type: 'product'
         }, function(error, data) {
+          console.log('[AFFIRM API DEBUG] Promo callback received');
+
           if (error) {
-            console.error('[AFFIRM] Error fetching promo:', error);
+            console.error('[AFFIRM API DEBUG] Error fetching promo:', error);
+            console.error('[AFFIRM API DEBUG] Error type:', typeof error);
+            console.error('[AFFIRM API DEBUG] Error stringified:', JSON.stringify(error));
             // Fallback to simple calculation
             callback(null);
             return;
           }
 
-          console.log('[AFFIRM] Promo data received:', data);
+          console.log('[AFFIRM API DEBUG] ========== PROMO DATA RECEIVED ==========');
+          console.log('[AFFIRM API DEBUG] Full data object:', data);
+          console.log('[AFFIRM API DEBUG] Data stringified:', JSON.stringify(data, null, 2));
+          console.log('[AFFIRM API DEBUG] data.promo exists?', !!data.promo);
+
+          if (data && data.promo) {
+            console.log('[AFFIRM API DEBUG] data.promo object:', data.promo);
+            console.log('[AFFIRM API DEBUG] data.promo.ala exists?', !!data.promo.ala);
+
+            if (data.promo.ala) {
+              console.log('[AFFIRM API DEBUG] data.promo.ala object:', data.promo.ala);
+              console.log('[AFFIRM API DEBUG] data.promo.ala.display_value:', data.promo.ala.display_value);
+            }
+          }
 
           // Extract the monthly payment from promo data
           if (data && data.promo && data.promo.ala) {
             // Get the "as low as" monthly payment
             const monthlyPayment = data.promo.ala.display_value;
-            console.log('[AFFIRM] Monthly payment from API:', monthlyPayment);
+            console.log('[AFFIRM API DEBUG] ✓ Monthly payment from API:', monthlyPayment);
             callback(monthlyPayment);
           } else {
-            console.log('[AFFIRM] No promo data available, using fallback');
+            console.log('[AFFIRM API DEBUG] ✗ No promo data available, using fallback');
+            console.log('[AFFIRM API DEBUG] Available data keys:', data ? Object.keys(data) : 'none');
             callback(null);
           }
         });
       } else {
-        console.log('[AFFIRM] Promos API not available');
+        console.log('[AFFIRM API DEBUG] ✗ Promos API not available');
+        console.log('[AFFIRM API DEBUG] Available ui methods:', Object.keys(window.affirm.ui));
         callback(null);
       }
     });
