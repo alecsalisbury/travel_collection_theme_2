@@ -13374,3 +13374,9 @@ button[name="add"][disabled] {
 .gm-tabs-left ul.gm-tab-links > li.gm-item.gm-has-submenu > .gm-target > .gm-icon {
   padding-left: 8px !important;
 }
+
+/* Hide slow-loading Affirm app block - using custom fast version instead */
+.product-info__block-item[data-block-id*="affirm"],
+[data-block-id="affirm_pay_over_time_messaging_product_block_hdP8mr"] {
+  display: none !important;
+}
