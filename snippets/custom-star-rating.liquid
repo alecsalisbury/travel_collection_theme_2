@@ -391,7 +391,49 @@
     }
   }
 
-  // Wait 3 seconds for Yotpo to load, then update
-  setTimeout(updateCustomRating, 3000);
+  // Watch for Yotpo to load in the DOM
+  const observer = new MutationObserver(function(mutations) {
+    if (hasLoaded) {
+      observer.disconnect();
+      return;
+    }
+
+    // Check if Yotpo elements were added
+    for (let mutation of mutations) {
+      if (mutation.addedNodes.length > 0) {
+        const yotpoAdded = Array.from(mutation.addedNodes).some(node =>
+          node.nodeType === 1 && (
+            node.classList?.contains('yotpo-bottomline') ||
+            node.classList?.contains('yotpo-bottom-line-basic-text') ||
+            node.classList?.contains('yotpo-bottom-line-score') ||
+            node.querySelector?.('.yotpo-bottomline') ||
+            node.querySelector?.('.yotpo-bottom-line-basic-text') ||
+            node.querySelector?.('.yotpo-bottom-line-score')
+          )
+        );
+
+        if (yotpoAdded) {
+          // Give Yotpo a moment to fully render
+          setTimeout(function() {
+            updateCustomRating();
+            observer.disconnect();
+          }, 100);
+          break;
+        }
+      }
+    }
+  });
+
+  // Start observing
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+
+  // Fallback timeout in case MutationObserver misses it (5 seconds max)
+  setTimeout(function() {
+    updateCustomRating();
+    observer.disconnect();
+  }, 5000);
 })();
 </script>
