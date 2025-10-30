@@ -21,12 +21,13 @@
   </p>
 
   {%- comment -%}
-    "Check your purchasing power" link
+    "Check your purchasing power" link (hidden)
+    To show: change display: none to display: inline-block
   {%- endcomment -%}
   <a class="affirm-check-power-link"
      href="#"
      onclick="affirm.ui.ready(function() { affirm.ui.prequal.show({ amount: {{ price }} }); }); return false;"
-     style="display: inline-block; margin-top: 4px; color: #08c; font-size: inherit; text-decoration: none; cursor: pointer;"
+     style="display: none; margin-top: 4px; color: #08c; font-size: inherit; text-decoration: none; cursor: pointer;"
      onmouseover="this.style.textDecoration='underline'"
      onmouseout="this.style.textDecoration='none'"
      aria-label="Check your purchasing power - Learn more about Affirm Financing (opens in modal)">
@@ -40,16 +41,20 @@
 
   var refreshTimer = null;
   var lastPrice = {{ price }};
+  var isRefreshing = false;
+  var hasListeners = false;
 
   // Debounced refresh to prevent multiple rapid calls
   function debounceRefresh(newPrice) {
-    // Skip if price hasn't changed
-    if (newPrice === lastPrice) {
-      console.log('[AFFIRM WIDGET] Price unchanged, skipping refresh');
+    // Skip if already refreshing
+    if (isRefreshing) {
       return;
     }
 
-    lastPrice = newPrice;
+    // Skip if price hasn't changed
+    if (newPrice === lastPrice) {
+      return;
+    }
 
     // Clear any pending refresh
     if (refreshTimer) {
@@ -58,20 +63,29 @@
 
     // Schedule refresh
     refreshTimer = setTimeout(function() {
-      console.log('[AFFIRM WIDGET] Refreshing UI for price:', newPrice);
+      isRefreshing = true;
+      lastPrice = newPrice;
+
       if (window.affirm && window.affirm.ui && window.affirm.ui.refresh) {
         affirm.ui.ready(function() {
           affirm.ui.refresh();
+          console.log('[AFFIRM WIDGET] Refreshed for price:', newPrice);
+
+          // Reset flag after a delay
+          setTimeout(function() {
+            isRefreshing = false;
+          }, 500);
         });
+      } else {
+        isRefreshing = false;
       }
+
       refreshTimer = null;
-    }, 100); // Wait 100ms before refreshing
+    }, 200); // Wait 200ms before refreshing
   }
 
   // Update Affirm widget when variant changes
   function updateAffirmWidget(newPrice) {
-    console.log('[AFFIRM WIDGET] Updating price to:', newPrice);
-
     // Update the affirm-as-low-as element
     var affirmWidget = document.querySelector('.affirm-as-low-as');
     if (affirmWidget) {
@@ -93,19 +107,35 @@
     debounceRefresh(newPrice);
   }
 
-  // Listen for variant changes (only need one listener)
-  var variantHandler = function(e) {
-    if (e.detail && e.detail.variant && e.detail.variant.price) {
-      updateAffirmWidget(e.detail.variant.price);
-    }
-  };
+  // Set up listeners only once
+  if (!hasListeners) {
+    hasListeners = true;
 
-  document.addEventListener('variant:changed', variantHandler);
-  document.addEventListener('product:variant:change', variantHandler);
+    // Variant change handler
+    var variantHandler = function(e) {
+      if (e.detail && e.detail.variant && e.detail.variant.price) {
+        updateAffirmWidget(e.detail.variant.price);
+      }
+    };
 
-  // Re-initialize after DOM changes (debounced)
-  document.addEventListener('product:rerendered', function() {
-    debounceRefresh(lastPrice);
-  });
+    document.addEventListener('variant:changed', variantHandler, { once: false });
+    document.addEventListener('product:variant:change', variantHandler, { once: false });
+
+    // Re-initialize after DOM changes (heavily debounced)
+    var rerenderCount = 0;
+    document.addEventListener('product:rerendered', function() {
+      rerenderCount++;
+      if (rerenderCount > 1) {
+        // Skip if this is a duplicate event
+        return;
+      }
+
+      setTimeout(function() {
+        rerenderCount = 0;
+      }, 1000);
+
+      debounceRefresh(lastPrice);
+    });
+  }
 })();
 </script>
