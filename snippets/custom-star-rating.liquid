@@ -391,66 +391,7 @@
     }
   }
 
-  // Try immediately
-  updateCustomRating('immediate');
-
-  // Try after DOM loaded
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => updateCustomRating('DOMContentLoaded'));
-  }
-
-  // Watch for Yotpo widget to appear in DOM
-  const observer = new MutationObserver(function(mutations) {
-    if (hasLoaded) {
-      observer.disconnect();
-      return;
-    }
-
-    for (let mutation of mutations) {
-      if (mutation.addedNodes.length > 0) {
-        const yotpoAdded = Array.from(mutation.addedNodes).some(node =>
-          node.nodeType === 1 && (
-            node.classList?.contains('yotpo-bottomline') ||
-            node.classList?.contains('yotpo-bottom-line-basic-text') ||
-            node.classList?.contains('yotpo-bottom-line-score') ||
-            node.querySelector?.('.yotpo-bottomline') ||
-            node.querySelector?.('.yotpo-bottom-line-basic-text') ||
-            node.querySelector?.('.yotpo-bottom-line-score')
-          )
-        );
-
-        if (yotpoAdded) {
-          // Give Yotpo a tiny moment to fully render, then check
-          setTimeout(() => updateCustomRating('MutationObserver'), 50);
-          break;
-        }
-      }
-    }
-  });
-
-  // Start observing
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true
-  });
-
-  // Fallback timeouts - give up after 5 seconds with more frequent checks
-  setTimeout(() => updateCustomRating('timeout-300ms'), 300);
-  setTimeout(() => updateCustomRating('timeout-600ms'), 600);
-  setTimeout(() => updateCustomRating('timeout-1000ms'), 1000);
-  setTimeout(() => updateCustomRating('timeout-1500ms'), 1500);
-  setTimeout(() => updateCustomRating('timeout-2000ms'), 2000);
-  setTimeout(() => updateCustomRating('timeout-2500ms'), 2500);
-  setTimeout(() => updateCustomRating('timeout-3000ms'), 3000);
-  setTimeout(() => updateCustomRating('timeout-3500ms'), 3500);
-  setTimeout(() => updateCustomRating('timeout-4000ms'), 4000);
-  setTimeout(() => updateCustomRating('timeout-5000ms'), 5000);
-
-  // Listen for Yotpo events
-  document.addEventListener('yotpo.bottomline.loaded', () => updateCustomRating('yotpo.bottomline.loaded event'));
-  window.addEventListener('yotpo.initialized', () => updateCustomRating('yotpo.initialized event'));
-
-  // Cleanup observer after 5 seconds
-  setTimeout(() => observer.disconnect(), 5000);
+  // Wait 3 seconds for Yotpo to load, then update
+  setTimeout(updateCustomRating, 3000);
 })();
 </script>
