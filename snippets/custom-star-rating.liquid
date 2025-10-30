@@ -1,0 +1,82 @@
+{% comment %}
+  Custom Star Rating Display
+  Uses Yotpo metafields for instant loading without external JS
+  Scrolls to full reviews section when clicked
+{% endcomment %}
+
+{%- assign reviews_count = product.metafields.yotpo.reviews_count | default: 0 -%}
+{%- assign reviews_average = product.metafields.yotpo.reviews_average | default: 0 -%}
+
+{% if reviews_count > 0 %}
+<style>
+  .custom-star-rating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    margin: 8px 0;
+  }
+
+  .custom-star-rating:hover .custom-star-rating__text {
+    text-decoration: underline;
+  }
+
+  .custom-star-rating__stars {
+    display: flex;
+    gap: 2px;
+  }
+
+  .custom-star-rating__star {
+    width: 16px;
+    height: 16px;
+    fill: #e0e0e0;
+  }
+
+  .custom-star-rating__star.filled {
+    fill: #ffa500;
+  }
+
+  .custom-star-rating__star.half {
+    fill: url(#half-star-gradient);
+  }
+
+  .custom-star-rating__text {
+    font-size: 14px;
+    color: #666;
+  }
+</style>
+
+<svg style="display: none;">
+  <defs>
+    <linearGradient id="half-star-gradient">
+      <stop offset="50%" stop-color="#ffa500"/>
+      <stop offset="50%" stop-color="#e0e0e0"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<div class="custom-star-rating" onclick="document.querySelector('.yotpo-main-widget, .yotpo-reviews-carousel, [id*=yotpo]')?.scrollIntoView({ behavior: 'smooth', block: 'start' })">
+  <div class="custom-star-rating__stars">
+    {%- assign rating = reviews_average | times: 1.0 -%}
+    {%- for i in (1..5) -%}
+      {%- assign star_value = i | times: 1.0 -%}
+      {%- if rating >= star_value -%}
+        <svg class="custom-star-rating__star filled" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+      {%- elsif rating >= star_value | minus: 0.5 -%}
+        <svg class="custom-star-rating__star half" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+      {%- else -%}
+        <svg class="custom-star-rating__star" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+  <span class="custom-star-rating__text">
+    {{ reviews_average }} ({{ reviews_count }} {% if reviews_count == 1 %}review{% else %}reviews{% endif %})
+  </span>
+</div>
+{% endif %}
