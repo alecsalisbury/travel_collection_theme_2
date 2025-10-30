@@ -1,1 +1,128 @@
-{"type":"footer","name":"Footer group","sections":{"custom_liquid_bCCFrQ":{"type":"custom-liquid","custom_css":["section {margin-top: 0; margin-bottom: 0;}"],"name":"Custom Liquid","settings":{"title":"","include_margins":true,"liquid":"<style>\n  .shopify-section .tf-cta-bar-section {\n    margin-bottom: 0 !important;\n    padding-bottom: 0 !important;\n  }\n  .tf-cta-bar {\n    background:#0084D1;\n    color:#fff;\n    width:100vw;\n    margin-left: calc(-50vw + 50%);\n  }\n  .tf-cta-bar__inner {\n    max-width: 1200px;\n    margin: 0 auto;\n    padding: 10px 20px;\n    display:flex;\n    flex-wrap:wrap;\n    align-items:center;\n    justify-content:center;\n    gap:24px;\n    min-height:48px;\n  }\n  .tf-cta {\n    display:flex;\n    align-items:center;\n    gap:10px;\n    text-decoration:none;\n    color:#fff;\n    font-weight:700;\n    text-transform:uppercase;\n    letter-spacing:.02em;\n    font-size:14px;\n    line-height:1;\n    white-space:nowrap;\n    padding:6px 8px;\n  }\n  .tf-cta:hover { text-decoration:underline }\n  .tf-cta__icon { width:18px; height:18px; fill:currentColor }\n  .tf-divider { width:1px; align-self:stretch; background:rgba(255,255,255,.35) }\n  @media(max-width:768px){\n    .tf-divider{display:none}\n    .tf-cta{font-size:13px}\n    .tf-cta-bar__inner{gap:16px;justify-content:space-between}\n  }\n<\/style>\n\n<section class=\"tf-cta-bar tf-cta-bar-section\" aria-label=\"Shop benefits\">\n  <div class=\"tf-cta-bar__inner\">\n\n    <a class=\"tf-cta\" href=\"{{ shop.url }}\/pages\/shipping-policies\" target=\"_self\">\n      <svg class=\"tf-cta__icon\" viewBox=\"0 0 24 24\"><path d=\"M3 6h11a1 1 0 0 1 1 1v5h3.6c.3 0 .5.1.7.3l2.1 2.1c.2.2.3.5.3.7V18a1 1 0 0 1-1 1h-1a2.5 2.5 0 1 1-5 0H9a2.5 2.5 0 1 1-5 0H3a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1Zm12 6V8H4v9h.2a2.5 2.5 0 0 1 4.6 0h5.4a2.5 2.5 0 0 1 4.6 0H21v-1.6L19.4 13H15Z\"\/><\/svg>\n      <span>Free Shipping<\/span>\n    <\/a>\n\n    <div class=\"tf-divider\"><\/div>\n\n    <a class=\"tf-cta\" href=\"{{ shop.url }}\/pages\/castability-guarantee\" target=\"_self\">\n      <svg class=\"tf-cta__icon\" viewBox=\"0 0 24 24\"><path d=\"M7.7 7.7 5 5v6h6L8.3 8.3A6 6 0 1 1 6.7 15a1 1 0 1 0-1.8.9A8 8 0 1 0 7.7 7.7Z\"\/><\/svg>\n      <span>Castability Guarantee<\/span>\n    <\/a>\n\n    <div class=\"tf-divider\"><\/div>\n\n    <a class=\"tf-cta\" href=\"{{ shop.url }}\/pages\/price-match\" target=\"_self\">\n      <svg class=\"tf-cta__icon\" viewBox=\"0 0 24 24\"><path d=\"M12 2 4 5v6c0 5.3 3.4 9 8 10 4.6-1 8-4.7 8-10V5l-8-3Zm0 17c-3.1-.8-6-3.7-6-8V6.6L12 4.3 18 6.6V11c0 4.3-2.9 7.2-6 8Z\"\/><\/svg>\n      <span>Lowest Price Guarantee<\/span>\n    <\/a>\n\n    <div class=\"tf-divider\"><\/div>\n\n    <a class=\"tf-cta\" href=\"{{ shop.url }}\/pages\/rewards\" target=\"_self\">\n      <svg class=\"tf-cta__icon\" viewBox=\"0 0 24 24\"><path d=\"M4 18h16v2H4v-2Zm0-9 4 3 4-6 4 6 4-3v7H4v-7Z\"\/><\/svg>\n      <span>Trident Rewards<\/span>\n    <\/a>\n\n  <\/div>\n<\/section>"}},"footer":{"type":"footer","blocks":{"footer-1":{"type":"links","settings":{"menu":"footer"}},"footer-2":{"type":"newsletter","settings":{"title":"Newsletter","subheading":"<p>Sign up for our Newsletter, a monthly dose of new ideas and exclusive deals on great gear, sent directly to your inbox.<\/p>"}},"blog_KAkBnG":{"type":"blog","settings":{"title":"Blog Feed","blog":"all"}}},"block_order":["footer-1","footer-2","blog_KAkBnG"],"settings":{"show_social_media":true,"enable_follow_on_shop":false,"show_payment_icons":false,"show_locale_selector":false,"show_country_selector":false}},"footer_links_gJGzp8":{"type":"footer-links","blocks":{"link_EYXF6F":{"type":"link","settings":{"title":"About Us","link":"shopify:\/\/pages\/about-us"}},"link_cQLPhp":{"type":"link","settings":{"title":"Terms and Conditions","link":"shopify:\/\/pages\/terms"}},"link_dKTLmF":{"type":"link","settings":{"title":"Privacy Statement","link":"shopify:\/\/pages\/privacy"}},"link_tTEpcn":{"type":"link","settings":{"title":"Careers","link":"shopify:\/\/pages\/careers"}},"link_L6prhQ":{"type":"link","settings":{"title":"Affiliates","link":"shopify:\/\/pages\/affiliates"}},"link_BBB6gy":{"type":"link","settings":{"title":"FAQ","link":"shopify:\/\/pages\/faq"}}},"block_order":["link_EYXF6F","link_cQLPhp","link_dKTLmF","link_tTEpcn","link_L6prhQ","link_BBB6gy"],"name":"Footer links","settings":{"bg_color":"#143848"}}},"order":["custom_liquid_bCCFrQ","footer","footer_links_gJGzp8"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "footer",
+  "name": "Footer group",
+  "sections": {
+    "custom_liquid_bCCFrQ": {
+      "type": "custom-liquid",
+      "custom_css": [
+        "section {margin-top: 0; margin-bottom: 0;}"
+      ],
+      "name": "Custom Liquid",
+      "settings": {
+        "title": "",
+        "include_margins": true,
+        "liquid": "<style>\n  .shopify-section .tf-cta-bar-section {\n    margin-bottom: 0 !important;\n    padding-bottom: 0 !important;\n  }\n  .tf-cta-bar {\n    background:#0084D1;\n    color:#fff;\n    width:100vw;\n    margin-left: calc(-50vw + 50%);\n  }\n  .tf-cta-bar__inner {\n    max-width: 1200px;\n    margin: 0 auto;\n    padding: 10px 20px;\n    display:flex;\n    flex-wrap:wrap;\n    align-items:center;\n    justify-content:center;\n    gap:24px;\n    min-height:48px;\n  }\n  .tf-cta {\n    display:flex;\n    align-items:center;\n    gap:10px;\n    text-decoration:none;\n    color:#fff;\n    font-weight:700;\n    text-transform:uppercase;\n    letter-spacing:.02em;\n    font-size:14px;\n    line-height:1;\n    white-space:nowrap;\n    padding:6px 8px;\n  }\n  .tf-cta:hover { text-decoration:underline }\n  .tf-cta__icon { width:18px; height:18px; fill:currentColor }\n  .tf-divider { width:1px; align-self:stretch; background:rgba(255,255,255,.35) }\n  @media(max-width:768px){\n    .tf-divider{display:none}\n    .tf-cta{font-size:13px}\n    .tf-cta-bar__inner{gap:16px;justify-content:space-between}\n  }\n</style>\n\n<section class=\"tf-cta-bar tf-cta-bar-section\" aria-label=\"Shop benefits\">\n  <div class=\"tf-cta-bar__inner\">\n\n    <a class=\"tf-cta\" href=\"{{ shop.url }}/pages/shipping-policies\" target=\"_self\">\n      <svg class=\"tf-cta__icon\" viewBox=\"0 0 24 24\"><path d=\"M3 6h11a1 1 0 0 1 1 1v5h3.6c.3 0 .5.1.7.3l2.1 2.1c.2.2.3.5.3.7V18a1 1 0 0 1-1 1h-1a2.5 2.5 0 1 1-5 0H9a2.5 2.5 0 1 1-5 0H3a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1Zm12 6V8H4v9h.2a2.5 2.5 0 0 1 4.6 0h5.4a2.5 2.5 0 0 1 4.6 0H21v-1.6L19.4 13H15Z\"/></svg>\n      <span>Free Shipping</span>\n    </a>\n\n    <div class=\"tf-divider\"></div>\n\n    <a class=\"tf-cta\" href=\"{{ shop.url }}/pages/castability-guarantee\" target=\"_self\">\n      <svg class=\"tf-cta__icon\" viewBox=\"0 0 24 24\"><path d=\"M7.7 7.7 5 5v6h6L8.3 8.3A6 6 0 1 1 6.7 15a1 1 0 1 0-1.8.9A8 8 0 1 0 7.7 7.7Z\"/></svg>\n      <span>Castability Guarantee</span>\n    </a>\n\n    <div class=\"tf-divider\"></div>\n\n    <a class=\"tf-cta\" href=\"{{ shop.url }}/pages/price-match\" target=\"_self\">\n      <svg class=\"tf-cta__icon\" viewBox=\"0 0 24 24\"><path d=\"M12 2 4 5v6c0 5.3 3.4 9 8 10 4.6-1 8-4.7 8-10V5l-8-3Zm0 17c-3.1-.8-6-3.7-6-8V6.6L12 4.3 18 6.6V11c0 4.3-2.9 7.2-6 8Z\"/></svg>\n      <span>Lowest Price Guarantee</span>\n    </a>\n\n    <div class=\"tf-divider\"></div>\n\n    <a class=\"tf-cta\" href=\"{{ shop.url }}/pages/rewards\" target=\"_self\">\n      <svg class=\"tf-cta__icon\" viewBox=\"0 0 24 24\"><path d=\"M4 18h16v2H4v-2Zm0-9 4 3 4-6 4 6 4-3v7H4v-7Z\"/></svg>\n      <span>Trident Rewards</span>\n    </a>\n\n  </div>\n</section>"
+      }
+    },
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "footer-1": {
+          "type": "links",
+          "settings": {
+            "menu": "footer"
+          }
+        },
+        "footer-2": {
+          "type": "newsletter",
+          "settings": {
+            "title": "Newsletter",
+            "subheading": "<p>Sign up for our Newsletter, a monthly dose of new ideas and exclusive deals on great gear, sent directly to your inbox.</p>"
+          }
+        },
+        "blog_KAkBnG": {
+          "type": "blog",
+          "settings": {
+            "title": "Blog Feed",
+            "blog": "all"
+          }
+        }
+      },
+      "block_order": [
+        "footer-1",
+        "footer-2",
+        "blog_KAkBnG"
+      ],
+      "settings": {
+        "show_social_media": true,
+        "enable_follow_on_shop": false,
+        "show_payment_icons": false,
+        "show_locale_selector": false,
+        "show_country_selector": false
+      }
+    },
+    "footer_links_gJGzp8": {
+      "type": "footer-links",
+      "blocks": {
+        "link_EYXF6F": {
+          "type": "link",
+          "settings": {
+            "title": "About Us",
+            "link": "shopify://pages/about-us"
+          }
+        },
+        "link_cQLPhp": {
+          "type": "link",
+          "settings": {
+            "title": "Terms and Conditions",
+            "link": "shopify://pages/terms"
+          }
+        },
+        "link_dKTLmF": {
+          "type": "link",
+          "settings": {
+            "title": "Privacy Statement",
+            "link": "shopify://pages/privacy"
+          }
+        },
+        "link_tTEpcn": {
+          "type": "link",
+          "settings": {
+            "title": "Careers",
+            "link": "shopify://pages/careers"
+          }
+        },
+        "link_L6prhQ": {
+          "type": "link",
+          "settings": {
+            "title": "Affiliates",
+            "link": "shopify://pages/affiliates"
+          }
+        },
+        "link_BBB6gy": {
+          "type": "link",
+          "settings": {
+            "title": "FAQ",
+            "link": "shopify://pages/faq"
+          }
+        }
+      },
+      "block_order": [
+        "link_EYXF6F",
+        "link_cQLPhp",
+        "link_dKTLmF",
+        "link_tTEpcn",
+        "link_L6prhQ",
+        "link_BBB6gy"
+      ],
+      "name": "Footer links",
+      "settings": {
+        "bg_color": "#143848"
+      }
+    }
+  },
+  "order": [
+    "custom_liquid_bCCFrQ",
+    "footer",
+    "footer_links_gJGzp8"
+  ]
+}

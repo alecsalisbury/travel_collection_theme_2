@@ -112,13 +112,6 @@
     line-height: 1.2;
   }
 
-  .travel-product-card__price {
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 16px;
-    color: #000000;
-  }
-
   .travel-product-card__features {
     display: flex;
     flex-direction: column;
@@ -314,12 +307,6 @@
                   {{ product.title }}
                 </h3>
 
-                {% if section.settings.show_price %}
-                  <div class="travel-product-card__price">
-                    FROM {{ starting_price | money }}
-                  </div>
-                {% endif %}
-
                 <div class="travel-product-card__features">
                   {% if first_species != blank %}
                     <div class="travel-product-card__feature">
@@ -488,16 +475,6 @@ document.addEventListener('DOMContentLoaded', function() {
       "step": 1,
       "label": "Products per row (desktop)",
       "default": 3
-    },
-    {
-      "type": "header",
-      "content": "Product Card Display"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_price",
-      "label": "Show price",
-      "default": true
     },
     {
       "type": "header",

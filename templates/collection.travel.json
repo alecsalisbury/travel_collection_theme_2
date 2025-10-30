@@ -49,9 +49,6 @@
         "grid_heading": "TRIPS",
         "show_filters": true,
         "products_per_row": 3,
-        "show_price": true,
-        "show_species": true,
-        "max_species_display": 3,
         "view_lodge_text": "VIEW LODGE",
         "plan_trip_text": "PLAN MY TRIP",
         "plan_trip_url": ""
@@ -73,9 +70,6 @@
         "show_heading": true,
         "heading_text": "Featured Articles",
         "articles_limit": 6,
-        "show_meta": true,
-        "show_date": true,
-        "show_author": false,
         "show_excerpt": true,
         "read_more_text": "Read More"
       }
