@@ -172,17 +172,16 @@
       if (window.affirm && affirm.ui && typeof affirm.ui.refresh === 'function') {
         try {
           affirm.ui.refresh();
-          // After Affirm refreshes, wait and poll for price change
+          // After Affirm refreshes, poll to update the price silently
           if (window.updateAffirmPrice) {
-            // Poll for up to 2 seconds, checking if price changed
             var attempts = 0;
             var maxAttempts = 10;
             var pollInterval = setInterval(function() {
               attempts++;
-              console.log('[PRODUCT-PRICE] Polling for Affirm price change, attempt', attempts);
+              console.log('[PRODUCT-PRICE] Polling for Affirm price, attempt', attempts);
 
-              if (window.updateAffirmPrice(true)) {
-                // Price changed successfully
+              if (window.updateAffirmPrice()) {
+                // Price updated successfully
                 console.log('[PRODUCT-PRICE] Affirm price updated successfully');
                 clearInterval(pollInterval);
               } else if (attempts >= maxAttempts) {
