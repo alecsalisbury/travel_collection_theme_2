@@ -133,22 +133,39 @@
 
         if (window.affirm && window.affirm.ui && window.affirm.ui.ready) {
           window.affirm.ui.ready(function() {
-            console.log('[AFFIRM] Opening Affirm modal with amount:', amount);
+            console.log('[AFFIRM] Affirm.ui is ready, creating temporary promo element');
 
-            // Use Affirm's promos.open method to trigger the modal
-            if (window.affirm.ui.promos && typeof window.affirm.ui.promos.open === 'function') {
-              window.affirm.ui.promos.open({
-                amount: amount,
-                modalId: 'learn-modal'
-              });
-            } else {
-              console.log('[AFFIRM] Fallback: Opening Affirm info page');
-              window.open('https://www.affirm.com/how-it-works', '_blank', 'noopener,noreferrer');
+            // Create a temporary Affirm promo element
+            const tempPromo = document.createElement('span');
+            tempPromo.className = 'affirm-as-low-as';
+            tempPromo.setAttribute('data-page-type', 'product');
+            tempPromo.setAttribute('data-amount', amount);
+            tempPromo.style.position = 'absolute';
+            tempPromo.style.left = '-9999px';
+            tempPromo.style.width = '1px';
+            tempPromo.style.height = '1px';
+            tempPromo.style.overflow = 'hidden';
+
+            document.body.appendChild(tempPromo);
+
+            // Refresh Affirm to process the new element
+            if (window.affirm.ui.refresh) {
+              window.affirm.ui.refresh();
             }
+
+            // Wait a moment for Affirm to process, then click it
+            setTimeout(function() {
+              console.log('[AFFIRM] Clicking temporary promo element');
+              tempPromo.click();
+
+              // Remove after a delay
+              setTimeout(function() {
+                document.body.removeChild(tempPromo);
+              }, 1000);
+            }, 100);
           });
         } else {
-          console.log('[AFFIRM] Affirm.js not loaded, opening fallback URL');
-          window.open('https://www.affirm.com/how-it-works', '_blank', 'noopener,noreferrer');
+          console.log('[AFFIRM] Affirm.js not loaded');
         }
       });
     });
