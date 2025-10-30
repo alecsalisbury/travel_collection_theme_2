@@ -193,9 +193,52 @@
     margin-left: 8px;
   }
 
+  .travel-filters__mobile-toggle {
+    display: none;
+    width: 100%;
+    padding: 16px;
+    background-color: #3E90C5;
+    color: #FFFFFF;
+    border: none;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .travel-filters__mobile-toggle-icon {
+    font-size: 18px;
+    transition: transform 0.3s ease;
+  }
+
+  .travel-filters__mobile-toggle-icon.active {
+    transform: rotate(180deg);
+  }
+
+  .travel-filters__content-wrapper {
+    display: block;
+  }
+
   @media (max-width: 1024px) {
     .travel-filters {
       margin-bottom: 20px;
+    }
+
+    .travel-filters__mobile-toggle {
+      display: flex;
+    }
+
+    .travel-filters__content-wrapper {
+      display: none;
+    }
+
+    .travel-filters__content-wrapper.active {
+      display: block;
     }
   }
 </style>
