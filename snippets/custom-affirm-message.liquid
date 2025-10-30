@@ -147,12 +147,12 @@
       // Function to extract and display the monthly price
       function updateMonthlyPrice() {
         const affirmPriceElement = affirmAnchor.querySelector('.affirm-ala-price');
-        const affirmLogoElement = affirmAnchor.querySelector('.__affirm-logo.__processed');
+        const affirmLogoElement = affirmAnchor.querySelector('.__affirm-logo');
 
         console.log('[AFFIRM SKELETON DEBUG] Checking for price...');
         console.log('[AFFIRM SKELETON DEBUG] affirmPriceElement:', affirmPriceElement);
         console.log('[AFFIRM SKELETON DEBUG] affirmPriceElement text:', affirmPriceElement?.textContent);
-        console.log('[AFFIRM SKELETON DEBUG] affirmLogoElement (processed):', affirmLogoElement);
+        console.log('[AFFIRM SKELETON DEBUG] affirmLogoElement:', affirmLogoElement);
 
         if (affirmPriceElement && affirmPriceElement.textContent.trim() && affirmLogoElement) {
           const monthlyPrice = affirmPriceElement.textContent.trim();
@@ -170,12 +170,12 @@
             customAffirmSuffix.style.display = 'inline';
           }
 
-          // Replace with processed Affirm logo
+          // Replace with Affirm logo
           if (customLogoContainer) {
-            console.log('[AFFIRM SKELETON DEBUG] Logo element found and processed, cloning...');
+            console.log('[AFFIRM SKELETON DEBUG] Logo element found, cloning...');
             console.log('[AFFIRM SKELETON DEBUG] Logo HTML:', affirmLogoElement.outerHTML);
 
-            // Clone the fully processed logo
+            // Clone the logo
             const logoClone = affirmLogoElement.cloneNode(true);
             customLogoContainer.innerHTML = '';
             customLogoContainer.appendChild(logoClone);
