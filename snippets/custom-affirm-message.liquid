@@ -1,12 +1,11 @@
 {% comment %}
   Custom Affirm Message
-  Fast-loading alternative to Affirm app block
+  Direct integration with Affirm.js public API
   Triggers Affirm modal on click
 {% endcomment %}
 
 {%- assign selected_variant = product.selected_or_first_available_variant -%}
 {%- assign price = selected_variant.price -%}
-{%- assign installment = price | divided_by: 4 -%}
 
 <style>
   .custom-affirm-message {
@@ -43,6 +42,7 @@
     color: #4A4AF4;
     font-weight: 700;
     text-decoration: none;
+    cursor: pointer;
   }
 
   .custom-affirm-message__logo-text svg {
@@ -128,423 +128,117 @@
 
 <script>
 (function() {
-  // Store Affirm state globally for instant restoration on variant changes
-  if (!window.affirmMessageState) {
-    window.affirmMessageState = {
-      loaded: false,
-      price: null,
-      logoHtml: null
-    };
+  // Affirm logo SVG
+  const affirmLogoSvg = '<svg width="429" height="171" viewBox="0 0 429 171" fill="none" xmlns="http://www.w3.org/2000/svg" style="height: 1.2em; width: auto; vertical-align: baseline; position: relative; top: 0.05em;"><g clip-path="url(#clip0_2525_303)"><path fill-rule="evenodd" clip-rule="evenodd" d="M28.1 156.27C22.8 156.27 20.1 153.66 20.1 149.37C20.1 141.37 29.02 138.68 45.29 136.95C45.29 147.61 38.08 156.27 28.05 156.27H28.1ZM35.1 96.3198C23.47 96.3198 10.1 101.79 2.83998 107.58L9.46998 121.58C15.29 116.25 24.7 111.69 33.19 111.69C41.26 111.69 45.72 114.39 45.72 119.83C45.72 123.48 42.77 125.33 37.19 126.06C16.33 128.76 -0.0200195 134.52 -0.0200195 150.59C-0.0200195 163.33 9.04998 171.04 23.22 171.04C33.34 171.04 42.34 165.42 46.62 158.04V169.04H65.48V122.95C65.48 103.95 52.29 96.2798 35.11 96.2798L35.1 96.3198Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M224.39 98.3902V168.95H244.57V134.95C244.57 118.8 254.35 114.05 261.16 114.05C264.226 114.026 267.229 114.914 269.79 116.6L273.48 97.9502C270.62 96.8056 267.559 96.2511 264.48 96.3202C254.11 96.3202 247.59 100.91 243.29 110.25V98.3902H224.39Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M367 96.3198C356.33 96.3198 348.35 102.62 344.2 108.7C340.35 100.85 332.2 96.3198 322.4 96.3198C311.74 96.3198 304.35 102.24 300.94 109.06V98.3898H281.48V168.95H301.68V132.62C301.68 119.62 308.51 113.33 314.88 113.33C320.65 113.33 325.95 117.06 325.95 126.69V168.95H346.11V132.62C346.11 119.43 352.77 113.33 359.44 113.33C364.78 113.33 370.44 117.21 370.44 126.55V168.95H390.6V120.17C390.6 104.32 379.93 96.3198 367.04 96.3198" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M175.28 98.3901H157V91.2201C157 81.8801 162.33 79.2201 166.92 79.2201C170.054 79.261 173.135 80.0313 175.92 81.4701L182.14 67.2401C182.14 67.2401 175.83 63.1201 164.36 63.1201C151.47 63.1201 136.8 70.3901 136.8 93.2001V98.3901H106.25V91.2201C106.25 81.8801 111.57 79.2201 116.17 79.2201C119.309 79.2199 122.4 79.9926 125.17 81.4701L131.39 67.2401C127.68 65.0701 121.71 63.1201 113.62 63.1201C100.73 63.1201 86.0599 70.3901 86.0599 93.2001V98.3901H74.3799V113.95H86.0899V168.95H106.25V113.95H136.84V168.95H157V113.95H175.28V98.3901Z" fill="black"/><path d="M207.46 98.3901H187.32V168.92H207.46V98.3901Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M188.06 86.4H207.79C219.3 50.21 258.35 18.4 304.79 18.4C361.27 18.4 410.08 61.4 410.08 128.34C410.252 142.08 408.364 155.769 404.48 168.95H423.63L423.82 168.29C427.047 155.241 428.639 141.842 428.56 128.4C428.56 53.75 374.16 0.0200195 304.83 0.0200195C250.37 0.0200195 201.83 37.82 188.07 86.42L188.06 86.4Z" fill="#4A4AF4"/></g><defs><clipPath id="clip0_2525_303"><rect width="428.55" height="171" fill="white"/></clipPath></defs></svg>';
+
+  // Calculate monthly payment (simple estimate: price / 12)
+  function calculateMonthlyPayment(priceInCents) {
+    const months = 12;
+    const monthlyAmount = priceInCents / months / 100;
+    return '$' + monthlyAmount.toFixed(0);
   }
 
-  // DEBUG: Check if Affirm is loaded
-  console.log('[AFFIRM DEBUG] Checking Affirm availability...');
-  console.log('[AFFIRM DEBUG] window.affirm exists:', typeof window.affirm !== 'undefined');
-  console.log('[AFFIRM DEBUG] window.affirm object:', window.affirm);
+  // Initialize the message
+  function initAffirmMessage() {
+    const messageContainer = document.querySelector('.custom-affirm-message');
+    if (!messageContainer) return;
 
-  // Function to instantly restore Affirm state
-  function restoreAffirmState() {
-    if (window.affirmMessageState.loaded && window.affirmMessageState.price) {
-      console.log('[AFFIRM RESTORE] Instantly restoring saved Affirm state');
-      const skeletonLoader = document.querySelector('#affirm-skeleton-loader');
-      const customPriceElement = document.querySelector('.custom-affirm-message__price');
-      const customLogoContainer = document.querySelector('#custom-affirm-logo-container');
-      const customAffirmSuffix = document.querySelector('#custom-affirm-suffix');
+    const priceInCents = parseInt(messageContainer.getAttribute('data-product-price')) || 0;
+    const skeletonLoader = document.querySelector('#affirm-skeleton-loader');
+    const priceElement = document.querySelector('.custom-affirm-message__price');
+    const logoContainer = document.querySelector('#custom-affirm-logo-container');
+    const suffixElement = document.querySelector('#custom-affirm-suffix');
 
-      if (skeletonLoader && customPriceElement && customLogoContainer && customAffirmSuffix) {
-        // Hide skeleton and show content immediately
-        skeletonLoader.classList.add('hidden');
-        customPriceElement.textContent = window.affirmMessageState.price;
-        customPriceElement.style.display = 'inline';
-        customLogoContainer.innerHTML = window.affirmMessageState.logoHtml;
-        customAffirmSuffix.style.display = 'inline';
-        return true;
-      }
-    }
-    return false;
+    if (!priceElement || !logoContainer || !suffixElement || !skeletonLoader) return;
+
+    // Calculate and display monthly price immediately
+    const monthlyPrice = calculateMonthlyPayment(priceInCents);
+
+    priceElement.textContent = monthlyPrice;
+    logoContainer.innerHTML = affirmLogoSvg;
+
+    // Hide skeleton and show content
+    skeletonLoader.classList.add('hidden');
+    priceElement.style.display = 'inline';
+    suffixElement.style.display = 'inline';
+
+    console.log('[AFFIRM] Custom message initialized with price:', monthlyPrice);
   }
 
-  // Global function to extract Affirm price from hidden widget
-  window.updateAffirmPrice = function() {
-    const affirmAnchor = document.querySelector('#affirm-under-price');
-    const affirmPriceElement = affirmAnchor ? affirmAnchor.querySelector('.affirm-ala-price') : null;
-    const affirmLogoElement = affirmAnchor ? affirmAnchor.querySelector('.__affirm-logo') : null;
-    const skeletonLoader = document.querySelector('#affirm-skeleton-loader');
-    const customPriceElement = document.querySelector('.custom-affirm-message__price');
-    const customLogoContainer = document.querySelector('#custom-affirm-logo-container');
-    const customAffirmSuffix = document.querySelector('#custom-affirm-suffix');
-
-    console.log('[AFFIRM UPDATE] Extracting price from hidden widget...');
-
-    if (affirmPriceElement && affirmPriceElement.textContent.trim() && affirmLogoElement) {
-      const monthlyPrice = affirmPriceElement.textContent.trim();
-
-      // Only update display if price actually changed
-      if (window.affirmMessageState.price === monthlyPrice) {
-        console.log('[AFFIRM UPDATE] Price unchanged, no update needed. Current:', monthlyPrice);
-        return true; // Return true because we found the price (even though it didn't change)
-      }
-
-      const logoSvg = '<svg width="429" height="171" viewBox="0 0 429 171" fill="none" xmlns="http://www.w3.org/2000/svg" style="height: 1.2em; width: auto; vertical-align: baseline; position: relative; top: 0.05em;"><g clip-path="url(#clip0_2525_303)"><path fill-rule="evenodd" clip-rule="evenodd" d="M28.1 156.27C22.8 156.27 20.1 153.66 20.1 149.37C20.1 141.37 29.02 138.68 45.29 136.95C45.29 147.61 38.08 156.27 28.05 156.27H28.1ZM35.1 96.3198C23.47 96.3198 10.1 101.79 2.83998 107.58L9.46998 121.58C15.29 116.25 24.7 111.69 33.19 111.69C41.26 111.69 45.72 114.39 45.72 119.83C45.72 123.48 42.77 125.33 37.19 126.06C16.33 128.76 -0.0200195 134.52 -0.0200195 150.59C-0.0200195 163.33 9.04998 171.04 23.22 171.04C33.34 171.04 42.34 165.42 46.62 158.04V169.04H65.48V122.95C65.48 103.95 52.29 96.2798 35.11 96.2798L35.1 96.3198Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M224.39 98.3902V168.95H244.57V134.95C244.57 118.8 254.35 114.05 261.16 114.05C264.226 114.026 267.229 114.914 269.79 116.6L273.48 97.9502C270.62 96.8056 267.559 96.2511 264.48 96.3202C254.11 96.3202 247.59 100.91 243.29 110.25V98.3902H224.39Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M367 96.3198C356.33 96.3198 348.35 102.62 344.2 108.7C340.35 100.85 332.2 96.3198 322.4 96.3198C311.74 96.3198 304.35 102.24 300.94 109.06V98.3898H281.48V168.95H301.68V132.62C301.68 119.62 308.51 113.33 314.88 113.33C320.65 113.33 325.95 117.06 325.95 126.69V168.95H346.11V132.62C346.11 119.43 352.77 113.33 359.44 113.33C364.78 113.33 370.44 117.21 370.44 126.55V168.95H390.6V120.17C390.6 104.32 379.93 96.3198 367.04 96.3198" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M175.28 98.3901H157V91.2201C157 81.8801 162.33 79.2201 166.92 79.2201C170.054 79.261 173.135 80.0313 175.92 81.4701L182.14 67.2401C182.14 67.2401 175.83 63.1201 164.36 63.1201C151.47 63.1201 136.8 70.3901 136.8 93.2001V98.3901H106.25V91.2201C106.25 81.8801 111.57 79.2201 116.17 79.2201C119.309 79.2199 122.4 79.9926 125.17 81.4701L131.39 67.2401C127.68 65.0701 121.71 63.1201 113.62 63.1201C100.73 63.1201 86.0599 70.3901 86.0599 93.2001V98.3901H74.3799V113.95H86.0899V168.95H106.25V113.95H136.84V168.95H157V113.95H175.28V98.3901Z" fill="black"/><path d="M207.46 98.3901H187.32V168.92H207.46V98.3901Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M188.06 86.4H207.79C219.3 50.21 258.35 18.4 304.79 18.4C361.27 18.4 410.08 61.4 410.08 128.34C410.252 142.08 408.364 155.769 404.48 168.95H423.63L423.82 168.29C427.047 155.241 428.639 141.842 428.56 128.4C428.56 53.75 374.16 0.0200195 304.83 0.0200195C250.37 0.0200195 201.83 37.82 188.07 86.42L188.06 86.4Z" fill="#4A4AF4"/></g><defs><clipPath id="clip0_2525_303"><rect width="428.55" height="171" fill="white"/></clipPath></defs></svg>';
-
-      console.log('[AFFIRM UPDATE] Found price:', monthlyPrice, '(previous:', window.affirmMessageState.price, ')');
-      console.log('[AFFIRM UPDATE] Price changed, updating display');
-
-      // Update the display
-      if (customPriceElement) {
-        customPriceElement.textContent = monthlyPrice;
-        customPriceElement.style.display = 'inline';
-      }
-
-      if (customLogoContainer) {
-        customLogoContainer.innerHTML = logoSvg;
-      }
-
-      if (customAffirmSuffix) {
-        customAffirmSuffix.style.display = 'inline';
-      }
-
-      if (skeletonLoader) {
-        skeletonLoader.classList.add('hidden');
-      }
-
-      // Save state
-      window.affirmMessageState.loaded = true;
-      window.affirmMessageState.price = monthlyPrice;
-      window.affirmMessageState.logoHtml = logoSvg;
-
-      return true;
-    }
-    return false;
-  };
-
-  // Wait for DOM to be ready
-  document.addEventListener('DOMContentLoaded', function() {
-    console.log('[AFFIRM DEBUG] DOM loaded, checking Affirm again...');
-    console.log('[AFFIRM DEBUG] window.affirm:', window.affirm);
-
-    // Try to restore state immediately if already loaded
-    if (restoreAffirmState()) {
-      console.log('[AFFIRM RESTORE] State restored, skipping initialization');
-      return;
-    }
-
-    // Watch for Affirm's dynamic price to appear and hide skeleton
-    const affirmAnchor = document.querySelector('#affirm-under-price');
-    const skeletonLoader = document.querySelector('#affirm-skeleton-loader');
-
-    console.log('[AFFIRM SKELETON DEBUG] affirmAnchor found:', !!affirmAnchor);
-    console.log('[AFFIRM SKELETON DEBUG] skeletonLoader found:', !!skeletonLoader);
-    console.log('[AFFIRM SKELETON DEBUG] affirmAnchor element:', affirmAnchor);
-
-    if (affirmAnchor && skeletonLoader) {
-      const customPriceElement = document.querySelector('.custom-affirm-message__price');
-      const customLogoContainer = document.querySelector('#custom-affirm-logo-container');
-      const customAffirmSuffix = document.querySelector('#custom-affirm-suffix');
-      const customStarRating = document.querySelector('.custom-star-rating');
-
-      let affirmReady = false;
-      let starRatingReady = false;
-
-      // Function to check if we should show everything
-      function checkIfReadyToShow() {
-        console.log('[AFFIRM SKELETON DEBUG] Checking if ready to show...');
-        console.log('[AFFIRM SKELETON DEBUG] affirmReady:', affirmReady);
-        console.log('[AFFIRM SKELETON DEBUG] starRatingReady:', starRatingReady);
-
-        // If star rating exists, wait for both. If not, just wait for Affirm
-        const shouldWaitForStars = customStarRating !== null;
-        const readyToShow = affirmReady && (!shouldWaitForStars || starRatingReady);
-
-        if (readyToShow) {
-          console.log('[AFFIRM SKELETON DEBUG] Ready to show! Revealing content...');
-          // Hide skeleton and show the price
-          skeletonLoader.classList.add('hidden');
-          if (customPriceElement) {
-            customPriceElement.style.display = 'inline';
-          }
-
-          // Show the "/mo with" text
-          if (customAffirmSuffix) {
-            customAffirmSuffix.style.display = 'inline';
-          }
-        }
-
-        return readyToShow;
-      }
-
-      // Function to extract and display the monthly price
-      function updateMonthlyPrice() {
-        const affirmPriceElement = affirmAnchor.querySelector('.affirm-ala-price');
-        const affirmLogoElement = affirmAnchor.querySelector('.__affirm-logo');
-
-        console.log('[AFFIRM SKELETON DEBUG] Checking for price...');
-        console.log('[AFFIRM SKELETON DEBUG] affirmPriceElement:', affirmPriceElement);
-        console.log('[AFFIRM SKELETON DEBUG] affirmPriceElement text:', affirmPriceElement?.textContent);
-        console.log('[AFFIRM SKELETON DEBUG] affirmLogoElement:', affirmLogoElement);
-
-        if (affirmPriceElement && affirmPriceElement.textContent.trim() && affirmLogoElement) {
-          // Check if logo styles are loaded by checking font-family
-          const logoStyles = window.getComputedStyle(affirmLogoElement);
-          const fontFamily = logoStyles.fontFamily;
-          console.log('[AFFIRM SKELETON DEBUG] Logo font-family:', fontFamily);
-
-          // Only proceed if Affirm's font is loaded (contains 'affirm' in font family)
-          if (!fontFamily || fontFamily.toLowerCase().indexOf('affirm') === -1) {
-            console.log('[AFFIRM SKELETON DEBUG] Logo styles not ready yet, waiting...');
-            return false;
-          }
-
-          // Check if the font file is actually loaded using the Font Loading API
-          if (document.fonts && document.fonts.check) {
-            try {
-              const fontLoaded = document.fonts.check('1em affirm');
-              console.log('[AFFIRM SKELETON DEBUG] Font file loaded check:', fontLoaded);
-
-              if (!fontLoaded) {
-                console.log('[AFFIRM SKELETON DEBUG] Font file not loaded yet, waiting...');
-                return false;
-              }
-            } catch (e) {
-              console.log('[AFFIRM SKELETON DEBUG] Font check failed, proceeding anyway:', e);
-            }
-          }
-
-          const monthlyPrice = affirmPriceElement.textContent.trim();
-          console.log('[AFFIRM SKELETON DEBUG] Extracted monthly price:', monthlyPrice);
-
-          const logoSvg = '<svg width="429" height="171" viewBox="0 0 429 171" fill="none" xmlns="http://www.w3.org/2000/svg" style="height: 1.2em; width: auto; vertical-align: baseline; position: relative; top: 0.05em;"><g clip-path="url(#clip0_2525_303)"><path fill-rule="evenodd" clip-rule="evenodd" d="M28.1 156.27C22.8 156.27 20.1 153.66 20.1 149.37C20.1 141.37 29.02 138.68 45.29 136.95C45.29 147.61 38.08 156.27 28.05 156.27H28.1ZM35.1 96.3198C23.47 96.3198 10.1 101.79 2.83998 107.58L9.46998 121.58C15.29 116.25 24.7 111.69 33.19 111.69C41.26 111.69 45.72 114.39 45.72 119.83C45.72 123.48 42.77 125.33 37.19 126.06C16.33 128.76 -0.0200195 134.52 -0.0200195 150.59C-0.0200195 163.33 9.04998 171.04 23.22 171.04C33.34 171.04 42.34 165.42 46.62 158.04V169.04H65.48V122.95C65.48 103.95 52.29 96.2798 35.11 96.2798L35.1 96.3198Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M224.39 98.3902V168.95H244.57V134.95C244.57 118.8 254.35 114.05 261.16 114.05C264.226 114.026 267.229 114.914 269.79 116.6L273.48 97.9502C270.62 96.8056 267.559 96.2511 264.48 96.3202C254.11 96.3202 247.59 100.91 243.29 110.25V98.3902H224.39Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M367 96.3198C356.33 96.3198 348.35 102.62 344.2 108.7C340.35 100.85 332.2 96.3198 322.4 96.3198C311.74 96.3198 304.35 102.24 300.94 109.06V98.3898H281.48V168.95H301.68V132.62C301.68 119.62 308.51 113.33 314.88 113.33C320.65 113.33 325.95 117.06 325.95 126.69V168.95H346.11V132.62C346.11 119.43 352.77 113.33 359.44 113.33C364.78 113.33 370.44 117.21 370.44 126.55V168.95H390.6V120.17C390.6 104.32 379.93 96.3198 367.04 96.3198" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M175.28 98.3901H157V91.2201C157 81.8801 162.33 79.2201 166.92 79.2201C170.054 79.261 173.135 80.0313 175.92 81.4701L182.14 67.2401C182.14 67.2401 175.83 63.1201 164.36 63.1201C151.47 63.1201 136.8 70.3901 136.8 93.2001V98.3901H106.25V91.2201C106.25 81.8801 111.57 79.2201 116.17 79.2201C119.309 79.2199 122.4 79.9926 125.17 81.4701L131.39 67.2401C127.68 65.0701 121.71 63.1201 113.62 63.1201C100.73 63.1201 86.0599 70.3901 86.0599 93.2001V98.3901H74.3799V113.95H86.0899V168.95H106.25V113.95H136.84V168.95H157V113.95H175.28V98.3901Z" fill="black"/><path d="M207.46 98.3901H187.32V168.92H207.46V98.3901Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M188.06 86.4H207.79C219.3 50.21 258.35 18.4 304.79 18.4C361.27 18.4 410.08 61.4 410.08 128.34C410.252 142.08 408.364 155.769 404.48 168.95H423.63L423.82 168.29C427.047 155.241 428.639 141.842 428.56 128.4C428.56 53.75 374.16 0.0200195 304.83 0.0200195C250.37 0.0200195 201.83 37.82 188.07 86.42L188.06 86.4Z" fill="#4A4AF4"/></g><defs><clipPath id="clip0_2525_303"><rect width="428.55" height="171" fill="white"/></clipPath></defs></svg>';
-
-          // Store the price (but don't show yet)
-          if (customPriceElement) {
-            customPriceElement.textContent = monthlyPrice;
-          }
-
-          // Add Affirm logo SVG directly
-          if (customLogoContainer) {
-            console.log('[AFFIRM SKELETON DEBUG] Adding Affirm logo SVG...');
-            customLogoContainer.innerHTML = logoSvg;
-            console.log('[AFFIRM SKELETON DEBUG] Added Affirm logo SVG!');
-          }
-
-          // Save state globally for instant restoration on variant changes
-          window.affirmMessageState.loaded = true;
-          window.affirmMessageState.price = monthlyPrice;
-          window.affirmMessageState.logoHtml = logoSvg;
-
-          console.log('[AFFIRM SKELETON DEBUG] Affirm data ready!');
-          affirmReady = true;
-          checkIfReadyToShow();
-          return true;
-        }
-        return false;
-      }
-
-      // Watch for star rating to finish loading
-      if (customStarRating) {
-        console.log('[AFFIRM SKELETON DEBUG] Star rating element found, watching for load...');
-        const starRatingObserver = new MutationObserver(function() {
-          if (customStarRating.classList.contains('loaded')) {
-            console.log('[AFFIRM SKELETON DEBUG] Star rating loaded!');
-            starRatingReady = true;
-            checkIfReadyToShow();
-            starRatingObserver.disconnect();
-          }
-        });
-
-        starRatingObserver.observe(customStarRating, {
-          attributes: true,
-          attributeFilter: ['class']
-        });
-
-        // Check if already loaded
-        if (customStarRating.classList.contains('loaded')) {
-          console.log('[AFFIRM SKELETON DEBUG] Star rating already loaded!');
-          starRatingReady = true;
-        }
-
-        // Timeout: show after 5 seconds even if star rating not loaded
-        setTimeout(function() {
-          if (!starRatingReady) {
-            console.log('[AFFIRM SKELETON DEBUG] Star rating timeout reached, proceeding anyway...');
-            starRatingReady = true;
-            checkIfReadyToShow();
-          }
-        }, 5000);
-      } else {
-        console.log('[AFFIRM SKELETON DEBUG] No star rating element found, not waiting for it');
-        starRatingReady = true;
-      }
-
-      // Try immediate extraction first (Affirm might already be loaded)
-      console.log('[AFFIRM IMMEDIATE] Attempting immediate extraction...');
-      if (updateMonthlyPrice()) {
-        console.log('[AFFIRM IMMEDIATE] Success! Affirm data found immediately');
-        // Don't set up observers/intervals if we already have the data
-      } else {
-        console.log('[AFFIRM IMMEDIATE] Not ready yet, setting up observers...');
-
-        // Use MutationObserver to watch for Affirm adding content
-        const observer = new MutationObserver(function(mutations) {
-          console.log('[AFFIRM SKELETON DEBUG] MutationObserver triggered. Mutations:', mutations.length);
-          console.log('[AFFIRM SKELETON DEBUG] affirmAnchor innerHTML:', affirmAnchor.innerHTML);
-
-          if (updateMonthlyPrice()) {
-            observer.disconnect();
-          }
-        });
-
-        observer.observe(affirmAnchor, {
-          childList: true,
-          subtree: true,
-          characterData: true
-        });
-
-        // Fallback: also check periodically with faster intervals
-        let checkCount = 0;
-        const checkAffirmPrice = setInterval(function() {
-          checkCount++;
-          console.log('[AFFIRM SKELETON DEBUG] Interval check #' + checkCount);
-          console.log('[AFFIRM SKELETON DEBUG] affirmAnchor innerHTML:', affirmAnchor.innerHTML);
-
-          if (updateMonthlyPrice()) {
-            clearInterval(checkAffirmPrice);
-          }
-        }, 200); // Reduced from 500ms to 200ms
-
-        // Stop checking after 10 seconds
-        setTimeout(function() {
-          console.log('[AFFIRM SKELETON DEBUG] Timeout reached (10s). Final state:');
-          console.log('[AFFIRM SKELETON DEBUG] affirmAnchor innerHTML:', affirmAnchor.innerHTML);
-
-          // One final attempt
-          if (!updateMonthlyPrice()) {
-            console.log('[AFFIRM SKELETON DEBUG] Price never loaded, keeping skeleton visible');
-          }
-
-          clearInterval(checkAffirmPrice);
-        }, 10000);
-      }
-    } else {
-      console.error('[AFFIRM SKELETON DEBUG] Missing required elements!');
-      console.error('[AFFIRM SKELETON DEBUG] affirmAnchor:', affirmAnchor);
-      console.error('[AFFIRM SKELETON DEBUG] skeletonLoader:', skeletonLoader);
-    }
-
-    // Check if Affirm triggers exist
+  // Set up modal triggers
+  function setupModalTriggers() {
     const triggers = document.querySelectorAll('.affirm-modal-trigger');
-    console.log('[AFFIRM DEBUG] Found', triggers.length, 'Affirm modal triggers');
 
-    // Add manual click handlers with debugging
-    triggers.forEach(function(trigger, index) {
-      console.log('[AFFIRM DEBUG] Setting up trigger', index, trigger);
-
+    triggers.forEach(function(trigger) {
       trigger.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
 
-        console.log('[AFFIRM DEBUG] Trigger clicked!', index);
-        console.log('[AFFIRM DEBUG] window.affirm at click time:', window.affirm);
-        console.log('[AFFIRM DEBUG] window.affirm.ui:', window.affirm?.ui);
+        console.log('[AFFIRM] Modal trigger clicked');
 
-        // Try manual modal trigger
-        if (window.affirm && window.affirm.ui) {
-          console.log('[AFFIRM DEBUG] Attempting to open modal...');
-          console.log('[AFFIRM DEBUG] Available affirm.ui methods:', Object.keys(window.affirm.ui));
-
-          const price = trigger.getAttribute('data-amount');
-          console.log('[AFFIRM DEBUG] Price:', price);
-
-          // Try method 1: openModal (most common)
-          if (typeof window.affirm.ui.openModal === 'function') {
-            console.log('[AFFIRM DEBUG] Using affirm.ui.openModal');
-            try {
-              window.affirm.ui.openModal();
-            } catch(err) {
-              console.error('[AFFIRM DEBUG] Error calling openModal:', err);
-            }
-          }
-          // Try method 2: prequal (prequalification modal)
-          else if (typeof window.affirm.ui.prequal === 'function') {
-            console.log('[AFFIRM DEBUG] Using affirm.ui.prequal');
-            try {
-              window.affirm.ui.prequal.show();
-            } catch(err) {
-              console.error('[AFFIRM DEBUG] Error calling prequal:', err);
-            }
-          }
-          // Try method 3: error.modal
-          else if (window.affirm.ui.error && window.affirm.ui.error.modal) {
-            console.log('[AFFIRM DEBUG] Using affirm.ui.error.modal');
-            try {
+        // Wait for Affirm.js to load
+        if (window.affirm && window.affirm.ui && typeof window.affirm.ui.ready === 'function') {
+          window.affirm.ui.ready(function() {
+            console.log('[AFFIRM] Affirm.ui is ready, opening modal');
+            if (typeof window.affirm.ui.error === 'object' && window.affirm.ui.error.modal) {
               window.affirm.ui.error.modal();
-            } catch(err) {
-              console.error('[AFFIRM DEBUG] Error calling error.modal:', err);
+            } else {
+              // Fallback: open Affirm info page
+              window.open('https://www.affirm.com/how-it-works', '_blank');
             }
-          }
-          else {
-            console.error('[AFFIRM DEBUG] No known modal method found!');
-            window.open('https://www.affirm.com/how-it-works', '_blank');
-          }
+          });
         } else {
-          console.error('[AFFIRM DEBUG] Affirm not loaded yet!');
+          console.log('[AFFIRM] Affirm not loaded, opening fallback URL');
           window.open('https://www.affirm.com/how-it-works', '_blank');
         }
       });
     });
-  });
 
-  // Check periodically for Affirm loading
-  let checkCount = 0;
-  const checkInterval = setInterval(function() {
-    checkCount++;
-    console.log('[AFFIRM DEBUG] Check #' + checkCount, 'window.affirm:', window.affirm);
+    console.log('[AFFIRM] Set up', triggers.length, 'modal triggers');
+  }
 
-    if (window.affirm || checkCount >= 10) {
-      clearInterval(checkInterval);
-      console.log('[AFFIRM DEBUG] Stopped checking. Final state:', window.affirm);
+  // Update price when variant changes
+  function updatePriceOnVariantChange(newPrice) {
+    const messageContainer = document.querySelector('.custom-affirm-message');
+    const priceElement = document.querySelector('.custom-affirm-message__price');
+
+    if (messageContainer && priceElement) {
+      messageContainer.setAttribute('data-product-price', newPrice);
+      const monthlyPrice = calculateMonthlyPayment(newPrice);
+      priceElement.textContent = monthlyPrice;
+
+      // Update data-amount on all triggers
+      document.querySelectorAll('.affirm-modal-trigger').forEach(function(trigger) {
+        trigger.setAttribute('data-amount', newPrice);
+      });
+
+      console.log('[AFFIRM] Updated price to:', monthlyPrice);
     }
-  }, 1000);
+  }
 
-  // Update price when variant changes - only update data attributes, let Affirm widget update the display
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      initAffirmMessage();
+      setupModalTriggers();
+    });
+  } else {
+    initAffirmMessage();
+    setupModalTriggers();
+  }
+
+  // Listen for variant changes
   document.addEventListener('variant:changed', function(e) {
     if (e.detail && e.detail.variant && e.detail.variant.price) {
-      const newPrice = e.detail.variant.price;
-
-      // Update data attributes for Affirm
-      const messageElement = document.querySelector('.custom-affirm-message');
-      if (messageElement) {
-        messageElement.setAttribute('data-product-price', newPrice);
-      }
-
-      // Update all affirm triggers
-      document.querySelectorAll('.custom-affirm-message .affirm-modal-trigger').forEach(function(el) {
-        el.setAttribute('data-amount', newPrice);
-      });
-
-      // Don't show skeleton - just keep current price visible and update silently
-      // The product-price.liquid script will handle updating after Affirm refreshes
+      updatePriceOnVariantChange(e.detail.variant.price);
     }
   });
 
-  // Also listen for product:variant:change event
   document.addEventListener('product:variant:change', function(e) {
     if (e.detail && e.detail.variant && e.detail.variant.price) {
-      const newPrice = e.detail.variant.price;
-
-      const messageElement = document.querySelector('.custom-affirm-message');
-      if (messageElement) {
-        messageElement.setAttribute('data-product-price', newPrice);
-      }
-
-      document.querySelectorAll('.custom-affirm-message .affirm-modal-trigger').forEach(function(el) {
-        el.setAttribute('data-amount', newPrice);
-      });
-
-      // Don't show skeleton - just keep current price visible and update silently
-      // The product-price.liquid script will handle updating after Affirm refreshes
+      updatePriceOnVariantChange(e.detail.variant.price);
     }
   });
 
-})(); // Close IIFE
+})();
 </script>
