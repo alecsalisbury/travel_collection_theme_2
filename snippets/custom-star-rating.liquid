@@ -319,11 +319,32 @@
   }
 
   let hasLoaded = false;
+  let hasShownNoReviews = false;
+
+  function showNoReviews() {
+    if (hasLoaded || hasShownNoReviews) return;
+
+    const customRating = document.querySelector('.custom-star-rating');
+    if (!customRating) return;
+
+    const starsContainer = customRating.querySelector('.custom-star-rating__stars');
+    const textContainer = customRating.querySelector('.custom-star-rating__text');
+
+    if (starsContainer && textContainer) {
+      starsContainer.innerHTML = renderStars(0);
+      textContainer.textContent = 'No reviews yet';
+      customRating.classList.add('loaded');
+      customRating.style.cursor = 'default';
+      customRating.style.opacity = '0.6';
+      hasShownNoReviews = true;
+    }
+  }
 
   function updateCustomRating() {
     if (hasLoaded) return;
 
     const data = extractYotpoData();
+
     if (!data || data.reviewCount === 0) return;
 
     const customRating = document.querySelector('.custom-star-rating');
@@ -336,7 +357,10 @@
       starsContainer.innerHTML = renderStars(data.rating);
       textContainer.textContent = `${data.rating.toFixed(1)} (${data.reviewCount} ${data.reviewCount === 1 ? 'review' : 'reviews'})`;
       customRating.classList.add('loaded');
+      customRating.style.cursor = 'pointer';
+      customRating.style.opacity = '1';
       hasLoaded = true;
+      hasShownNoReviews = false;
 
       // Add click handler to scroll to reviews
       customRating.addEventListener('click', function() {
@@ -391,49 +415,60 @@
     }
   }
 
-  // Watch for Yotpo to load in the DOM
-  const observer = new MutationObserver(function(mutations) {
-    if (hasLoaded) {
-      observer.disconnect();
-      return;
-    }
+  // Try immediately - if no reviews found, show "No reviews yet" right away
+  const immediateData = extractYotpoData();
+  if (immediateData && immediateData.reviewCount > 0) {
+    // Reviews already loaded, show them
+    updateCustomRating();
+  } else {
+    // No reviews found yet - show "No reviews yet" immediately
+    showNoReviews();
 
-    // Check if Yotpo elements were added
-    for (let mutation of mutations) {
-      if (mutation.addedNodes.length > 0) {
-        const yotpoAdded = Array.from(mutation.addedNodes).some(node =>
-          node.nodeType === 1 && (
-            node.classList?.contains('yotpo-bottomline') ||
-            node.classList?.contains('yotpo-bottom-line-basic-text') ||
-            node.classList?.contains('yotpo-bottom-line-score') ||
-            node.querySelector?.('.yotpo-bottomline') ||
-            node.querySelector?.('.yotpo-bottom-line-basic-text') ||
-            node.querySelector?.('.yotpo-bottom-line-score')
-          )
-        );
+    // But keep watching in case Yotpo loads later with reviews
+    const observer = new MutationObserver(function(mutations) {
+      if (hasLoaded) {
+        observer.disconnect();
+        return;
+      }
 
-        if (yotpoAdded) {
-          // Give Yotpo a moment to fully render
-          setTimeout(function() {
-            updateCustomRating();
-            observer.disconnect();
-          }, 100);
-          break;
+      // Check if Yotpo elements were added
+      for (let mutation of mutations) {
+        if (mutation.addedNodes.length > 0) {
+          const yotpoAdded = Array.from(mutation.addedNodes).some(node =>
+            node.nodeType === 1 && (
+              node.classList?.contains('yotpo-bottomline') ||
+              node.classList?.contains('yotpo-bottom-line-basic-text') ||
+              node.classList?.contains('yotpo-bottom-line-score') ||
+              node.querySelector?.('.yotpo-bottomline') ||
+              node.querySelector?.('.yotpo-bottom-line-basic-text') ||
+              node.querySelector?.('.yotpo-bottom-line-score')
+            )
+          );
+
+          if (yotpoAdded) {
+            // Give Yotpo a moment to fully render
+            setTimeout(function() {
+              updateCustomRating();
+              if (hasLoaded) {
+                observer.disconnect();
+              }
+            }, 100);
+            break;
+          }
         }
       }
-    }
-  });
+    });
 
-  // Start observing
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true
-  });
+    // Start observing
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
 
-  // Fallback timeout in case MutationObserver misses it (5 seconds max)
-  setTimeout(function() {
-    updateCustomRating();
-    observer.disconnect();
-  }, 5000);
+    // Stop watching after 5 seconds
+    setTimeout(function() {
+      observer.disconnect();
+    }, 5000);
+  }
 })();
 </script>
