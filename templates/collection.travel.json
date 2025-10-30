@@ -1,1 +1,137 @@
-{"sections":{"main":{"type":"main-collection","custom_css":[],"settings":{"show_collection_image":false,"collection_image_size":"small","collapse_collection_description":true,"products_per_row":"4","default_products_per_page":24,"default_view_layout":"grid","show_quick_buy":"list","show_quick_view":"list","quick_links":"","quick_links_show_products_count":true,"show_filters":true,"show_filter_color_swatch":false,"open_group_filters_mode":"all_closed"}},"recently-viewed-products":{"type":"recently-viewed-products","settings":{"title":"Recently viewed","show_quick_buy":false}},"17570991984bbe5b11":{"type":"apps","blocks":{"regios_discounts_collection_page_discount_BqrHgq":{"type":"shopify:\/\/apps\/regios-discounts\/blocks\/collection_page_discount\/dc1514bb-4830-4102-bffa-e8b300bac5bd","settings":{"collection":"","products_per_page":16,"key":""}}},"block_order":["regios_discounts_collection_page_discount_BqrHgq"],"settings":{"include_margins":true}}},"order":["main","recently-viewed-products","17570991984bbe5b11"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "travel-hero": {
+      "type": "travel-collection-hero",
+      "settings": {
+        "overlay_opacity": 40,
+        "show_label": false,
+        "label_text": "FISHING PACKAGE",
+        "description_text": "",
+        "text_alignment": "left",
+        "show_primary_button": true,
+        "primary_button_text": "PLAN MY TRIP",
+        "primary_button_url": "#trips",
+        "show_secondary_button": true,
+        "secondary_button_text": "CALL (888)-413-5211",
+        "secondary_button_phone": "+18884135211"
+      }
+    },
+    "travel-summary": {
+      "type": "travel-collection-summary",
+      "settings": {
+        "default_heading": "INTRO HEADLINE",
+        "default_content": "",
+        "show_callout": true,
+        "callout_text": "Trip planning is free. Price-match guaranteed.",
+        "padding_top": 60,
+        "padding_bottom": 60
+      }
+    },
+    "travel-map": {
+      "type": "travel-collection-map",
+      "settings": {
+        "map_height": 600,
+        "max_zoom": 12
+      }
+    },
+    "travel-product-grid": {
+      "type": "travel-collection-product-grid",
+      "settings": {
+        "grid_heading": "TRIPS",
+        "show_filters": true,
+        "products_per_row": 3,
+        "show_price": true,
+        "show_species": true,
+        "max_species_display": 3,
+        "view_lodge_text": "VIEW LODGE",
+        "plan_trip_text": "PLAN MY TRIP",
+        "plan_trip_url": ""
+      }
+    },
+    "travel-videos": {
+      "type": "travel-collection-videos",
+      "settings": {
+        "video_title_1": "VIDEO TITLE",
+        "video_title_2": "VIDEO TITLE",
+        "video_title_3": "VIDEO TITLE",
+        "video_title_4": "VIDEO TITLE",
+        "video_title_5": "VIDEO TITLE"
+      }
+    },
+    "travel-articles": {
+      "type": "travel-collection-articles",
+      "settings": {
+        "show_heading": true,
+        "heading_text": "Featured Articles",
+        "articles_limit": 6,
+        "show_meta": true,
+        "show_date": true,
+        "show_author": false,
+        "show_excerpt": true,
+        "read_more_text": "Read More"
+      }
+    },
+    "travel-cta": {
+      "type": "travel-collection-cta",
+      "settings": {
+        "background_image": "",
+        "background_color": "#3E90C5",
+        "overlay_opacity": 40,
+        "heading": "WHAT ARE YOU WAITING FOR?",
+        "subheading": "Start planning your dream fishing adventure today",
+        "show_primary_button": true,
+        "primary_button_text": "PLAN MY TRIP",
+        "primary_button_url": "",
+        "show_secondary_button": true,
+        "secondary_button_text": "CALL (888)-413-5211",
+        "secondary_button_phone": "+18884135211"
+      }
+    },
+    "recently-viewed-products": {
+      "type": "recently-viewed-products",
+      "settings": {
+        "title": "Recently viewed",
+        "show_quick_buy": false
+      }
+    },
+    "17570991984bbe5b11": {
+      "type": "apps",
+      "blocks": {
+        "regios_discounts_collection_page_discount_BqrHgq": {
+          "type": "shopify://apps/regios-discounts/blocks/collection_page_discount/dc1514bb-4830-4102-bffa-e8b300bac5bd",
+          "settings": {
+            "collection": "",
+            "products_per_page": 16,
+            "key": ""
+          }
+        }
+      },
+      "block_order": [
+        "regios_discounts_collection_page_discount_BqrHgq"
+      ],
+      "settings": {
+        "include_margins": true
+      }
+    }
+  },
+  "order": [
+    "travel-hero",
+    "travel-summary",
+    "travel-map",
+    "travel-product-grid",
+    "travel-videos",
+    "travel-articles",
+    "travel-cta",
+    "recently-viewed-products",
+    "17570991984bbe5b11"
+  ]
+}
