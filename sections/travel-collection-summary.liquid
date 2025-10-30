@@ -170,15 +170,15 @@
       </h2>
     </div>
 
-    <div class="travel-summary__content">
-      {% if has_custom_format and summary_part != blank %}
-        <p>{{ summary_part }}</p>
-      {% elsif use_metafield_tag and summary_content.value != blank %}
+    {% if summary_content.value != blank %}
+      <div class="travel-summary__content">
         {{ summary_content | metafield_tag }}
-      {% elsif section.settings.default_content != blank %}
+      </div>
+    {% elsif section.settings.default_content != blank %}
+      <div class="travel-summary__content">
         {{ section.settings.default_content }}
-      {% endif %}
-    </div>
+      </div>
+    {% endif %}
 
     {% if section.settings.show_callout %}
       <div class="travel-summary__callout">
