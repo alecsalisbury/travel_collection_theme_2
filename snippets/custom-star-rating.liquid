@@ -62,7 +62,18 @@
 
 <script>
 (function() {
+  const debugPanel = document.getElementById('debug-log');
+
+  function debugLog(message) {
+    if (debugPanel) {
+      debugPanel.innerHTML += message + '<br>';
+    }
+    console.log(message);
+  }
+
   function extractYotpoData() {
+    debugLog('⏳ Attempting to extract Yotpo data...');
+
     // Try multiple selectors to find the review text
     let yotpoText = null;
     const selectors = [
@@ -76,35 +87,75 @@
     for (let selector of selectors) {
       yotpoText = document.querySelector(selector);
       if (yotpoText && yotpoText.textContent.toLowerCase().includes('review')) {
+        debugLog('✅ Found review text with selector: ' + selector);
         break;
-      } else {
+      } else if (yotpoText) {
+        debugLog('⚠️ Found element with ' + selector + ' but no review text: "' + (yotpoText.textContent || '').substring(0, 50) + '"');
         yotpoText = null;
       }
     }
 
     // If still not found, search all Yotpo elements for review text
     if (!yotpoText) {
+      debugLog('⚠️ Specific selectors failed, searching all Yotpo elements...');
       const allYotpo = document.querySelectorAll('[class*="yotpo"]');
+      debugLog('Total elements with "yotpo" in class: ' + allYotpo.length);
+
+      // Log sample elements to see what we're dealing with
+      let loggedCount = 0;
+      let foundBottomLine = false;
 
       for (let element of allYotpo) {
         const text = (element.textContent || '').trim();
+        const classes = element.className || '';
 
-        // Look for review text
+        // Check if this is the bottom-line element we're looking for
+        if (classes.includes('bottom-line')) {
+          foundBottomLine = true;
+          debugLog('  🎯 Found bottom-line element: "' + classes.substring(0, 50) + '"');
+          debugLog('     Text content (' + text.length + ' chars): "' + text.substring(0, 100) + '"');
+        }
+
+        // Show sample of what we're finding
+        if (loggedCount < 5) {
+          debugLog('  [' + loggedCount + '] "' + classes.substring(0, 40) + '...": "' + text.substring(0, 40) + '"');
+          loggedCount++;
+        }
+
+        // Look for review text more loosely
         if (text.toLowerCase().includes('review')) {
           yotpoText = element;
+          debugLog('✅ Found review text in element with classes: ' + element.className);
+          debugLog('📝 Text content: "' + text + '"');
           break;
+        }
+      }
+
+      if (!yotpoText) {
+        debugLog('❌ No element found containing "review" in text');
+        if (!foundBottomLine) {
+          debugLog('⚠️ Also did not find any element with "bottom-line" in class name');
         }
       }
     }
 
-    if (!yotpoText) return null;
+    if (!yotpoText) {
+      debugLog('❌ Cannot find Yotpo review text anywhere on page');
+      return null;
+    }
 
     const text = yotpoText.textContent || yotpoText.innerText;
+    debugLog('📝 Yotpo text content: "' + text + '"');
+
     const countMatch = text.match(/(\d+)\s+review/i);
 
-    if (!countMatch) return null;
+    if (!countMatch) {
+      debugLog('❌ No review count match found in text');
+      return null;
+    }
 
     const reviewCount = parseInt(countMatch[1], 10);
+    debugLog('✅ Review count extracted: ' + reviewCount);
 
     // Extract rating from aria-label or data attributes
     let rating = 0;
@@ -116,6 +167,7 @@
       const ratingMatch = ariaLabel.match(/([\d.]+)\s+star/i);
       if (ratingMatch) {
         rating = parseFloat(ratingMatch[1]);
+        debugLog('⭐ Rating from aria-label: ' + rating);
         break;
       }
     }
@@ -128,6 +180,7 @@
         const scoreMatch = scoreText.match(/^([\d.]+)$/);
         if (scoreMatch) {
           rating = parseFloat(scoreMatch[1]);
+          debugLog('⭐ Rating from score text: ' + rating);
           break;
         }
       }
@@ -145,6 +198,7 @@
         const filledStars = document.querySelectorAll(selector);
         if (filledStars.length > 0 && filledStars.length <= 5) {
           rating = filledStars.length;
+          debugLog('⭐ Rating from counting stars (' + selector + '): ' + rating);
           break;
         }
       }
@@ -153,8 +207,10 @@
     // Final fallback: default to 5.0 if we have reviews but no rating
     if (!rating && reviewCount > 0) {
       rating = 5.0;
+      debugLog('⭐ Using default rating of 5.0 (could not extract from page)');
     }
 
+    debugLog('✅ Final extracted data: rating=' + rating + ', count=' + reviewCount);
     return { rating, reviewCount };
   }
 
