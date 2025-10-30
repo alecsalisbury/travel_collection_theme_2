@@ -43,7 +43,7 @@
 </style>
 
 <div class="affirm-widget-container">
-  <div class="affirm-custom-widget">
+  <div class="affirm-custom-widget affirm-modal-trigger" data-amount="{{ price }}" style="cursor: pointer;">
     Starting at <span class="affirm-custom-widget__price" id="affirm-custom-price">${{ estimated_monthly }}</span>/mo with<span class="affirm-custom-widget__logo" id="affirm-custom-logo">
       <svg width="429" height="171" viewBox="0 0 429 171" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g clip-path="url(#clip0_affirm)">
@@ -215,14 +215,57 @@
     }, 300);
   }
 
+  // Set up modal triggers
+  function setupModalTriggers() {
+    var triggers = document.querySelectorAll('.affirm-modal-trigger');
+
+    triggers.forEach(function(trigger) {
+      trigger.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var amount = parseInt(trigger.getAttribute('data-amount')) || 0;
+
+        if (window.affirm && window.affirm.ui && window.affirm.ui.ready) {
+          window.affirm.ui.ready(function() {
+            // Try different modal methods based on what's available
+            if (typeof window.affirm.ui.openModal === 'function') {
+              window.affirm.ui.openModal({ amount: amount });
+            } else if (window.affirm.ui.prequal && typeof window.affirm.ui.prequal.show === 'function') {
+              window.affirm.ui.prequal.show({ amount: amount });
+            } else if (typeof window.affirm.ui.modal === 'function') {
+              window.affirm.ui.modal({ amount: amount });
+            } else {
+              console.log('[AFFIRM WIDGET] No suitable modal method found');
+            }
+          });
+        } else {
+          console.log('[AFFIRM WIDGET] Affirm.js not loaded or not ready');
+        }
+      });
+    });
+  }
+
+  // Update modal trigger amounts when variant changes
+  function updateModalTriggers(newPrice) {
+    var triggers = document.querySelectorAll('.affirm-modal-trigger');
+    triggers.forEach(function(trigger) {
+      trigger.setAttribute('data-amount', newPrice);
+    });
+  }
+
   // Set up listeners only once
   if (!hasListeners) {
     hasListeners = true;
+
+    // Set up modal triggers
+    setupModalTriggers();
 
     // Variant change handler
     var variantHandler = function(e) {
       if (e.detail && e.detail.variant && e.detail.variant.price) {
         updateAffirmWidget(e.detail.variant.price);
+        updateModalTriggers(e.detail.variant.price);
       }
     };
 
@@ -243,6 +286,7 @@
       }, 1000);
 
       debounceRefresh(lastPrice);
+      setupModalTriggers(); // Re-setup modal triggers after DOM change
     });
   }
 })();
