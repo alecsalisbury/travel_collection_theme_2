@@ -1,36 +1,9 @@
 {% comment %}
-  Custom Star Rating Display - DEBUG MODE
-  Testing different metafield paths to find Yotpo data
+  Custom Star Rating Display
+  Extracts review data from Yotpo widget on page load
+  Displays stars and count when reviews are available
+  Click to scroll to full reviews section
 {% endcomment %}
-
-<!-- METAFIELD DEBUG -->
-<div style="padding: 15px; background: #f0f0f0; border: 2px solid #333; margin: 10px 0; font-family: monospace; font-size: 12px;">
-  <strong>YOTPO METAFIELD DEBUG:</strong><br><br>
-
-  <strong>Testing yotpo namespace:</strong><br>
-  - yotpo.reviews_count: {{ product.metafields.yotpo.reviews_count }}<br>
-  - yotpo.reviews_average: {{ product.metafields.yotpo.reviews_average }}<br>
-  - yotpo.bottomline: {{ product.metafields.yotpo.bottomline }}<br>
-  - yotpo.reviews: {{ product.metafields.yotpo.reviews }}<br><br>
-
-  <strong>Testing yotpo_v3 namespace:</strong><br>
-  - yotpo_v3.reviews_count: {{ product.metafields.yotpo_v3.reviews_count }}<br>
-  - yotpo_v3.reviews_average: {{ product.metafields.yotpo_v3.reviews_average }}<br><br>
-
-  <strong>Testing reviews namespace (Shopify native):</strong><br>
-  - reviews.rating.value: {{ product.metafields.reviews.rating.value }}<br>
-  - reviews.rating_count: {{ product.metafields.reviews.rating_count }}<br><br>
-
-  <strong>All available metafield namespaces:</strong><br>
-  {% for metafield_namespace in product.metafields %}
-    - {{ metafield_namespace[0] }}:
-    {% for key in metafield_namespace[1] %}
-      {{ key[0] }}{% unless forloop.last %}, {% endunless %}
-    {% endfor %}<br>
-  {% endfor %}
-
-  <br><strong>Product ID:</strong> {{ product.id }}
-</div>
 <style>
   .custom-star-rating {
     display: none; /* Hidden until populated by JS */
