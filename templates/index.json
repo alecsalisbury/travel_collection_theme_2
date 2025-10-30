@@ -1,1 +1,283 @@
-{"sections":{"slideshow":{"type":"slideshow","blocks":{"image_rdBcth":{"type":"image","settings":{"image":"shopify:\/\/shop_images\/mako3.png","mobile_image":"shopify:\/\/shop_images\/mako3.png","show_overlay":false,"overlay_opacity":30,"text_color":"#ffffff","title":"","content":"","content_position":"middle_center","button_background":"#ffffff","button_text_color":"#000000","button_text":"","link":"shopify:\/\/products\/mako-7450-fly-reel"}},"image_h6hrVH":{"type":"image","settings":{"image":"shopify:\/\/shop_images\/air-2_th.jpg","show_overlay":false,"overlay_opacity":30,"text_color":"#ffffff","title":"","content":"","content_position":"middle_center","button_background":"#ffffff","button_text_color":"#000000","button_text":"","link":"https:\/\/www.tridentflyfishing.com\/products\/winston-air-2-th-spey-rod"}},"image-2":{"type":"image","settings":{"image":"shopify:\/\/shop_images\/farbank_grand_slam_banner.webp","mobile_image":"shopify:\/\/shop_images\/farbank_grand_slam_banner.webp","show_overlay":false,"overlay_opacity":30,"text_color":"#ffffff","title":"","content":"","content_position":"middle_center","button_background":"#ffffff","button_text_color":"#000000","button_text":"","link":"shopify:\/\/products\/sage-enforcer-grand-slam-limited-edition-fly-reel"}},"image-3":{"type":"image","settings":{"image":"shopify:\/\/shop_images\/mariah_behety_2025.webp","mobile_image":"shopify:\/\/shop_images\/mariah_behety_2025.webp","show_overlay":false,"overlay_opacity":30,"text_color":"#ffffff","title":"","content":"","content_position":"middle_left","button_background":"#ffffff","button_text_color":"#000000","button_text":"","link":"shopify:\/\/products\/maria-behety-fly-fishing-lodge"}}},"block_order":["image_rdBcth","image_h6hrVH","image-2","image-3"],"settings":{"edge_to_edge":true,"section_size":"preserve_ratio","carousel_effect":"fade","autoplay":true,"cycle_speed":5}},"mosaic_DwL4fj":{"type":"mosaic","blocks":{"item_WXPrkx":{"type":"item","settings":{"image":"shopify:\/\/shop_images\/fly-fishing-travel-program.webp","show_overlay":false,"overlay_opacity":50,"background":"#f3f4f4","text_color":"#4f5558","title":"","content":"","content_position":"top_left","button_background":"#4f5558","button_text_color":"#f3f4f4","button_text":"","link":"shopify:\/\/collections\/fly-fishing-travel-trv"}},"item_yzFKbz":{"type":"item","settings":{"image":"shopify:\/\/shop_images\/used-fly-fishing-rods.webp","show_overlay":false,"overlay_opacity":50,"background":"#f3f4f4","text_color":"#4f5558","title":"","content":"","content_position":"top_left","button_background":"#4f5558","button_text_color":"#f3f4f4","button_text":"","link":"shopify:\/\/collections\/used-fly-rods"}},"item_nQ3XKP":{"type":"item","settings":{"image":"shopify:\/\/shop_images\/2023-tarpon-big-game-shootout.webp","show_overlay":false,"overlay_opacity":50,"background":"#f3f4f4","text_color":"#4f5558","title":"","content":"","content_position":"top_left","button_background":"#4f5558","button_text_color":"#f3f4f4","button_text":"","link":"\/blogs\/all\/2022-tarpon-big-game-reel-mini-shootout-best-gt-11-weight-reel"}}},"block_order":["item_WXPrkx","item_yzFKbz","item_nQ3XKP"],"name":"Mosaic","settings":{"section_size":"extra-large"}},"featured-collection":{"type":"featured-collection","settings":{"collection":"overstock-products","title":"FEATURED PRODUCTS","products_count":12,"layout":"vertical","stack_products":false,"show_quick_buy":false,"link_title":"View all","link_url":""}},"video_mosaic_d6CMR3":{"type":"video-mosaic","blocks":{"item_h4JQzT":{"type":"item","settings":{"video_url":"https:\/\/www.youtube.com\/watch?v=emDeH8MRwHk","show_overlay":false,"overlay_opacity":50,"background":"#f3f4f4","text_color":"#4f5558","title":"","content":"","content_position":"bottom_left","button_background":"#4f5558","button_text_color":"#f3f4f4","button_text":""}},"item_4jCUXY":{"type":"item","settings":{"video_url":"https:\/\/www.youtube.com\/watch?v=zkBrB6Gu86s","show_overlay":false,"overlay_opacity":50,"background":"#f3f4f4","text_color":"#4f5558","title":"","content":"","content_position":"bottom_left","button_background":"#4f5558","button_text_color":"#f3f4f4","button_text":""}},"item_MW9XF3":{"type":"item","settings":{"video_url":"https:\/\/www.youtube.com\/watch?v=d-ekmVCGAQk","show_overlay":false,"overlay_opacity":50,"background":"#f3f4f4","text_color":"#4f5558","title":"","content":"","content_position":"bottom_left","button_background":"#4f5558","button_text_color":"#f3f4f4","button_text":""}}},"block_order":["item_h4JQzT","item_4jCUXY","item_MW9XF3"],"name":"Video Mosaic","settings":{"title":"FLY FISHING GEAR REVIEWS","section_size":"large"}},"1756843498acd816dc":{"type":"apps","blocks":{"yotpo_product_reviews_reviews_carousel_wGkTyG":{"type":"shopify:\/\/apps\/yotpo-product-reviews\/blocks\/reviews_carousel\/eb7dfd7d-db44-4334-bc49-c893b51b36cf","settings":{"product":""}}},"block_order":["yotpo_product_reviews_reviews_carousel_wGkTyG"],"settings":{"include_margins":true}},"1757099226c50ddd19":{"type":"apps","blocks":{"regios_discounts_collection_page_discount_xmDARX":{"type":"shopify:\/\/apps\/regios-discounts\/blocks\/collection_page_discount\/dc1514bb-4830-4102-bffa-e8b300bac5bd","settings":{"collection":"","products_per_page":16,"key":""}}},"block_order":["regios_discounts_collection_page_discount_xmDARX"],"settings":{"include_margins":true}}},"order":["slideshow","mosaic_DwL4fj","featured-collection","video_mosaic_d6CMR3","1756843498acd816dc","1757099226c50ddd19"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "slideshow": {
+      "type": "slideshow",
+      "blocks": {
+        "image_rdBcth": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/mako3.png",
+            "mobile_image": "shopify://shop_images/mako3.png",
+            "show_overlay": false,
+            "overlay_opacity": 30,
+            "text_color": "#ffffff",
+            "title": "",
+            "content": "",
+            "content_position": "middle_center",
+            "button_background": "#ffffff",
+            "button_text_color": "#000000",
+            "button_text": "",
+            "link": "shopify://products/mako-7450-fly-reel"
+          }
+        },
+        "image_h6hrVH": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/air-2_th.jpg",
+            "show_overlay": false,
+            "overlay_opacity": 30,
+            "text_color": "#ffffff",
+            "title": "",
+            "content": "",
+            "content_position": "middle_center",
+            "button_background": "#ffffff",
+            "button_text_color": "#000000",
+            "button_text": "",
+            "link": "https://www.tridentflyfishing.com/products/winston-air-2-th-spey-rod"
+          }
+        },
+        "image-2": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/farbank_grand_slam_banner.webp",
+            "mobile_image": "shopify://shop_images/farbank_grand_slam_banner.webp",
+            "show_overlay": false,
+            "overlay_opacity": 30,
+            "text_color": "#ffffff",
+            "title": "",
+            "content": "",
+            "content_position": "middle_center",
+            "button_background": "#ffffff",
+            "button_text_color": "#000000",
+            "button_text": "",
+            "link": "shopify://products/sage-enforcer-grand-slam-limited-edition-fly-reel"
+          }
+        },
+        "image-3": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/mariah_behety_2025.webp",
+            "mobile_image": "shopify://shop_images/mariah_behety_2025.webp",
+            "show_overlay": false,
+            "overlay_opacity": 30,
+            "text_color": "#ffffff",
+            "title": "",
+            "content": "",
+            "content_position": "middle_left",
+            "button_background": "#ffffff",
+            "button_text_color": "#000000",
+            "button_text": "",
+            "link": "shopify://products/maria-behety-fly-fishing-lodge"
+          }
+        }
+      },
+      "block_order": [
+        "image_rdBcth",
+        "image_h6hrVH",
+        "image-2",
+        "image-3"
+      ],
+      "settings": {
+        "edge_to_edge": true,
+        "section_size": "preserve_ratio",
+        "carousel_effect": "fade",
+        "autoplay": true,
+        "cycle_speed": 5
+      }
+    },
+    "mosaic_DwL4fj": {
+      "type": "mosaic",
+      "blocks": {
+        "item_WXPrkx": {
+          "type": "item",
+          "settings": {
+            "image": "shopify://shop_images/fly-fishing-travel-program.webp",
+            "show_overlay": false,
+            "overlay_opacity": 50,
+            "background": "#f3f4f4",
+            "text_color": "#4f5558",
+            "title": "",
+            "content": "",
+            "content_position": "top_left",
+            "button_background": "#4f5558",
+            "button_text_color": "#f3f4f4",
+            "button_text": "",
+            "link": "shopify://collections/fly-fishing-travel-trv"
+          }
+        },
+        "item_yzFKbz": {
+          "type": "item",
+          "settings": {
+            "image": "shopify://shop_images/used-fly-fishing-rods.webp",
+            "show_overlay": false,
+            "overlay_opacity": 50,
+            "background": "#f3f4f4",
+            "text_color": "#4f5558",
+            "title": "",
+            "content": "",
+            "content_position": "top_left",
+            "button_background": "#4f5558",
+            "button_text_color": "#f3f4f4",
+            "button_text": "",
+            "link": "shopify://collections/used-fly-rods"
+          }
+        },
+        "item_nQ3XKP": {
+          "type": "item",
+          "settings": {
+            "image": "shopify://shop_images/2023-tarpon-big-game-shootout.webp",
+            "show_overlay": false,
+            "overlay_opacity": 50,
+            "background": "#f3f4f4",
+            "text_color": "#4f5558",
+            "title": "",
+            "content": "",
+            "content_position": "top_left",
+            "button_background": "#4f5558",
+            "button_text_color": "#f3f4f4",
+            "button_text": "",
+            "link": "/blogs/all/2022-tarpon-big-game-reel-mini-shootout-best-gt-11-weight-reel"
+          }
+        }
+      },
+      "block_order": [
+        "item_WXPrkx",
+        "item_yzFKbz",
+        "item_nQ3XKP"
+      ],
+      "name": "Mosaic",
+      "settings": {
+        "section_size": "extra-large"
+      }
+    },
+    "featured-collection": {
+      "type": "featured-collection",
+      "settings": {
+        "collection": "overstock-products",
+        "title": "FEATURED PRODUCTS",
+        "products_count": 12,
+        "layout": "vertical",
+        "stack_products": false,
+        "show_quick_buy": false,
+        "link_title": "View all",
+        "link_url": ""
+      }
+    },
+    "video_mosaic_d6CMR3": {
+      "type": "video-mosaic",
+      "blocks": {
+        "item_h4JQzT": {
+          "type": "item",
+          "settings": {
+            "video_url": "https://www.youtube.com/watch?v=emDeH8MRwHk",
+            "show_overlay": false,
+            "overlay_opacity": 50,
+            "background": "#f3f4f4",
+            "text_color": "#4f5558",
+            "title": "",
+            "content": "",
+            "content_position": "bottom_left",
+            "button_background": "#4f5558",
+            "button_text_color": "#f3f4f4",
+            "button_text": ""
+          }
+        },
+        "item_4jCUXY": {
+          "type": "item",
+          "settings": {
+            "video_url": "https://www.youtube.com/watch?v=zkBrB6Gu86s",
+            "show_overlay": false,
+            "overlay_opacity": 50,
+            "background": "#f3f4f4",
+            "text_color": "#4f5558",
+            "title": "",
+            "content": "",
+            "content_position": "bottom_left",
+            "button_background": "#4f5558",
+            "button_text_color": "#f3f4f4",
+            "button_text": ""
+          }
+        },
+        "item_MW9XF3": {
+          "type": "item",
+          "settings": {
+            "video_url": "https://www.youtube.com/watch?v=d-ekmVCGAQk",
+            "show_overlay": false,
+            "overlay_opacity": 50,
+            "background": "#f3f4f4",
+            "text_color": "#4f5558",
+            "title": "",
+            "content": "",
+            "content_position": "bottom_left",
+            "button_background": "#4f5558",
+            "button_text_color": "#f3f4f4",
+            "button_text": ""
+          }
+        }
+      },
+      "block_order": [
+        "item_h4JQzT",
+        "item_4jCUXY",
+        "item_MW9XF3"
+      ],
+      "name": "Video Mosaic",
+      "settings": {
+        "title": "FLY FISHING GEAR REVIEWS",
+        "section_size": "large"
+      }
+    },
+    "1756843498acd816dc": {
+      "type": "apps",
+      "blocks": {
+        "yotpo_product_reviews_reviews_carousel_wGkTyG": {
+          "type": "shopify://apps/yotpo-product-reviews/blocks/reviews_carousel/eb7dfd7d-db44-4334-bc49-c893b51b36cf",
+          "settings": {
+            "product": ""
+          }
+        }
+      },
+      "block_order": [
+        "yotpo_product_reviews_reviews_carousel_wGkTyG"
+      ],
+      "settings": {
+        "include_margins": true
+      }
+    },
+    "1757099226c50ddd19": {
+      "type": "apps",
+      "blocks": {
+        "regios_discounts_collection_page_discount_xmDARX": {
+          "type": "shopify://apps/regios-discounts/blocks/collection_page_discount/dc1514bb-4830-4102-bffa-e8b300bac5bd",
+          "settings": {
+            "collection": "",
+            "products_per_page": 16,
+            "key": ""
+          }
+        }
+      },
+      "block_order": [
+        "regios_discounts_collection_page_discount_xmDARX"
+      ],
+      "settings": {
+        "include_margins": true
+      }
+    }
+  },
+  "order": [
+    "slideshow",
+    "mosaic_DwL4fj",
+    "featured-collection",
+    "video_mosaic_d6CMR3",
+    "1756843498acd816dc",
+    "1757099226c50ddd19"
+  ]
+}

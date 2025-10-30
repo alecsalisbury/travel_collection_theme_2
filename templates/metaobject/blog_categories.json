@@ -1,1 +1,94 @@
-{"sections":{"image_banner_j3jnRM":{"type":"image-banner","name":"Image banner","settings":{"image":"{{ metaobject.image.value }}","title":"{{ metaobject.title.value }}","title_font_size":72,"title_font_family":"condensed","title_uppercase":false,"content":"","show_image_overlay":false,"color":"#ffffff","hide_on_url_contains":"","disable_margin":true}},"mini_articles_collection_7zhiyW":{"type":"mini-articles-collection","name":"Mini articles collection","settings":{"blog":"all","blog_posts_count":3,"title":"Latest {{ metaobject.title.value }} Articles","link_title":"","tag":"{{ metaobject.tag.value }}","show_category":false,"show_author":false,"show_date":false,"show_excerpt":true,"background_color":"#ffffff","stack_mobile":true}},"rich_text_banner_XKYieU":{"type":"rich-text-banner","disabled":true,"name":"Rich text banner","settings":{"image":"shopify:\/\/shop_images\/48938176116_83f085919b_c-1_78290b06-8a39-4bd1-b70a-af91371dde78.webp","title":"Best Euro Rods of 25'","title_font_size":90,"title_font_family":"condensed","content":"","content_font_size":12,"show_image_overlay":true,"color":"#ffffff","banner_height_mobile":400,"banner_height_desktop":460,"content_position":"middle_center","button_background":"#0693e3","button_text_color":"#ffffff","button_text":"READ ARTICLE","button_link":"shopify:\/\/blogs\/all\/best-euro-nymphing-fly-rods-of-2025","hide_on_url_contains":"tagged","disable_margin":true}},"category_articles_JX9JKR":{"type":"category-articles","name":"Category articles","settings":{"blog":"all","blog_posts_count":9,"title":"","link_title":"","tag":"{{ metaobject.tag.value }}","show_category":false,"show_author":false,"show_date":false,"show_excerpt":true,"background_color":"#ffffff","stack_mobile":true,"first_articles_to_exclude":3}}},"order":["image_banner_j3jnRM","mini_articles_collection_7zhiyW","rich_text_banner_XKYieU","category_articles_JX9JKR"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "image_banner_j3jnRM": {
+      "type": "image-banner",
+      "name": "Image banner",
+      "settings": {
+        "image": "{{ metaobject.image.value }}",
+        "title": "{{ metaobject.title.value }}",
+        "title_font_size": 72,
+        "title_font_family": "condensed",
+        "title_uppercase": false,
+        "content": "",
+        "show_image_overlay": false,
+        "color": "#ffffff",
+        "hide_on_url_contains": "",
+        "disable_margin": true
+      }
+    },
+    "mini_articles_collection_7zhiyW": {
+      "type": "mini-articles-collection",
+      "name": "Mini articles collection",
+      "settings": {
+        "blog": "all",
+        "blog_posts_count": 3,
+        "title": "Latest {{ metaobject.title.value }} Articles",
+        "link_title": "",
+        "tag": "{{ metaobject.tag.value }}",
+        "show_category": false,
+        "show_author": false,
+        "show_date": false,
+        "show_excerpt": true,
+        "background_color": "#ffffff",
+        "stack_mobile": true
+      }
+    },
+    "rich_text_banner_XKYieU": {
+      "type": "rich-text-banner",
+      "disabled": true,
+      "name": "Rich text banner",
+      "settings": {
+        "image": "shopify://shop_images/48938176116_83f085919b_c-1_78290b06-8a39-4bd1-b70a-af91371dde78.webp",
+        "title": "Best Euro Rods of 25'",
+        "title_font_size": 90,
+        "title_font_family": "condensed",
+        "content": "",
+        "content_font_size": 12,
+        "show_image_overlay": true,
+        "color": "#ffffff",
+        "banner_height_mobile": 400,
+        "banner_height_desktop": 460,
+        "content_position": "middle_center",
+        "button_background": "#0693e3",
+        "button_text_color": "#ffffff",
+        "button_text": "READ ARTICLE",
+        "button_link": "shopify://blogs/all/best-euro-nymphing-fly-rods-of-2025",
+        "hide_on_url_contains": "tagged",
+        "disable_margin": true
+      }
+    },
+    "category_articles_JX9JKR": {
+      "type": "category-articles",
+      "name": "Category articles",
+      "settings": {
+        "blog": "all",
+        "blog_posts_count": 9,
+        "title": "",
+        "link_title": "",
+        "tag": "{{ metaobject.tag.value }}",
+        "show_category": false,
+        "show_author": false,
+        "show_date": false,
+        "show_excerpt": true,
+        "background_color": "#ffffff",
+        "stack_mobile": true,
+        "first_articles_to_exclude": 3
+      }
+    }
+  },
+  "order": [
+    "image_banner_j3jnRM",
+    "mini_articles_collection_7zhiyW",
+    "rich_text_banner_XKYieU",
+    "category_articles_JX9JKR"
+  ]
+}
