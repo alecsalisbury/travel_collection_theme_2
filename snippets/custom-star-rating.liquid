@@ -319,47 +319,11 @@
   }
 
   let hasLoaded = false;
-  let attemptsMade = 0;
-  const maxAttempts = 15; // Total attempts before giving up (within 5 seconds)
 
-  debugLog('🚀 Review loading script initialized');
-  debugLog('Will try: immediate, DOMContentLoaded, MutationObserver, timeouts (300ms-5000ms), and Yotpo events');
-
-  function updateCustomRating(source) {
+  function updateCustomRating() {
     if (hasLoaded) return;
 
-    attemptsMade++;
-    debugLog(`Attempt #${attemptsMade} from: ${source}`);
-
     const data = extractYotpoData();
-
-    if (data && data.reviewCount > 0) {
-      debugLog(`✓ SUCCESS! Source: ${source} | Rating: ${data.rating} | Count: ${data.reviewCount}`, true);
-    } else {
-      debugLog(`✗ No data found from: ${source}`, false, true);
-    }
-
-    // If no data and we've tried enough times, show "No reviews" state
-    if ((!data || data.reviewCount === 0) && attemptsMade >= maxAttempts) {
-      debugLog(`⚠ Giving up after ${maxAttempts} attempts - showing "No reviews" state`, false, true);
-      const customRating = document.querySelector('.custom-star-rating');
-      if (customRating) {
-        const starsContainer = customRating.querySelector('.custom-star-rating__stars');
-        const textContainer = customRating.querySelector('.custom-star-rating__text');
-
-        if (starsContainer && textContainer) {
-          // Show empty stars and "No reviews" text
-          starsContainer.innerHTML = renderStars(0);
-          textContainer.textContent = 'No reviews yet';
-          customRating.classList.add('loaded');
-          customRating.style.cursor = 'default'; // Not clickable
-          customRating.style.opacity = '0.6'; // Slightly dimmed
-        }
-      }
-      hasLoaded = true;
-      return;
-    }
-
     if (!data || data.reviewCount === 0) return;
 
     const customRating = document.querySelector('.custom-star-rating');
@@ -373,7 +337,6 @@
       textContainer.textContent = `${data.rating.toFixed(1)} (${data.reviewCount} ${data.reviewCount === 1 ? 'review' : 'reviews'})`;
       customRating.classList.add('loaded');
       hasLoaded = true;
-      debugLog('✅ Reviews displayed successfully on page!', true);
 
       // Add click handler to scroll to reviews
       customRating.addEventListener('click', function() {
