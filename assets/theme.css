@@ -13289,7 +13289,6 @@ section>nav.nav-bar>div.nav-bar__inner .nav-bar__linklist.gm-menu .gm-links>li:n
 }
 
 .the-app-wrapper:has(.yotpo-widget-instance) {
-  min-height: 30px;
   height: auto;
   margin-top: -5px;
 }
