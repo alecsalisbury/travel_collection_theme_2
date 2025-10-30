@@ -6,31 +6,36 @@
 {%- liquid
   assign summary_content = collection.metafields.travel.summary
   assign heading_part = section.settings.default_heading
+  assign display_content = ''
+  assign has_custom_format = false
 
-  # Check if metafield exists and has value - try to extract custom heading if present
+  # Check if metafield exists and has value
   if summary_content.value != blank
-    # Check if it's a rich_text_field type with structured content
-    if summary_content.type == 'rich_text_field'
-      # Try to parse structured content
-      assign first_node = summary_content.value.children.first
+    # Get the plain text to check for custom format markers
+    assign summary_text = summary_content | metafield_text | strip
 
-      # Check if first node is a heading
-      if first_node.type == 'heading'
-        # Extract heading text from first node
-        assign custom_heading = ''
-        for child in first_node.children
-          assign custom_heading = custom_heading | append: child.value
-        endfor
-        if custom_heading != blank
-          assign heading_part = custom_heading
-        endif
-      endif
+    # Check if using custom format with "Heading:" and "Summary:" markers
+    if summary_text contains 'Heading:' and summary_text contains 'Summary:'
+      assign has_custom_format = true
+
+      # Extract heading (between "Heading:" and "Summary:")
+      assign heading_split = summary_text | split: 'Heading:'
+      assign after_heading = heading_split[1]
+      assign parts = after_heading | split: 'Summary:'
+      assign heading_part = parts[0] | strip
+
+      # Extract summary content (after "Summary:")
+      assign display_content = parts[1] | strip
     endif
   endif
 
   # Determine if section should be shown
   assign show_section = false
-  if summary_content.value != blank or section.settings.default_content != blank
+  if has_custom_format and display_content != blank
+    assign show_section = true
+  elsif summary_content.value != blank
+    assign show_section = true
+  elsif section.settings.default_content != blank
     assign show_section = true
   endif
 -%}
@@ -125,24 +130,18 @@
 
     <div class="travel-summary__header">
       <div class="travel-summary__accent"></div>
-      <h2 class="travel-summary__heading">
-        {% if heading_part != blank %}
-          {{ heading_part }}
-        {% else %}
-          {{ section.settings.default_heading }}
-        {% endif %}
-      </h2>
+      <h2 class="travel-summary__heading">{{ heading_part }}</h2>
     </div>
 
-    {% if summary_content.value != blank %}
-      <div class="travel-summary__content">
+    <div class="travel-summary__content">
+      {% if has_custom_format and display_content != blank %}
+        <p>{{ display_content }}</p>
+      {% elsif summary_content.value != blank %}
         {{ summary_content | metafield_tag }}
-      </div>
-    {% elsif section.settings.default_content != blank %}
-      <div class="travel-summary__content">
+      {% elsif section.settings.default_content != blank %}
         {{ section.settings.default_content }}
-      </div>
-    {% endif %}
+      {% endif %}
+    </div>
 
     {% if section.settings.show_callout %}
       <div class="travel-summary__callout">
