@@ -8,6 +8,14 @@
   assign hero_image = collection.metafields.travel.hero_image.value | default: collection.metafields.travel.hero_image
   assign hero_text = collection.metafields.travel.hero_text.value | default: collection.metafields.travel.hero_text
 
+  # Fallback to first product's featured image if no hero image
+  if hero_image == blank
+    assign first_product = collection.products.first
+    if first_product and first_product.featured_image
+      assign hero_image = first_product.featured_image
+    endif
+  endif
+
   # Fallback to collection title if no hero text
   if hero_text == blank
     assign hero_text = collection.title
