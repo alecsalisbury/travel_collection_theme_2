@@ -12,10 +12,10 @@
     display: none !important;
   }
 
-  /* Hide the Yotpo app block in product-info section only */
-  .product-form .product-info__block-item--app:has(.yotpo-reviews-star-ratings-widget),
-  .card .product-info__block-item--app:has(.yotpo-reviews-star-ratings-widget),
-  product-form .product-info__block-item[data-block-type="app"]:has(.yotpo-reviews-star-ratings-widget) {
+  /* Hide the entire app block container that has Yotpo star rating widget */
+  .product-info__block-item[data-block-type="@app"]:has(.yotpo-reviews-star-ratings-widget),
+  .product-info__block-item--\@app:has(.yotpo-reviews-star-ratings-widget),
+  [class*="product-info__block-item"][data-block-id*="98e0b222-0db6-4ffd-b5dc-ac118cb6455e"] {
     display: none !important;
   }
 
@@ -315,12 +315,19 @@
       customRating.classList.add('loaded');
       hasLoaded = true;
 
-      // Hide the original Yotpo star rating widget ONLY in product info (not main reviews)
+      // Hide the original Yotpo star rating widget and its parent container
       const productForm = document.querySelector('product-form, .product-form');
       if (productForm) {
-        const elementsToHide = productForm.querySelectorAll('.yotpo-reviews-star-ratings-widget, .yotpo-widget-instance');
-        elementsToHide.forEach(el => {
+        // Hide Yotpo widgets
+        const yotpoWidgets = productForm.querySelectorAll('.yotpo-reviews-star-ratings-widget, .yotpo-widget-instance');
+        yotpoWidgets.forEach(el => {
           el.style.display = 'none';
+
+          // Also hide the parent app block container
+          const parentBlock = el.closest('.product-info__block-item[data-block-type="@app"]');
+          if (parentBlock) {
+            parentBlock.style.display = 'none';
+          }
         });
       }
     }
