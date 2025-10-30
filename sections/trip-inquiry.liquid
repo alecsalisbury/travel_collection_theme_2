@@ -621,20 +621,25 @@
       flex-direction: column;
     }
 
-    /* Show fields in order: non-anglers input, textarea, then button */
+    /* Remove first form-field from layout to allow direct ordering of its children */
     .form-row--last .form-field:first-child {
-      display: flex;
-      flex-direction: column;
+      display: contents;
+    }
+
+    /* Order: non-anglers input (1), textarea field (2), button (3) */
+    .form-row--last .form-field:first-child input {
       order: 1;
+      margin-bottom: 15px;
     }
 
     .form-row--last .form-field:last-child {
       order: 2;
+      margin-bottom: 15px;
     }
 
     .form-row--last .form-submit {
       order: 3;
-      margin-top: 15px;
+      margin-top: 0;
     }
   }
 </style>
