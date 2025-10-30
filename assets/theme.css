@@ -13316,7 +13316,15 @@ section>nav.nav-bar>div.nav-bar__inner .nav-bar__linklist.gm-menu .gm-links>li:n
 }
 
 /* Star skeleton loader */
+.the-app-wrapper {
+  position: relative;
+  min-height: 28px;
+}
+
 .the-app-wrapper .app-skeleton {
+  position: absolute;
+  top: 0;
+  left: 0;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -13324,6 +13332,9 @@ section>nav.nav-bar>div.nav-bar__inner .nav-bar__linklist.gm-menu .gm-links>li:n
   line-height: 28px;
   transition: opacity 0.3s ease-out;
   opacity: 1;
+  background: white;
+  z-index: 10;
+  width: 100%;
 }
 
 .the-app-wrapper.loaded .app-skeleton {
@@ -13337,11 +13348,17 @@ section>nav.nav-bar>div.nav-bar__inner .nav-bar__linklist.gm-menu .gm-links>li:n
 .the-app-wrapper .shopify-app-block {
   display: block !important;
   visibility: visible !important;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1;
 }
 
 /* Smooth transition for Yotpo content */
 .the-app-wrapper .yotpo-widget-instance {
   opacity: 0;
+  transition: opacity 0.3s ease-in;
 }
 
 .the-app-wrapper.loaded .yotpo-widget-instance {
@@ -13391,20 +13408,6 @@ section>nav.nav-bar>div.nav-bar__inner .nav-bar__linklist.gm-menu .gm-links>li:n
   }
 }
 
-/* Position skeleton on top while loading */
-.the-app-wrapper.loading {
-  position: relative;
-  min-height: 28px;
-}
-
-.the-app-wrapper.loading .app-skeleton {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 10;
-  background: white;
-  width: 100%;
-}
 
 .app-skeleton__stars {
   display: flex;
