@@ -401,22 +401,25 @@
   {%- endif -%}
 
   {%- if section.settings.mobile_logo -%}
+    /* Default: hide both to prevent flash */
+    .header__logo-image,
     .header__logo-image-mobile {
-      max-width: {{ section.settings.mobile_logo_max_width }}px !important;
-    }
-
-    .header__logo-image {
       display: none;
     }
 
+    /* Mobile: show mobile logo only */
+    @media screen and (max-width: 767px) {
+      .header__logo-image-mobile {
+        display: block;
+        max-width: {{ section.settings.mobile_logo_max_width }}px !important;
+      }
+    }
+
+    /* Desktop: show desktop logo only */
     @media screen and (min-width: 768px) {
       .header__logo-image {
         display: block;
         max-width: {{ section.settings.logo_max_width }}px !important;
-      }
-
-      .header__logo-image-mobile {
-        display: none;
       }
     }
   {%- endif -%}
