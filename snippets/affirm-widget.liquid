@@ -15,6 +15,12 @@
     color: #333;
   }
 
+  .affirm-custom-widget__price-container {
+    position: relative;
+    display: inline-block;
+    min-width: 35px;
+  }
+
   .affirm-custom-widget__price {
     font-weight: 500;
     opacity: 0;
@@ -23,6 +29,32 @@
 
   .affirm-custom-widget__price.loaded {
     opacity: 1;
+  }
+
+  .affirm-custom-widget__skeleton {
+    display: inline-block;
+    width: 35px;
+    height: 1em;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 2px;
+    vertical-align: middle;
+    position: relative;
+    top: -0.05em;
+  }
+
+  .affirm-custom-widget__skeleton.hidden {
+    display: none;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
   }
 
   .affirm-custom-widget__logo {
@@ -48,7 +80,7 @@
 
 <div class="affirm-widget-container">
   <div class="affirm-custom-widget affirm-modal-trigger" data-amount="{{ price }}" style="cursor: pointer;">
-    Starting at <span class="affirm-custom-widget__price" id="affirm-custom-price"></span>/mo with <span class="affirm-custom-widget__logo" id="affirm-custom-logo">
+    Starting at <span class="affirm-custom-widget__price-container"><span class="affirm-custom-widget__skeleton" id="affirm-price-skeleton"></span><span class="affirm-custom-widget__price" id="affirm-custom-price"></span></span><span class="affirm-custom-widget__period" id="affirm-custom-period">/mo</span> with <span class="affirm-custom-widget__logo" id="affirm-custom-logo">
       <svg width="429" height="171" viewBox="0 0 429 171" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g clip-path="url(#clip0_affirm)">
           <path fill-rule="evenodd" clip-rule="evenodd" d="M28.1 156.27C22.8 156.27 20.1 153.66 20.1 149.37C20.1 141.37 29.02 138.68 45.29 136.95C45.29 147.61 38.08 156.27 28.05 156.27H28.1ZM35.1 96.3198C23.47 96.3198 10.1 101.79 2.83998 107.58L9.46998 121.58C15.29 116.25 24.7 111.69 33.19 111.69C41.26 111.69 45.72 114.39 45.72 119.83C45.72 123.48 42.77 125.33 37.19 126.06C16.33 128.76 -0.0200195 134.52 -0.0200195 150.59C-0.0200195 163.33 9.04998 171.04 23.22 171.04C33.34 171.04 42.34 165.42 46.62 158.04V169.04H65.48V122.95C65.48 103.95 52.29 96.2798 35.11 96.2798L35.1 96.3198Z" fill="black"/>
@@ -101,23 +133,48 @@
   var isRefreshing = false;
   var hasListeners = false;
 
-  // Extract price from Affirm's widget and update custom display
+  // Extract price and period from Affirm's widget and update custom display
   function updateCustomPrice() {
     var widget = document.querySelector('.affirm-as-low-as');
     var customPrice = document.getElementById('affirm-custom-price');
+    var customPeriod = document.getElementById('affirm-custom-period');
+    var skeleton = document.getElementById('affirm-price-skeleton');
 
     if (!widget || !customPrice) return false;
 
-    // Look for the price in Affirm's rendered content
+    // Look for the price and period in Affirm's rendered content
     var affirmText = widget.textContent || '';
-    // Match patterns like "$49/mo" or "as low as $49"
-    var priceMatch = affirmText.match(/\$(\d+)/);
+    console.log('[AFFIRM WIDGET] Affirm text:', affirmText);
+
+    // Match patterns like "$49/mo", "$49 for 8 weeks", "as low as $49/month"
+    var priceMatch = affirmText.match(/\$(\d+)(?:\/mo|\/month|\s+for\s+(\d+)\s+(week|month|day)s?)?/i);
 
     if (priceMatch && priceMatch[1]) {
       var price = priceMatch[1];
       customPrice.textContent = '$' + price;
       customPrice.classList.add('loaded');
-      console.log('[AFFIRM WIDGET] Updated custom price to:', '$' + price);
+
+      // Extract and update the period if available
+      if (customPeriod) {
+        if (priceMatch[2] && priceMatch[3]) {
+          // "for X weeks/months/days" format
+          customPeriod.textContent = ' for ' + priceMatch[2] + ' ' + priceMatch[3] + 's';
+        } else if (affirmText.includes('/mo')) {
+          customPeriod.textContent = '/mo';
+        } else if (affirmText.includes('/month')) {
+          customPeriod.textContent = '/mo';
+        } else {
+          // Keep default "/mo" if no period found
+          customPeriod.textContent = '/mo';
+        }
+      }
+
+      // Hide skeleton when price is loaded
+      if (skeleton) {
+        skeleton.classList.add('hidden');
+      }
+
+      console.log('[AFFIRM WIDGET] Updated custom price to:', '$' + price, customPeriod ? customPeriod.textContent : '');
       return true;
     }
 
@@ -187,10 +244,16 @@
       affirmWidget.setAttribute('data-amount', newPrice);
     }
 
-    // Hide the price until Affirm API updates it
+    // Show skeleton and hide the price until Affirm API updates it
     var customPrice = document.getElementById('affirm-custom-price');
+    var skeleton = document.getElementById('affirm-price-skeleton');
+
     if (customPrice) {
       customPrice.classList.remove('loaded');
+    }
+
+    if (skeleton) {
+      skeleton.classList.remove('hidden');
     }
 
     // Update the prequal link
