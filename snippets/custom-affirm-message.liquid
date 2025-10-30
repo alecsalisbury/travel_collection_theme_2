@@ -125,12 +125,31 @@
     const affirmAnchor = document.querySelector('#affirm-under-price');
     const skeletonLoader = document.querySelector('#affirm-skeleton-loader');
 
+    console.log('[AFFIRM SKELETON DEBUG] affirmAnchor found:', !!affirmAnchor);
+    console.log('[AFFIRM SKELETON DEBUG] skeletonLoader found:', !!skeletonLoader);
+    console.log('[AFFIRM SKELETON DEBUG] affirmAnchor element:', affirmAnchor);
+
     if (affirmAnchor && skeletonLoader) {
       // Use MutationObserver to watch for Affirm adding content
       const observer = new MutationObserver(function(mutations) {
+        console.log('[AFFIRM SKELETON DEBUG] MutationObserver triggered. Mutations:', mutations.length);
+        console.log('[AFFIRM SKELETON DEBUG] affirmAnchor innerHTML:', affirmAnchor.innerHTML);
+
+        // Check for various possible selectors
         const affirmPrice = affirmAnchor.querySelector('.affirm-ala-price');
-        if (affirmPrice) {
-          // Affirm has loaded, hide skeleton
+        const affirmAsLowAs = affirmAnchor.querySelector('.affirm-as-low-as');
+        const anyAffirmContent = affirmAnchor.querySelector('[class*="affirm"]');
+
+        console.log('[AFFIRM SKELETON DEBUG] .affirm-ala-price found:', !!affirmPrice);
+        console.log('[AFFIRM SKELETON DEBUG] .affirm-as-low-as found:', !!affirmAsLowAs);
+        console.log('[AFFIRM SKELETON DEBUG] any affirm class found:', !!anyAffirmContent);
+
+        if (anyAffirmContent) {
+          console.log('[AFFIRM SKELETON DEBUG] Affirm content detected, classes:', anyAffirmContent.className);
+        }
+
+        if (affirmPrice || affirmAsLowAs || (anyAffirmContent && affirmAnchor.textContent.trim().length > 0)) {
+          console.log('[AFFIRM SKELETON DEBUG] Affirm has loaded! Hiding skeleton.');
           skeletonLoader.classList.add('hidden');
           observer.disconnect();
         }
@@ -143,9 +162,24 @@
       });
 
       // Fallback: also check periodically
+      let checkCount = 0;
       const checkAffirmPrice = setInterval(function() {
+        checkCount++;
+        console.log('[AFFIRM SKELETON DEBUG] Interval check #' + checkCount);
+        console.log('[AFFIRM SKELETON DEBUG] affirmAnchor innerHTML:', affirmAnchor.innerHTML);
+        console.log('[AFFIRM SKELETON DEBUG] affirmAnchor children:', affirmAnchor.children.length);
+
         const affirmPrice = affirmAnchor.querySelector('.affirm-ala-price');
-        if (affirmPrice) {
+        const affirmAsLowAs = affirmAnchor.querySelector('.affirm-as-low-as');
+        const anyAffirmContent = affirmAnchor.querySelector('[class*="affirm"]');
+
+        console.log('[AFFIRM SKELETON DEBUG] Looking for price elements:');
+        console.log('[AFFIRM SKELETON DEBUG]   - .affirm-ala-price:', !!affirmPrice);
+        console.log('[AFFIRM SKELETON DEBUG]   - .affirm-as-low-as:', !!affirmAsLowAs);
+        console.log('[AFFIRM SKELETON DEBUG]   - any affirm content:', !!anyAffirmContent);
+
+        if (affirmPrice || affirmAsLowAs || (anyAffirmContent && affirmAnchor.textContent.trim().length > 0)) {
+          console.log('[AFFIRM SKELETON DEBUG] SUCCESS! Affirm content found, hiding skeleton.');
           skeletonLoader.classList.add('hidden');
           clearInterval(checkAffirmPrice);
         }
@@ -153,9 +187,16 @@
 
       // Stop checking after 10 seconds
       setTimeout(function() {
+        console.log('[AFFIRM SKELETON DEBUG] Timeout reached (10s). Final state:');
+        console.log('[AFFIRM SKELETON DEBUG] affirmAnchor innerHTML:', affirmAnchor.innerHTML);
+        console.log('[AFFIRM SKELETON DEBUG] affirmAnchor has content:', affirmAnchor.textContent.trim().length > 0);
         clearInterval(checkAffirmPrice);
         // Keep skeleton if Affirm never loaded
       }, 10000);
+    } else {
+      console.error('[AFFIRM SKELETON DEBUG] Missing required elements!');
+      console.error('[AFFIRM SKELETON DEBUG] affirmAnchor:', affirmAnchor);
+      console.error('[AFFIRM SKELETON DEBUG] skeletonLoader:', skeletonLoader);
     }
 
     // Check if Affirm triggers exist
