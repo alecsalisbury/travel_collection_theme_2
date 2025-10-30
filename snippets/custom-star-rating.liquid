@@ -322,12 +322,19 @@
   let attemptsMade = 0;
   const maxAttempts = 15; // Total attempts before giving up (within 5 seconds)
 
-  function updateCustomRating() {
+  function updateCustomRating(source) {
     if (hasLoaded) return;
 
     attemptsMade++;
+    console.log('[REVIEW DEBUG] Attempt', attemptsMade, 'from source:', source);
 
     const data = extractYotpoData();
+
+    if (data && data.reviewCount > 0) {
+      console.log('[REVIEW DEBUG] ✓ SUCCESS! Found reviews from source:', source, 'Data:', data);
+    } else {
+      console.log('[REVIEW DEBUG] ✗ No data found from source:', source);
+    }
 
     // If no data and we've tried enough times, show "No reviews" state
     if ((!data || data.reviewCount === 0) && attemptsMade >= maxAttempts) {
@@ -417,11 +424,11 @@
   }
 
   // Try immediately
-  updateCustomRating();
+  updateCustomRating('immediate');
 
   // Try after DOM loaded
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', updateCustomRating);
+    document.addEventListener('DOMContentLoaded', () => updateCustomRating('DOMContentLoaded'));
   }
 
   // Watch for Yotpo widget to appear in DOM
