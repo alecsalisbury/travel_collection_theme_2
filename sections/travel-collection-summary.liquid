@@ -34,20 +34,25 @@
 
     # Fallback: Check if using custom format with markers
     unless has_custom_format
-      assign summary_html = summary_content.value
-      if summary_html contains 'Heading:' and summary_html contains 'Summary:'
+      # Get the text content from metafield
+      assign summary_text = summary_content | metafield_text | strip
+
+      if summary_text contains 'Heading:' and summary_text contains 'Summary:'
         assign has_custom_format = true
 
-        # Split on Summary: to separate heading and content
-        assign parts = summary_html | split: 'Summary:'
+        # Split on "Heading:" first to isolate the heading section
+        assign heading_split = summary_text | split: 'Heading:'
+        # Get everything after "Heading:"
+        assign after_heading_marker = heading_split[1]
 
-        # Extract heading (remove "Heading:" prefix and HTML tags)
-        assign heading_raw = parts[0] | strip_html | remove: 'Heading:' | strip
-        assign heading_part = heading_raw
+        # Now split on "Summary:" to separate heading from summary
+        assign parts = after_heading_marker | split: 'Summary:'
 
-        # Extract summary content (remove HTML tags but keep text)
-        assign summary_raw = parts[1] | strip_html | strip
-        assign summary_part = summary_raw
+        # Extract heading (everything before "Summary:")
+        assign heading_part = parts[0] | strip
+
+        # Extract summary content (everything after "Summary:")
+        assign summary_part = parts[1] | strip
       endif
     endunless
   endif
@@ -135,6 +140,16 @@
 
 <section class="travel-summary">
   <div class="travel-summary__container">
+
+    <!-- Debug info (remove in production) -->
+    <script>
+      console.log('=== TRAVEL SUMMARY DEBUG ===');
+      console.log('Has custom format:', {{ has_custom_format | json }});
+      console.log('Heading part:', {{ heading_part | json }});
+      console.log('Summary part:', {{ summary_part | slice: 0, 100 | json }});
+      console.log('Metafield type:', {{ summary_content.type | json }});
+      console.log('Metafield exists:', {% if summary_content.value != blank %}true{% else %}false{% endif %});
+    </script>
 
     <div class="travel-summary__header">
       <div class="travel-summary__accent"></div>
