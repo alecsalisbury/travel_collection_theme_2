@@ -146,6 +146,9 @@
         console.log('[AFFIRM DEBUG] window.affirm.ui exists?', !!(window.affirm && window.affirm.ui));
         console.log('[AFFIRM DEBUG] window.affirm.ui.ready exists?', !!(window.affirm && window.affirm.ui && window.affirm.ui.ready));
         console.log('[AFFIRM DEBUG] Full window.affirm object:', window.affirm);
+        console.log('[AFFIRM DEBUG] window.affirm.ui methods:', Object.keys(window.affirm.ui));
+        console.log('[AFFIRM DEBUG] window.affirm.ui.error:', window.affirm.ui.error);
+        console.log('[AFFIRM DEBUG] window.affirm.ui.promos:', window.affirm.ui.promos);
 
         if (window.affirm && window.affirm.ui && window.affirm.ui.ready) {
           console.log('[AFFIRM DEBUG] Calling affirm.ui.ready()');
