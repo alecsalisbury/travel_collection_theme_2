@@ -367,6 +367,20 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  // Mobile filter toggle
+  const mobileToggle = document.getElementById('mobile-filter-toggle');
+  const filterContentWrapper = document.getElementById('filter-content-wrapper');
+  const mobileToggleIcon = document.querySelector('.travel-filters__mobile-toggle-icon');
+
+  if (mobileToggle && filterContentWrapper) {
+    mobileToggle.addEventListener('click', function() {
+      filterContentWrapper.classList.toggle('active');
+      if (mobileToggleIcon) {
+        mobileToggleIcon.classList.toggle('active');
+      }
+    });
+  }
+
   // Toggle filter groups
   const filterToggles = document.querySelectorAll('[data-filter-toggle]');
   filterToggles.forEach((toggle, index) => {
