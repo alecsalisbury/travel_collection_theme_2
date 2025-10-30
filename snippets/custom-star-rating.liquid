@@ -353,6 +353,36 @@
       customRating.classList.add('loaded');
       hasLoaded = true;
 
+      // Add click handler to scroll to reviews
+      customRating.addEventListener('click', function() {
+        // Find the reviews section (not the star rating widget)
+        const reviewsSelectors = [
+          '.yotpo-main-widget',
+          '#yotpo-reviews-widget',
+          '[class*="yotpo"][class*="widget"]:not([class*="star-ratings"])',
+          '.yotpo-reviews-carousel'
+        ];
+
+        let reviewsSection = null;
+        for (let selector of reviewsSelectors) {
+          const element = document.querySelector(selector);
+          if (element && element.offsetHeight > 100) { // Make sure it's visible and substantial
+            reviewsSection = element;
+            break;
+          }
+        }
+
+        if (reviewsSection) {
+          const offset = 100;
+          const elementPosition = reviewsSection.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.scrollY - offset;
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      });
+
       // Hide the original Yotpo star rating widget and its parent container
       const productForm = document.querySelector('product-form, .product-form');
       if (productForm) {
