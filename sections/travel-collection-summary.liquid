@@ -6,24 +6,50 @@
 {%- liquid
   assign summary_content = collection.metafields.travel.summary
   assign has_custom_format = false
+  assign heading_part = ''
+  assign summary_part = ''
 
-  # Check if using custom format with markers
+  # Check if metafield exists and has value
   if summary_content.value != blank
-    assign summary_html = summary_content.value
-    if summary_html contains 'Heading:' and summary_html contains 'Summary:'
-      assign has_custom_format = true
+    # Check if it's a rich_text_field type with structured content
+    if summary_content.type == 'rich_text_field'
+      # Try to parse structured content
+      assign first_node = summary_content.value.children.first
 
-      # Split on Summary: to separate heading and content
-      assign parts = summary_html | split: 'Summary:'
+      # Check if first node is a heading
+      if first_node.type == 'heading'
+        assign has_custom_format = true
+        # Extract heading text from first node
+        for child in first_node.children
+          assign heading_part = heading_part | append: child.value
+        endfor
 
-      # Extract heading (remove "Heading:" prefix and HTML tags)
-      assign heading_raw = parts[0] | strip_html | remove: 'Heading:' | strip
-      assign heading_part = heading_raw
-
-      # Extract summary content (remove HTML tags but keep text)
-      assign summary_raw = parts[1] | strip_html | strip
-      assign summary_part = summary_raw
+        # Get remaining content as summary
+        assign summary_html = summary_content | metafield_tag
+        assign summary_part = summary_html | strip_html | strip
+        # Remove the heading from summary
+        assign summary_part = summary_part | remove_first: heading_part | strip
+      endif
     endif
+
+    # Fallback: Check if using custom format with markers
+    unless has_custom_format
+      assign summary_html = summary_content.value
+      if summary_html contains 'Heading:' and summary_html contains 'Summary:'
+        assign has_custom_format = true
+
+        # Split on Summary: to separate heading and content
+        assign parts = summary_html | split: 'Summary:'
+
+        # Extract heading (remove "Heading:" prefix and HTML tags)
+        assign heading_raw = parts[0] | strip_html | remove: 'Heading:' | strip
+        assign heading_part = heading_raw
+
+        # Extract summary content (remove HTML tags but keep text)
+        assign summary_raw = parts[1] | strip_html | strip
+        assign summary_part = summary_raw
+      endif
+    endunless
   endif
 
   # Use defaults if not using custom format
