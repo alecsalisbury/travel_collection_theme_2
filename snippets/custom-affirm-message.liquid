@@ -122,18 +122,37 @@
   function setupModalTriggers() {
     const triggers = document.querySelectorAll('.affirm-modal-trigger');
 
-    triggers.forEach(function(trigger) {
+    console.log('[AFFIRM DEBUG] setupModalTriggers called');
+    console.log('[AFFIRM DEBUG] Found triggers:', triggers.length);
+    console.log('[AFFIRM DEBUG] Triggers:', triggers);
+
+    triggers.forEach(function(trigger, index) {
+      console.log('[AFFIRM DEBUG] Setting up trigger', index, trigger);
+
       trigger.addEventListener('click', function(e) {
+        console.log('[AFFIRM DEBUG] ========== CLICK EVENT FIRED ==========');
+        console.log('[AFFIRM DEBUG] Event:', e);
+        console.log('[AFFIRM DEBUG] Target:', e.target);
+
         e.preventDefault();
         e.stopPropagation();
 
-        console.log('[AFFIRM] Modal trigger clicked');
+        console.log('[AFFIRM DEBUG] Modal trigger clicked');
 
         const amount = parseInt(trigger.getAttribute('data-amount')) || 0;
+        console.log('[AFFIRM DEBUG] Amount:', amount);
+
+        console.log('[AFFIRM DEBUG] window.affirm exists?', !!window.affirm);
+        console.log('[AFFIRM DEBUG] window.affirm.ui exists?', !!(window.affirm && window.affirm.ui));
+        console.log('[AFFIRM DEBUG] window.affirm.ui.ready exists?', !!(window.affirm && window.affirm.ui && window.affirm.ui.ready));
+        console.log('[AFFIRM DEBUG] Full window.affirm object:', window.affirm);
 
         if (window.affirm && window.affirm.ui && window.affirm.ui.ready) {
+          console.log('[AFFIRM DEBUG] Calling affirm.ui.ready()');
+
           window.affirm.ui.ready(function() {
-            console.log('[AFFIRM] Affirm.ui is ready, creating temporary promo element');
+            console.log('[AFFIRM DEBUG] Inside affirm.ui.ready callback');
+            console.log('[AFFIRM DEBUG] Creating temporary promo element');
 
             // Create a temporary Affirm promo element
             const tempPromo = document.createElement('span');
@@ -146,31 +165,43 @@
             tempPromo.style.height = '1px';
             tempPromo.style.overflow = 'hidden';
 
+            console.log('[AFFIRM DEBUG] Temp promo element created:', tempPromo);
             document.body.appendChild(tempPromo);
+            console.log('[AFFIRM DEBUG] Temp promo element appended to body');
 
             // Refresh Affirm to process the new element
+            console.log('[AFFIRM DEBUG] window.affirm.ui.refresh exists?', !!(window.affirm.ui.refresh));
             if (window.affirm.ui.refresh) {
+              console.log('[AFFIRM DEBUG] Calling affirm.ui.refresh()');
               window.affirm.ui.refresh();
+              console.log('[AFFIRM DEBUG] affirm.ui.refresh() called');
             }
 
             // Wait a moment for Affirm to process, then click it
             setTimeout(function() {
-              console.log('[AFFIRM] Clicking temporary promo element');
+              console.log('[AFFIRM DEBUG] Timeout fired, about to click temp promo');
+              console.log('[AFFIRM DEBUG] Temp promo element:', tempPromo);
               tempPromo.click();
+              console.log('[AFFIRM DEBUG] Temp promo clicked');
 
               // Remove after a delay
               setTimeout(function() {
-                document.body.removeChild(tempPromo);
+                console.log('[AFFIRM DEBUG] Removing temp promo element');
+                if (tempPromo.parentNode) {
+                  document.body.removeChild(tempPromo);
+                  console.log('[AFFIRM DEBUG] Temp promo removed');
+                }
               }, 1000);
             }, 100);
           });
         } else {
-          console.log('[AFFIRM] Affirm.js not loaded');
+          console.log('[AFFIRM DEBUG] Affirm.js not loaded or not ready');
+          console.log('[AFFIRM DEBUG] window.affirm:', window.affirm);
         }
       });
     });
 
-    console.log('[AFFIRM] Set up', triggers.length, 'modal triggers');
+    console.log('[AFFIRM DEBUG] Set up', triggers.length, 'modal triggers');
   }
 
   // Update price when variant changes
