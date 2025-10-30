@@ -113,7 +113,7 @@
 
     {% if summary_part != blank %}
       <div class="travel-summary__content">
-        {{ summary_part }}
+        <p>{{ summary_part | replace: '&#39;', "'" | replace: '&quot;', '"' | replace: '&amp;', '&' }}</p>
       </div>
     {% elsif section.settings.default_content != blank %}
       <div class="travel-summary__content">
