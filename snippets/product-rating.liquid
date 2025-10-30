@@ -158,19 +158,22 @@
 
 <script>
 (function() {
-  console.log('[YOTPO RATING] Initializing...');
+  console.log('[YOTPO DEBUG] ========== INITIALIZATION START ==========');
 
   const wrapper = document.querySelector('.rating-wrapper');
   if (!wrapper) {
-    console.log('[YOTPO RATING] No wrapper found');
+    console.error('[YOTPO DEBUG] ❌ No wrapper found');
     return;
   }
 
   const appKey = wrapper.getAttribute('data-yotpo-app-key');
   const productId = wrapper.getAttribute('data-product-id');
 
+  console.log('[YOTPO DEBUG] 🔑 App Key:', appKey);
+  console.log('[YOTPO DEBUG] 🆔 Product ID:', productId);
+
   if (!appKey || !productId) {
-    console.log('[YOTPO RATING] Missing app key or product ID');
+    console.error('[YOTPO DEBUG] ❌ Missing required data - App Key:', !!appKey, 'Product ID:', !!productId);
     wrapper.classList.add('loaded');
     return;
   }
@@ -178,29 +181,38 @@
   // Fetch rating data from Yotpo API
   const apiUrl = `https://api-cdn.yotpo.com/products/${appKey}/${productId}/bottomline`;
 
-  console.log('[YOTPO RATING] Fetching from:', apiUrl);
+  console.log('[YOTPO DEBUG] 🌐 API URL:', apiUrl);
+  console.log('[YOTPO DEBUG] 📡 Starting API fetch...');
 
   fetch(apiUrl)
     .then(function(response) {
+      console.log('[YOTPO DEBUG] ✅ Response received - Status:', response.status, response.statusText);
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error('Network response was not ok: ' + response.status);
       }
       return response.json();
     })
     .then(function(data) {
-      console.log('[YOTPO RATING] Data received:', data);
+      console.log('[YOTPO DEBUG] 📦 Full API Response:', data);
 
       if (!data.response || !data.response.bottomline) {
-        console.log('[YOTPO RATING] No rating data found');
+        console.warn('[YOTPO DEBUG] ⚠️ No bottomline data in response');
+        console.log('[YOTPO DEBUG] Response structure:', {
+          hasResponse: !!data.response,
+          hasBottomline: !!(data.response && data.response.bottomline)
+        });
         wrapper.classList.add('loaded');
         return;
       }
 
       const bottomline = data.response.bottomline;
+      console.log('[YOTPO DEBUG] 📊 Bottomline data:', bottomline);
+
       const averageScore = bottomline.average_score || 0;
       const totalReviews = bottomline.total_reviews || 0;
 
-      console.log('[YOTPO RATING] Average:', averageScore, 'Reviews:', totalReviews);
+      console.log('[YOTPO DEBUG] ⭐ Average Score:', averageScore);
+      console.log('[YOTPO DEBUG] 📝 Total Reviews:', totalReviews);
 
       // Build star rating
       const starsContainer = wrapper.querySelector('.rating__stars');
@@ -218,6 +230,12 @@
       const fullStars = Math.floor(averageScore);
       const hasHalfStar = (averageScore % 1) >= 0.5;
       const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+      console.log('[YOTPO DEBUG] 🌟 Star breakdown:', {
+        fullStars: fullStars,
+        hasHalfStar: hasHalfStar,
+        emptyStars: emptyStars
+      });
 
       // Add full stars
       for (let i = 0; i < fullStars; i++) {
@@ -264,14 +282,19 @@
         captionElement.textContent = totalReviews + ' reviews';
       }
 
+      console.log('[YOTPO DEBUG] 📺 Final display text:', captionElement.textContent);
+
       // Show rating, hide skeleton
       wrapper.classList.add('loaded');
-      console.log('[YOTPO RATING] Rating displayed successfully');
+      console.log('[YOTPO DEBUG] ✅ Rating displayed successfully');
+      console.log('[YOTPO DEBUG] ========== INITIALIZATION COMPLETE ==========');
     })
     .catch(function(error) {
-      console.error('[YOTPO RATING] Error fetching rating:', error);
+      console.error('[YOTPO DEBUG] ❌ Error fetching rating:', error);
+      console.error('[YOTPO DEBUG] Error details:', error.message, error.stack);
       // Still mark as loaded to hide skeleton
       wrapper.classList.add('loaded');
+      console.log('[YOTPO DEBUG] ========== INITIALIZATION FAILED ==========');
     });
 })();
 </script>
