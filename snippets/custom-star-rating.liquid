@@ -147,22 +147,32 @@
   }
 
   let hasLoaded = false;
+  let attemptCount = 0;
 
   function updateCustomRating() {
-    console.log('[Custom Stars] updateCustomRating called, hasLoaded:', hasLoaded);
+    attemptCount++;
+    debugLog('---');
+    debugLog('🔄 Attempt #' + attemptCount + ' - updateCustomRating called');
+    debugLog('hasLoaded: ' + hasLoaded);
 
-    if (hasLoaded) return; // Only run once
+    if (hasLoaded) {
+      debugLog('⏭️ Already loaded, skipping');
+      return;
+    }
 
     const data = extractYotpoData();
 
     if (!data || data.reviewCount === 0) {
-      console.log('[Custom Stars] No data or reviewCount is 0, exiting');
+      debugLog('⚠️ No data or reviewCount is 0, will try again later');
       return;
     }
 
     const customRating = document.querySelector('.custom-star-rating');
-    console.log('[Custom Stars] Custom rating container found:', !!customRating);
-    if (!customRating) return;
+    debugLog('Custom rating container found: ' + (customRating ? '✅ YES' : '❌ NO'));
+    if (!customRating) {
+      debugLog('❌ Cannot find .custom-star-rating element');
+      return;
+    }
 
     const starsContainer = customRating.querySelector('.custom-star-rating__stars');
     const textContainer = customRating.querySelector('.custom-star-rating__text');
@@ -172,19 +182,28 @@
       textContainer.textContent = `${data.rating.toFixed(1)} (${data.reviewCount} ${data.reviewCount === 1 ? 'review' : 'reviews'})`;
       customRating.classList.add('loaded');
       hasLoaded = true;
-      console.log('[Custom Stars] ✅ Successfully loaded custom stars!');
+      debugLog('🎉 SUCCESS! Custom stars loaded and displayed!');
+      debugLog('---');
+    } else {
+      debugLog('❌ Stars or text container not found inside .custom-star-rating');
     }
   }
 
   // Try immediately
+  debugLog('🚀 Script started');
   updateCustomRating();
 
   // Try after DOM loaded
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', updateCustomRating);
+    debugLog('⏳ Waiting for DOM to load...');
+    document.addEventListener('DOMContentLoaded', function() {
+      debugLog('✅ DOM loaded');
+      updateCustomRating();
+    });
   }
 
   // Watch for Yotpo widget to appear in DOM
+  debugLog('👀 Starting MutationObserver to watch for Yotpo...');
   const observer = new MutationObserver(function(mutations) {
     if (hasLoaded) {
       observer.disconnect();
@@ -202,6 +221,7 @@
         );
 
         if (yotpoAdded) {
+          debugLog('🔔 MutationObserver detected Yotpo widget added!');
           setTimeout(updateCustomRating, 100); // Small delay for Yotpo to fully render
           break;
         }
@@ -216,14 +236,31 @@
   });
 
   // Fallback timeouts in case MutationObserver misses it
-  setTimeout(updateCustomRating, 500);
-  setTimeout(updateCustomRating, 1500);
+  debugLog('⏰ Setting fallback timeouts at 500ms and 1500ms...');
+  setTimeout(function() {
+    debugLog('⏰ 500ms timeout triggered');
+    updateCustomRating();
+  }, 500);
+  setTimeout(function() {
+    debugLog('⏰ 1500ms timeout triggered');
+    updateCustomRating();
+  }, 1500);
 
   // Listen for Yotpo events
-  document.addEventListener('yotpo.bottomline.loaded', updateCustomRating);
-  window.addEventListener('yotpo.initialized', updateCustomRating);
+  debugLog('👂 Listening for Yotpo events...');
+  document.addEventListener('yotpo.bottomline.loaded', function() {
+    debugLog('🔔 yotpo.bottomline.loaded event fired!');
+    updateCustomRating();
+  });
+  window.addEventListener('yotpo.initialized', function() {
+    debugLog('🔔 yotpo.initialized event fired!');
+    updateCustomRating();
+  });
 
   // Cleanup observer after 5 seconds
-  setTimeout(() => observer.disconnect(), 5000);
+  setTimeout(() => {
+    observer.disconnect();
+    debugLog('🛑 MutationObserver stopped after 5 seconds');
+  }, 5000);
 })();
 </script>
