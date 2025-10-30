@@ -415,60 +415,59 @@
     }
   }
 
-  // Try immediately - if no reviews found, show "No reviews yet" right away
-  const immediateData = extractYotpoData();
-  if (immediateData && immediateData.reviewCount > 0) {
-    // Reviews already loaded, show them
-    updateCustomRating();
-  } else {
-    // No reviews found yet - show "No reviews yet" immediately
-    showNoReviews();
+  // Watch for Yotpo to load in the DOM
+  const observer = new MutationObserver(function(mutations) {
+    if (hasLoaded) {
+      observer.disconnect();
+      return;
+    }
 
-    // But keep watching in case Yotpo loads later with reviews
-    const observer = new MutationObserver(function(mutations) {
-      if (hasLoaded) {
-        observer.disconnect();
-        return;
-      }
+    // Check if Yotpo elements were added
+    for (let mutation of mutations) {
+      if (mutation.addedNodes.length > 0) {
+        const yotpoAdded = Array.from(mutation.addedNodes).some(node =>
+          node.nodeType === 1 && (
+            node.classList?.contains('yotpo-bottomline') ||
+            node.classList?.contains('yotpo-bottom-line-basic-text') ||
+            node.classList?.contains('yotpo-bottom-line-score') ||
+            node.querySelector?.('.yotpo-bottomline') ||
+            node.querySelector?.('.yotpo-bottom-line-basic-text') ||
+            node.querySelector?.('.yotpo-bottom-line-score')
+          )
+        );
 
-      // Check if Yotpo elements were added
-      for (let mutation of mutations) {
-        if (mutation.addedNodes.length > 0) {
-          const yotpoAdded = Array.from(mutation.addedNodes).some(node =>
-            node.nodeType === 1 && (
-              node.classList?.contains('yotpo-bottomline') ||
-              node.classList?.contains('yotpo-bottom-line-basic-text') ||
-              node.classList?.contains('yotpo-bottom-line-score') ||
-              node.querySelector?.('.yotpo-bottomline') ||
-              node.querySelector?.('.yotpo-bottom-line-basic-text') ||
-              node.querySelector?.('.yotpo-bottom-line-score')
-            )
-          );
-
-          if (yotpoAdded) {
-            // Give Yotpo a moment to fully render
-            setTimeout(function() {
-              updateCustomRating();
-              if (hasLoaded) {
-                observer.disconnect();
-              }
-            }, 100);
-            break;
-          }
+        if (yotpoAdded) {
+          // Give Yotpo a moment to fully render
+          setTimeout(function() {
+            updateCustomRating();
+            if (hasLoaded) {
+              observer.disconnect();
+            }
+          }, 100);
+          break;
         }
       }
-    });
+    }
+  });
 
-    // Start observing
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
+  // Start observing
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
 
-    // Stop watching after 5 seconds
-    setTimeout(function() {
-      observer.disconnect();
-    }, 5000);
-  }
+  // After 3 seconds (when reviews are normally found), check one final time
+  // If still no reviews, show "No reviews yet"
+  setTimeout(function() {
+    if (!hasLoaded) {
+      const data = extractYotpoData();
+      if (data && data.reviewCount > 0) {
+        updateCustomRating();
+      } else {
+        showNoReviews();
+      }
+    }
+    observer.disconnect();
+  }, 3000);
 })();
 </script>
