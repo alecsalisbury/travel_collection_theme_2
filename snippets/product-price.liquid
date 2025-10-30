@@ -97,7 +97,14 @@
             </span>
           {%- endif -%}
         </div>
-        <div id="affirm-under-price" class="affirm-anchor" aria-live="polite"></div>
+        <div id="affirm-under-price" class="affirm-anchor" aria-live="polite" style="display: none;">
+          <p class="affirm-as-low-as"
+             data-page-type="product"
+             data-amount="{{ selected_variant.price }}"
+             data-affirm-type="logo"
+             data-affirm-color="blue">
+          </p>
+        </div>
         {%- render 'custom-affirm-message', product: product -%}
 
         <div
