@@ -76,6 +76,17 @@
           </div>
 
           <div class="trip-form-row">
+            <div class="trip-form-field">
+              <input
+                type="text"
+                id="ModalContactForm-destination"
+                class="trip-form-input"
+                name="contact[destination_interest]"
+                placeholder="Where would you like to go?*"
+                required
+              >
+            </div>
+
             <div class="trip-form-field trip-date-picker-field">
               <input
                 type="text"
@@ -130,10 +141,12 @@
                 required
               >
             </div>
+          </div>
 
+          <div class="trip-form-row trip-form-row--full">
             <div class="trip-form-field">
               <textarea
-                rows="1"
+                rows="3"
                 id="ModalContactForm-body"
                 class="trip-form-input trip-form-textarea"
                 name="contact[body]"
