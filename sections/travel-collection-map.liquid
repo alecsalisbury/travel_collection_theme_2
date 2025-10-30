@@ -64,32 +64,20 @@
     opacity: 1;
   }
 
-  /* Custom Trident Brand Marker */
+  /* Custom Trident Brand Marker (standard shape, brand colors) */
   .custom-map-marker {
-    background: none;
-    border: none;
+    background: none !important;
+    border: none !important;
   }
 
-  .marker-pin {
-    width: 30px;
-    height: 42px;
-    position: relative;
-    background-color: #3E90C5;
-    border-radius: 50% 50% 50% 0;
-    transform: rotate(-45deg);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  }
-
-  .marker-pin::after {
-    content: '';
-    width: 14px;
-    height: 14px;
+  .marker-shadow {
+    width: 41px;
+    height: 41px;
     position: absolute;
-    background-color: #ffffff;
+    left: -8px;
+    top: -4px;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 70%);
     border-radius: 50%;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
   }
 
   .travel-map-popup {
@@ -262,13 +250,20 @@
       maxZoom: 19
     }).addTo(map);
 
-    // Custom Trident brand icon (using divIcon for custom colors)
+    // Custom Trident brand icon (standard marker shape with brand colors)
     const customIcon = L.divIcon({
       className: 'custom-map-marker',
-      html: `<div class="marker-pin"></div>`,
-      iconSize: [30, 42],
-      iconAnchor: [15, 42],
-      popupAnchor: [0, -42]
+      html: `
+        <svg width="25" height="41" viewBox="0 0 25 41" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12.5 0C5.596 0 0 5.596 0 12.5c0 1.867.415 3.634 1.146 5.224C3.604 24.29 12.5 41 12.5 41s8.896-16.71 11.354-23.276A12.387 12.387 0 0 0 25 12.5C25 5.596 19.404 0 12.5 0z"
+                fill="#3E90C5" stroke="#ffffff" stroke-width="1"/>
+          <circle cx="12.5" cy="12.5" r="4" fill="#ffffff"/>
+        </svg>
+        <div class="marker-shadow"></div>
+      `,
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34]
     });
 
     // Add markers and collect bounds
