@@ -410,6 +410,7 @@
   const maxAttempts = 15; // Total attempts before giving up (within 5 seconds)
 
   debugLog('🚀 Review loading script initialized');
+  debugLog('Will try: immediate, DOMContentLoaded, MutationObserver, timeouts (300ms-5000ms), and Yotpo events');
 
   function updateCustomRating(source) {
     if (hasLoaded) return;
