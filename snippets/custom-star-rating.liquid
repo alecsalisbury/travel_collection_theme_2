@@ -5,12 +5,14 @@
   Click to scroll to full reviews section
 {% endcomment %}
 <style>
-  /* Hide Yotpo widget in product-meta area to prevent duplicate stars */
+  /* Hide Yotpo widget to prevent duplicate stars - targets both product-meta and app blocks */
   .product-meta .the-app-wrapper,
   .product-meta .yotpo-widget-instance,
   .product-meta .yotpo-bottomline,
   .product-meta [class*="yotpo-bottom-line"],
-  .product-meta #shopify-block-AeUtvMlZNMUNJV1B6a__98e0b222-0db6-4ffd-b5dc-ac118cb6455e {
+  .product-info__block-item--app .the-app-wrapper:has(.yotpo-widget-instance),
+  .product-info__block-item--app .yotpo-widget-instance,
+  #shopify-block-AeUtvMlZNMUNJV1B6a__98e0b222-0db6-4ffd-b5dc-ac118cb6455e {
     display: none !important;
   }
 
