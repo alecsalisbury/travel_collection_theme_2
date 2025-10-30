@@ -1,0 +1,103 @@
+{% comment %}
+  Custom Affirm Message
+  Fast-loading alternative to Affirm app block
+  Triggers Affirm modal on click
+{% endcomment %}
+
+{%- assign selected_variant = product.selected_or_first_available_variant -%}
+{%- assign price = selected_variant.price -%}
+{%- assign installment = price | divided_by: 4 -%}
+
+<style>
+  .custom-affirm-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .custom-affirm-message__text {
+    color: #333;
+  }
+
+  .custom-affirm-message__link {
+    color: #0fa0ea;
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  .custom-affirm-message__link:hover {
+    color: #0c7db8;
+  }
+
+  .custom-affirm-message__logo {
+    height: 16px;
+    width: auto;
+  }
+
+  .custom-affirm-message__price {
+    font-weight: 600;
+  }
+</style>
+
+<div class="custom-affirm-message" data-product-price="{{ price }}">
+  <span class="custom-affirm-message__text">
+    or 4 interest-free payments of
+    <span class="custom-affirm-message__price">{{ installment | money }}</span>
+    with
+  </span>
+  <svg class="custom-affirm-message__logo" viewBox="0 0 120 30" xmlns="http://www.w3.org/2000/svg">
+    <path fill="#0FA0EA" d="M7.5 0h15v30h-15V0zm22.5 0h15v30h-15V0zm22.5 0h15v30h-15V0zm22.5 0h15v30h-15V0zm22.5 0h15v30h-15V0z"/>
+    <text x="10" y="20" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white">affirm</text>
+  </svg>
+  <a class="custom-affirm-message__link" onclick="openAffirmModal(event)">Learn more</a>
+</div>
+
+<script>
+  function openAffirmModal(e) {
+    e.preventDefault();
+
+    // Try to trigger Affirm's native modal if it exists
+    if (window.affirm && window.affirm.ui && window.affirm.ui.error && window.affirm.ui.error.modal) {
+      // Affirm modal for promotional messaging
+      if (window.affirm.ui.ready) {
+        window.affirm.ui.ready(function() {
+          affirm.ui.error.modal({
+            message: 'Pay over time with Affirm',
+            learn_more_url: 'https://www.affirm.com/how-it-works'
+          });
+        });
+      }
+    } else {
+      // Fallback: open Affirm how-it-works page
+      window.open('https://www.affirm.com/how-it-works', '_blank', 'noopener,noreferrer');
+    }
+  }
+
+  // Update price when variant changes
+  document.addEventListener('variant:changed', function(e) {
+    if (e.detail && e.detail.variant && e.detail.variant.price) {
+      const newPrice = e.detail.variant.price;
+      const installment = Math.floor(newPrice / 4);
+
+      const priceElement = document.querySelector('.custom-affirm-message__price');
+      if (priceElement) {
+        // Format as money
+        const formatted = new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: '{{ shop.currency }}'
+        }).format(installment / 100);
+
+        priceElement.textContent = formatted;
+      }
+
+      const messageElement = document.querySelector('.custom-affirm-message');
+      if (messageElement) {
+        messageElement.setAttribute('data-product-price', newPrice);
+      }
+    }
+  });
+</script>
