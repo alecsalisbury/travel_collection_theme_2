@@ -79,6 +79,67 @@
 </div>
 
 <script>
+  // DEBUG: Check if Affirm is loaded
+  console.log('[AFFIRM DEBUG] Checking Affirm availability...');
+  console.log('[AFFIRM DEBUG] window.affirm exists:', typeof window.affirm !== 'undefined');
+  console.log('[AFFIRM DEBUG] window.affirm object:', window.affirm);
+
+  // Wait for DOM to be ready
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('[AFFIRM DEBUG] DOM loaded, checking Affirm again...');
+    console.log('[AFFIRM DEBUG] window.affirm:', window.affirm);
+
+    // Check if Affirm triggers exist
+    const triggers = document.querySelectorAll('.affirm-modal-trigger');
+    console.log('[AFFIRM DEBUG] Found', triggers.length, 'Affirm modal triggers');
+
+    // Add manual click handlers with debugging
+    triggers.forEach(function(trigger, index) {
+      console.log('[AFFIRM DEBUG] Setting up trigger', index, trigger);
+
+      trigger.addEventListener('click', function(e) {
+        console.log('[AFFIRM DEBUG] Trigger clicked!', index);
+        console.log('[AFFIRM DEBUG] window.affirm at click time:', window.affirm);
+        console.log('[AFFIRM DEBUG] window.affirm.ui:', window.affirm?.ui);
+
+        // Try manual modal trigger
+        if (window.affirm && window.affirm.ui) {
+          console.log('[AFFIRM DEBUG] Attempting to open modal...');
+
+          // Try method 1: affirm.ui.error.modal
+          if (window.affirm.ui.error && window.affirm.ui.error.modal) {
+            console.log('[AFFIRM DEBUG] Using affirm.ui.error.modal');
+            try {
+              window.affirm.ui.error.modal();
+            } catch(err) {
+              console.error('[AFFIRM DEBUG] Error calling affirm.ui.error.modal:', err);
+            }
+          }
+          // Try method 2: Check for other modal methods
+          else {
+            console.log('[AFFIRM DEBUG] Available affirm.ui methods:', Object.keys(window.affirm.ui));
+          }
+        } else {
+          console.error('[AFFIRM DEBUG] Affirm not loaded yet!');
+          // Fallback
+          window.open('https://www.affirm.com/how-it-works', '_blank');
+        }
+      });
+    });
+  });
+
+  // Check periodically for Affirm loading
+  let checkCount = 0;
+  const checkInterval = setInterval(function() {
+    checkCount++;
+    console.log('[AFFIRM DEBUG] Check #' + checkCount, 'window.affirm:', window.affirm);
+
+    if (window.affirm || checkCount >= 10) {
+      clearInterval(checkInterval);
+      console.log('[AFFIRM DEBUG] Stopped checking. Final state:', window.affirm);
+    }
+  }, 1000);
+
   // Update price when variant changes
   document.addEventListener('variant:changed', function(e) {
     if (e.detail && e.detail.variant && e.detail.variant.price) {
