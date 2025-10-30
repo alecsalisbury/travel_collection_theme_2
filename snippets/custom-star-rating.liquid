@@ -68,27 +68,45 @@
 
 <script>
 (function() {
+  const debugPanel = document.getElementById('debug-log');
+
+  function debugLog(message) {
+    if (debugPanel) {
+      debugPanel.innerHTML += message + '<br>';
+    }
+    console.log(message);
+  }
+
   function extractYotpoData() {
-    console.log('[Custom Stars] Attempting to extract Yotpo data...');
+    debugLog('⏳ Attempting to extract Yotpo data...');
 
     // Look for Yotpo bottom line text (e.g., "Based on 8 reviews")
     const yotpoText = document.querySelector('.yotpo-bottomline .text-m, .yotpo-bottom-line-basic-text, .yotpo-bottomline-box-1 .text-m');
-    console.log('[Custom Stars] Yotpo text element found:', !!yotpoText);
+    debugLog('Yotpo text element found: ' + (yotpoText ? '✅ YES' : '❌ NO'));
 
-    if (!yotpoText) return null;
+    if (!yotpoText) {
+      debugLog('❌ Cannot find Yotpo bottomline text element');
+      debugLog('Looking for elements with classes: .yotpo-bottomline .text-m, .yotpo-bottom-line-basic-text');
+
+      // List all Yotpo elements found
+      const allYotpo = document.querySelectorAll('[class*="yotpo"]');
+      debugLog('Total elements with "yotpo" in class: ' + allYotpo.length);
+
+      return null;
+    }
 
     const text = yotpoText.textContent || yotpoText.innerText;
-    console.log('[Custom Stars] Yotpo text content:', text);
+    debugLog('📝 Yotpo text content: "' + text + '"');
 
     const countMatch = text.match(/(\d+)\s+review/i);
 
     if (!countMatch) {
-      console.log('[Custom Stars] No review count match found');
+      debugLog('❌ No review count match found in text');
       return null;
     }
 
     const reviewCount = parseInt(countMatch[1], 10);
-    console.log('[Custom Stars] Review count extracted:', reviewCount);
+    debugLog('✅ Review count extracted: ' + reviewCount);
 
     // Extract rating from aria-label or data attributes
     let rating = 0;
@@ -99,7 +117,7 @@
       const ratingMatch = ariaLabel.match(/([\d.]+)\s+star/i);
       if (ratingMatch) {
         rating = parseFloat(ratingMatch[1]);
-        console.log('[Custom Stars] Rating from aria-label:', rating);
+        debugLog('⭐ Rating from aria-label: ' + rating);
       }
     }
 
@@ -108,10 +126,10 @@
       const filledStars = document.querySelectorAll('.yotpo-bottomline .yotpo-icon-star.rating-star:not(.yotpo-icon-empty-star)');
       const halfStars = document.querySelectorAll('.yotpo-bottomline .yotpo-icon-half-star');
       rating = filledStars.length + (halfStars.length * 0.5);
-      console.log('[Custom Stars] Rating from counting stars:', rating, '(filled:', filledStars.length, 'half:', halfStars.length + ')');
+      debugLog('⭐ Rating from counting stars: ' + rating + ' (filled: ' + filledStars.length + ', half: ' + halfStars.length + ')');
     }
 
-    console.log('[Custom Stars] Final extracted data:', { rating, reviewCount });
+    debugLog('✅ Final extracted data: rating=' + rating + ', count=' + reviewCount);
     return { rating, reviewCount };
   }
 
