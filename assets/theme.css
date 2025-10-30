@@ -13332,6 +13332,33 @@ section>nav.nav-bar>div.nav-bar__inner .nav-bar__linklist.gm-menu .gm-links>li:n
   display: none;
 }
 
+/* Ensure Yotpo widget and shopify blocks are always visible */
+.the-app-wrapper .shopify-block,
+.the-app-wrapper .yotpo-widget-instance,
+.the-app-wrapper .shopify-app-block {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Position skeleton on top while loading */
+.the-app-wrapper.loading {
+  position: relative;
+}
+
+.the-app-wrapper.loading .app-skeleton {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  background: white;
+  width: 100%;
+}
+
+.the-app-wrapper.loaded .app-skeleton {
+  display: none;
+}
+
 .app-skeleton__stars {
   display: flex;
   gap: 2px;
