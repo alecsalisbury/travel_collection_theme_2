@@ -1,0 +1,741 @@
+{% comment %}
+  Trip Inquiry Modal
+  Displays a contact form in a modal overlay
+  Can be triggered from any "PLAN MY TRIP" button
+{% endcomment %}
+
+<div id="trip-inquiry-modal" class="trip-modal" style="display: none;">
+  <div class="trip-modal__overlay"></div>
+
+  <div class="trip-modal__container">
+    <button type="button" class="trip-modal__close" aria-label="Close modal">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <div class="trip-modal__content">
+      <h2 class="trip-modal__title">Plan Your Trip</h2>
+      <p class="trip-modal__description">Fill out the form below and our team will contact you shortly to discuss availability and details.</p>
+
+      <div class="trip-modal__form">
+        {%- form 'contact', id: 'TripInquiryModalForm', class: 'trip-contact-form' -%}
+          <input type="hidden" name="contact[subject]" value="Trip Inquiry" id="modal-trip-name">
+
+          <div id="modal-form-status-messages"></div>
+
+          <div class="trip-form-row">
+            <div class="trip-form-field">
+              <input
+                autocomplete="given-name"
+                type="text"
+                id="ModalContactForm-firstname"
+                class="trip-form-input"
+                name="contact[first_name]"
+                placeholder="First name*"
+                required
+              >
+            </div>
+
+            <div class="trip-form-field">
+              <input
+                autocomplete="family-name"
+                type="text"
+                id="ModalContactForm-lastname"
+                class="trip-form-input"
+                name="contact[last_name]"
+                placeholder="Last name*"
+                required
+              >
+            </div>
+          </div>
+
+          <div class="trip-form-row">
+            <div class="trip-form-field">
+              <input
+                autocomplete="email"
+                type="email"
+                id="ModalContactForm-email"
+                class="trip-form-input"
+                name="contact[email]"
+                placeholder="Email address*"
+                required
+              >
+            </div>
+
+            <div class="trip-form-field">
+              <input
+                type="tel"
+                id="ModalContactForm-phone"
+                class="trip-form-input"
+                name="contact[phone]"
+                placeholder="Phone number*"
+                required
+              >
+            </div>
+          </div>
+
+          <div class="trip-form-row">
+            <div class="trip-form-field trip-date-picker-field">
+              <input
+                type="text"
+                id="ModalContactForm-dates"
+                class="trip-form-input"
+                name="contact[dates_interested]"
+                placeholder="Select date range (start - end)*"
+                readonly
+                required
+              >
+              <div class="trip-date-picker-calendar" id="modal-date-picker-calendar">
+                <div class="trip-date-picker-header">
+                  <button type="button" class="trip-date-picker-nav" id="modal-prev-month">&larr;</button>
+                  <div class="trip-date-picker-month-year" id="modal-month-year"></div>
+                  <button type="button" class="trip-date-picker-nav" id="modal-next-month">&rarr;</button>
+                </div>
+                <div class="trip-date-picker-weekdays">
+                  <div>Sun</div>
+                  <div>Mon</div>
+                  <div>Tue</div>
+                  <div>Wed</div>
+                  <div>Thu</div>
+                  <div>Fri</div>
+                  <div>Sat</div>
+                </div>
+                <div class="trip-date-picker-days" id="modal-calendar-days"></div>
+              </div>
+            </div>
+
+            <div class="trip-form-field">
+              <input
+                type="number"
+                id="ModalContactForm-anglers"
+                class="trip-form-input"
+                name="contact[number_of_anglers]"
+                placeholder="Number of anglers*"
+                min="0"
+                required
+              >
+            </div>
+          </div>
+
+          <div class="trip-form-row">
+            <div class="trip-form-field">
+              <input
+                type="number"
+                id="ModalContactForm-nonanglers"
+                class="trip-form-input"
+                name="contact[number_of_non_anglers]"
+                placeholder="Number of non-anglers*"
+                min="0"
+                required
+              >
+            </div>
+
+            <div class="trip-form-field">
+              <textarea
+                rows="1"
+                id="ModalContactForm-body"
+                class="trip-form-input trip-form-textarea"
+                name="contact[body]"
+                placeholder="Message (optional)"
+              ></textarea>
+            </div>
+          </div>
+
+          <button type="submit" class="trip-form-submit" id="modal-submit-btn">
+            <span class="trip-btn-text">Check Availability</span>
+            <span class="trip-btn-spinner" style="display: none;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" stroke-opacity="0.25"/>
+                <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+              </svg>
+            </span>
+          </button>
+        {%- endform -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Modal Overlay & Container */
+  .trip-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .trip-modal__overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 10001;
+  }
+
+  .trip-modal__container {
+    position: relative;
+    max-width: 700px;
+    margin: 40px auto;
+    background: #ffffff;
+    border-radius: 0;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    z-index: 10002;
+    animation: modalSlideIn 0.3s ease-out;
+  }
+
+  @keyframes modalSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .trip-modal__close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    color: #111827;
+    z-index: 10003;
+    transition: color 0.2s ease;
+  }
+
+  .trip-modal__close:hover {
+    color: #4A9FD8;
+  }
+
+  .trip-modal__content {
+    padding: 50px;
+  }
+
+  .trip-modal__title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .trip-modal__description {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #6b7280;
+    margin-bottom: 2.5rem;
+  }
+
+  /* Form Styles */
+  .trip-contact-form {
+    background: transparent;
+    padding: 0;
+  }
+
+  .trip-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .trip-form-field {
+    margin-bottom: 0;
+    position: relative;
+  }
+
+  .trip-form-input,
+  .trip-form-textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: none;
+    border-radius: 0;
+    background-color: #f5f5f5;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    color: #111827;
+  }
+
+  .trip-form-input::placeholder,
+  .trip-form-textarea::placeholder {
+    color: #9ca3af;
+  }
+
+  .trip-form-input:focus,
+  .trip-form-textarea:focus {
+    outline: none;
+    background-color: #ebebeb;
+  }
+
+  .trip-form-textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  .trip-form-submit {
+    background-color: #4A9FD8;
+    color: #ffffff;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 0;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+  }
+
+  .trip-form-submit:hover:not(:disabled) {
+    background-color: #3a8fc8;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(74, 159, 216, 0.3);
+  }
+
+  .trip-form-submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .trip-btn-spinner svg {
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Date Picker Styles */
+  .trip-date-picker-field {
+    position: relative;
+  }
+
+  .trip-date-picker-calendar {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 10004;
+    background: #ffffff;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    padding: 20px;
+    margin-top: 5px;
+    min-width: 320px;
+  }
+
+  .trip-date-picker-calendar.active {
+    display: block;
+  }
+
+  .trip-date-picker-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    background: #4A9FD8;
+    padding: 15px;
+    margin: -20px -20px 20px -20px;
+  }
+
+  .trip-date-picker-month-year {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+
+  .trip-date-picker-nav {
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px 10px;
+    transition: opacity 0.3s ease;
+  }
+
+  .trip-date-picker-nav:hover {
+    opacity: 0.8;
+  }
+
+  .trip-date-picker-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+
+  .trip-date-picker-weekdays > div {
+    text-align: center;
+    font-weight: 600;
+    color: #4A9FD8;
+    font-size: 0.875rem;
+    padding: 5px;
+  }
+
+  .trip-date-picker-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+  }
+
+  .trip-date-picker-day {
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+    color: #111827;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+  }
+
+  .trip-date-picker-day:hover:not(.disabled):not(.other-month) {
+    background: #E7E9EB;
+  }
+
+  .trip-date-picker-day.selected {
+    background: #4A9FD8;
+    color: #ffffff;
+  }
+
+  .trip-date-picker-day.in-range {
+    background: rgba(74, 159, 216, 0.2);
+  }
+
+  .trip-date-picker-day.today {
+    border: 2px solid #00857D;
+  }
+
+  .trip-date-picker-day.disabled {
+    color: #d1d5db;
+    cursor: not-allowed;
+  }
+
+  .trip-date-picker-day.other-month {
+    color: #d1d5db;
+    cursor: default;
+  }
+
+  .trip-date-picker-field::after {
+    content: '';
+    position: absolute;
+    right: 15px;
+    top: 17px;
+    width: 20px;
+    height: 20px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234A9FD8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E");
+    background-size: contain;
+    pointer-events: none;
+  }
+
+  .trip-date-picker-field input {
+    cursor: pointer;
+  }
+
+  /* Form Messages */
+  .trip-form-message {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+
+  .trip-form-message--success {
+    background-color: #d1f5f0;
+    color: #00857D;
+    border: 1px solid #00857D;
+    font-weight: 600;
+  }
+
+  .trip-form-message--error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .trip-modal__container {
+      margin: 20px;
+      max-width: calc(100% - 40px);
+    }
+
+    .trip-modal__content {
+      padding: 30px 20px;
+    }
+
+    .trip-modal__title {
+      font-size: 1.5rem;
+    }
+
+    .trip-modal__description {
+      font-size: 0.875rem;
+    }
+
+    .trip-form-row {
+      grid-template-columns: 1fr;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .trip-date-picker-calendar {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+</style>
+
+<script>
+(function() {
+  'use strict';
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTripModal);
+  } else {
+    initTripModal();
+  }
+
+  function initTripModal() {
+    const modal = document.getElementById('trip-inquiry-modal');
+    const closeBtn = modal?.querySelector('.trip-modal__close');
+    const overlay = modal?.querySelector('.trip-modal__overlay');
+
+    if (!modal) return;
+
+    // Open modal function
+    window.openTripInquiryModal = function(tripName) {
+      modal.style.display = 'block';
+      document.body.style.overflow = 'hidden';
+
+      // Set trip name if provided
+      if (tripName) {
+        const hiddenInput = document.getElementById('modal-trip-name');
+        if (hiddenInput) {
+          hiddenInput.value = `Trip Inquiry: ${tripName}`;
+        }
+      }
+
+      // Initialize date picker if not already done
+      if (!modal.dataset.initialized) {
+        initModalDatePicker();
+        setupModalFormSubmission();
+        modal.dataset.initialized = 'true';
+      }
+    };
+
+    // Close modal function
+    window.closeTripInquiryModal = function() {
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+    };
+
+    // Close button click
+    closeBtn?.addEventListener('click', window.closeTripInquiryModal);
+
+    // Overlay click
+    overlay?.addEventListener('click', window.closeTripInquiryModal);
+
+    // Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && modal.style.display === 'block') {
+        window.closeTripInquiryModal();
+      }
+    });
+
+    // Handle clicks on "Plan My Trip" buttons
+    document.addEventListener('click', function(e) {
+      const target = e.target.closest('[data-trip-inquiry-trigger]');
+      if (target) {
+        e.preventDefault();
+        const tripName = target.dataset.tripName || '';
+        window.openTripInquiryModal(tripName);
+      }
+    });
+  }
+
+  function initModalDatePicker() {
+    const dateInput = document.getElementById('ModalContactForm-dates');
+    const calendar = document.getElementById('modal-date-picker-calendar');
+    const monthYearDisplay = document.getElementById('modal-month-year');
+    const calendarDays = document.getElementById('modal-calendar-days');
+    const prevMonthBtn = document.getElementById('modal-prev-month');
+    const nextMonthBtn = document.getElementById('modal-next-month');
+
+    if (!dateInput || !calendar) return;
+
+    let currentDate = new Date();
+    let selectedStartDate = null;
+    let selectedEndDate = null;
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'];
+
+    dateInput.addEventListener('click', function(e) {
+      e.stopPropagation();
+      calendar.classList.toggle('active');
+      if (calendar.classList.contains('active')) {
+        renderCalendar();
+      }
+    });
+
+    calendar.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!calendar.contains(e.target) && e.target !== dateInput) {
+        calendar.classList.remove('active');
+      }
+    });
+
+    prevMonthBtn?.addEventListener('click', function() {
+      currentDate.setMonth(currentDate.getMonth() - 1);
+      renderCalendar();
+    });
+
+    nextMonthBtn?.addEventListener('click', function() {
+      currentDate.setMonth(currentDate.getMonth() + 1);
+      renderCalendar();
+    });
+
+    function renderCalendar() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const prevLastDay = new Date(year, month, 0);
+      const firstDayIndex = firstDay.getDay();
+      const lastDayDate = lastDay.getDate();
+      const prevLastDayDate = prevLastDay.getDate();
+
+      monthYearDisplay.textContent = `${monthNames[month]} ${year}`;
+
+      let days = '';
+
+      for (let x = firstDayIndex; x > 0; x--) {
+        days += `<div class="trip-date-picker-day other-month">${prevLastDayDate - x + 1}</div>`;
+      }
+
+      const today = new Date();
+      for (let i = 1; i <= lastDayDate; i++) {
+        const date = new Date(year, month, i);
+        const isPast = date < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        const isToday = date.toDateString() === today.toDateString();
+        const isSelected = (selectedStartDate && date.toDateString() === selectedStartDate.toDateString()) ||
+                          (selectedEndDate && date.toDateString() === selectedEndDate.toDateString());
+        const isInRange = selectedStartDate && selectedEndDate &&
+                         date > selectedStartDate && date < selectedEndDate;
+
+        let classes = 'trip-date-picker-day';
+        if (isPast) classes += ' disabled';
+        if (isToday) classes += ' today';
+        if (isSelected) classes += ' selected';
+        if (isInRange) classes += ' in-range';
+
+        days += `<div class="${classes}" data-date="${date.toISOString()}">${i}</div>`;
+      }
+
+      calendarDays.innerHTML = days;
+
+      document.querySelectorAll('.trip-date-picker-day:not(.disabled):not(.other-month)').forEach(day => {
+        day.addEventListener('click', function() {
+          selectDate(new Date(this.dataset.date));
+        });
+      });
+    }
+
+    function selectDate(date) {
+      if (!selectedStartDate || (selectedStartDate && selectedEndDate)) {
+        selectedStartDate = date;
+        selectedEndDate = null;
+      } else if (date < selectedStartDate) {
+        selectedEndDate = selectedStartDate;
+        selectedStartDate = date;
+      } else {
+        selectedEndDate = date;
+      }
+
+      updateInput();
+      renderCalendar();
+
+      if (selectedStartDate && selectedEndDate) {
+        setTimeout(() => calendar.classList.remove('active'), 300);
+      }
+    }
+
+    function updateInput() {
+      if (selectedStartDate && selectedEndDate) {
+        dateInput.value = `${formatDate(selectedStartDate)} to ${formatDate(selectedEndDate)}`;
+      } else if (selectedStartDate) {
+        dateInput.value = formatDate(selectedStartDate);
+      }
+    }
+
+    function formatDate(date) {
+      return `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+    }
+  }
+
+  function setupModalFormSubmission() {
+    const form = document.getElementById('TripInquiryModalForm');
+    const submitBtn = document.getElementById('modal-submit-btn');
+    const btnText = submitBtn?.querySelector('.trip-btn-text');
+    const btnSpinner = submitBtn?.querySelector('.trip-btn-spinner');
+    const statusMessages = document.getElementById('modal-form-status-messages');
+
+    if (!form) return;
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      submitBtn.disabled = true;
+      btnText.style.display = 'none';
+      btnSpinner.style.display = 'inline-block';
+
+      const formData = new FormData(form);
+
+      fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: { 'Accept': 'application/javascript' }
+      })
+      .then(response => response.text())
+      .then(() => {
+        submitBtn.disabled = false;
+        btnText.style.display = 'inline';
+        btnSpinner.style.display = 'none';
+
+        statusMessages.innerHTML = '<div class="trip-form-message trip-form-message--success">Thank you for your inquiry! We\'ll be in touch soon.</div>';
+        form.reset();
+
+        setTimeout(() => {
+          window.closeTripInquiryModal();
+          statusMessages.innerHTML = '';
+        }, 3000);
+      })
+      .catch(() => {
+        submitBtn.disabled = false;
+        btnText.style.display = 'inline';
+        btnSpinner.style.display = 'none';
+
+        statusMessages.innerHTML = '<div class="trip-form-message trip-form-message--error">There was an error submitting your form. Please try again.</div>';
+      });
+    });
+  }
+})();
+</script>
