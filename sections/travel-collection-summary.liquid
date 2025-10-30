@@ -6,36 +6,37 @@
 {%- liquid
   assign summary_content = collection.metafields.travel.summary
   assign heading_part = section.settings.default_heading
-  assign display_content = ''
+  assign summary_html = ''
   assign has_custom_format = false
 
   # Check if metafield exists and has value
   if summary_content.value != blank
-    # Get the plain text to check for custom format markers
-    assign summary_text = summary_content | metafield_text | strip
+    # Render the metafield as HTML first
+    assign summary_html = summary_content | metafield_tag
 
     # Check if using custom format with "Heading:" and "Summary:" markers
-    if summary_text contains 'Heading:' and summary_text contains 'Summary:'
+    if summary_html contains 'Heading:' and summary_html contains 'Summary:'
       assign has_custom_format = true
 
       # Extract heading (between "Heading:" and "Summary:")
-      assign heading_split = summary_text | split: 'Heading:'
+      assign heading_split = summary_html | split: 'Heading:'
       assign after_heading = heading_split[1]
       assign parts = after_heading | split: 'Summary:'
-      assign heading_part = parts[0] | strip
+      assign heading_text = parts[0] | strip_html | strip
 
-      # Extract summary content (after "Summary:")
-      assign display_content = parts[1] | strip
+      # Extract summary content (after "Summary:") - keep as HTML
+      assign summary_html = parts[1]
+
+      # Set the heading
+      if heading_text != blank
+        assign heading_part = heading_text
+      endif
     endif
   endif
 
   # Determine if section should be shown
   assign show_section = false
-  if has_custom_format and display_content != blank
-    assign show_section = true
-  elsif summary_content.value != blank
-    assign show_section = true
-  elsif section.settings.default_content != blank
+  if summary_content.value != blank or section.settings.default_content != blank
     assign show_section = true
   endif
 -%}
@@ -134,8 +135,8 @@
     </div>
 
     <div class="travel-summary__content">
-      {% if has_custom_format and display_content != blank %}
-        <p>{{ display_content }}</p>
+      {% if has_custom_format and summary_html != blank %}
+        {{ summary_html }}
       {% elsif summary_content.value != blank %}
         {{ summary_content | metafield_tag }}
       {% elsif section.settings.default_content != blank %}
