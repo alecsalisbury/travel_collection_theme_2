@@ -453,7 +453,7 @@
 
         if (yotpoAdded) {
           // Give Yotpo a tiny moment to fully render, then check
-          setTimeout(updateCustomRating, 50);
+          setTimeout(() => updateCustomRating('MutationObserver'), 50);
           break;
         }
       }
@@ -467,20 +467,20 @@
   });
 
   // Fallback timeouts - give up after 5 seconds with more frequent checks
-  setTimeout(updateCustomRating, 300);
-  setTimeout(updateCustomRating, 600);
-  setTimeout(updateCustomRating, 1000);
-  setTimeout(updateCustomRating, 1500);
-  setTimeout(updateCustomRating, 2000);
-  setTimeout(updateCustomRating, 2500);
-  setTimeout(updateCustomRating, 3000);
-  setTimeout(updateCustomRating, 3500);
-  setTimeout(updateCustomRating, 4000);
-  setTimeout(updateCustomRating, 5000);
+  setTimeout(() => updateCustomRating('timeout-300ms'), 300);
+  setTimeout(() => updateCustomRating('timeout-600ms'), 600);
+  setTimeout(() => updateCustomRating('timeout-1000ms'), 1000);
+  setTimeout(() => updateCustomRating('timeout-1500ms'), 1500);
+  setTimeout(() => updateCustomRating('timeout-2000ms'), 2000);
+  setTimeout(() => updateCustomRating('timeout-2500ms'), 2500);
+  setTimeout(() => updateCustomRating('timeout-3000ms'), 3000);
+  setTimeout(() => updateCustomRating('timeout-3500ms'), 3500);
+  setTimeout(() => updateCustomRating('timeout-4000ms'), 4000);
+  setTimeout(() => updateCustomRating('timeout-5000ms'), 5000);
 
   // Listen for Yotpo events
-  document.addEventListener('yotpo.bottomline.loaded', updateCustomRating);
-  window.addEventListener('yotpo.initialized', updateCustomRating);
+  document.addEventListener('yotpo.bottomline.loaded', () => updateCustomRating('yotpo.bottomline.loaded event'));
+  window.addEventListener('yotpo.initialized', () => updateCustomRating('yotpo.initialized event'));
 
   // Cleanup observer after 5 seconds
   setTimeout(() => observer.disconnect(), 5000);
