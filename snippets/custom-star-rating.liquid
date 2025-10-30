@@ -7,6 +7,8 @@
 {%- assign reviews_count = product.metafields.yotpo.reviews_count | default: 0 -%}
 {%- assign reviews_average = product.metafields.yotpo.reviews_average | default: 0 -%}
 
+<!-- DEBUG: Reviews count: {{ reviews_count }}, Average: {{ reviews_average }} -->
+
 {% if reviews_count > 0 %}
 <style>
   .custom-star-rating {
