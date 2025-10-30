@@ -149,7 +149,7 @@
             </div>
           </div>
 
-          <div class="form-row">
+          <div class="form-row form-row--last">
             <div class="form-field">
               <input
                 type="number"
@@ -160,6 +160,9 @@
                 min="0"
                 required
               >
+              <button type="submit" class="form-submit btn btn--primary">
+                {{ section.settings.button_text | default: "Check Availability" }}
+              </button>
             </div>
 
             <div class="form-field">
@@ -171,12 +174,6 @@
                 placeholder="Message (optional)"
               >{%- if form.body -%}{{- form.body -}}{%- endif -%}</textarea>
             </div>
-          </div>
-
-          <div class="form-row form-row--submit">
-            <button type="submit" class="form-submit btn btn--primary">
-              {{ section.settings.button_text | default: "Check Availability" }}
-            </button>
           </div>
         {%- endform -%}
       </div>
@@ -481,9 +478,8 @@
     margin-bottom: 0;
   }
 
-  .form-row--submit {
-    grid-template-columns: 1fr;
-    margin-top: 10px;
+  .form-field .form-submit {
+    margin-top: 20px;
   }
 
   .form-input::placeholder {
