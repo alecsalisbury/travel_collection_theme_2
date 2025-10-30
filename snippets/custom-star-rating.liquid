@@ -413,18 +413,19 @@
     if (hasLoaded) return;
 
     attemptsMade++;
-    console.log('[REVIEW DEBUG] Attempt', attemptsMade, 'from source:', source);
+    debugLog(`Attempt #${attemptsMade} from: ${source}`);
 
     const data = extractYotpoData();
 
     if (data && data.reviewCount > 0) {
-      console.log('[REVIEW DEBUG] ✓ SUCCESS! Found reviews from source:', source, 'Data:', data);
+      debugLog(`✓ SUCCESS! Source: ${source} | Rating: ${data.rating} | Count: ${data.reviewCount}`, true);
     } else {
-      console.log('[REVIEW DEBUG] ✗ No data found from source:', source);
+      debugLog(`✗ No data found from: ${source}`, false, true);
     }
 
     // If no data and we've tried enough times, show "No reviews" state
     if ((!data || data.reviewCount === 0) && attemptsMade >= maxAttempts) {
+      debugLog(`⚠ Giving up after ${maxAttempts} attempts - showing "No reviews" state`, false, true);
       const customRating = document.querySelector('.custom-star-rating');
       if (customRating) {
         const starsContainer = customRating.querySelector('.custom-star-rating__stars');
