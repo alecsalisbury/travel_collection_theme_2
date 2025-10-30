@@ -21,16 +21,19 @@
   }
 
   .custom-affirm-message {
-    display: flex;
-    align-items: center;
-    gap: 6px;
     margin: 12px 0;
     font-size: 14px;
     line-height: 1.5;
+  }
+
+  .custom-affirm-message__main {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     cursor: pointer;
   }
 
-  .custom-affirm-message:hover .custom-affirm-message__logo-text {
+  .custom-affirm-message__main:hover .custom-affirm-message__logo-text {
     text-decoration: underline;
   }
 
@@ -52,15 +55,36 @@
     font-weight: 700;
     text-decoration: none;
   }
+
+  .custom-affirm-message__link {
+    display: inline-block;
+    margin-top: 4px;
+    color: #0FA0EA;
+    font-size: 13px;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .custom-affirm-message__link:hover {
+    color: #0c7db8;
+  }
 </style>
 
-<div class="custom-affirm-message" data-product-price="{{ price }}" onclick="openAffirmModal(event)">
-  <span class="custom-affirm-message__text">
-    or 4 interest-free payments of
-    <span class="custom-affirm-message__price">{{ installment | money }}</span>
-    with
-    <span class="custom-affirm-message__logo-text">Affirm</span>
-  </span>
+<div class="custom-affirm-message" data-product-price="{{ price }}">
+  <div class="custom-affirm-message__main" onclick="openAffirmModal(event)">
+    <span class="custom-affirm-message__text">
+      or 4 interest-free payments of
+      <span class="custom-affirm-message__price">{{ installment | money }}</span>
+      with
+      <span class="custom-affirm-message__logo-text">Affirm</span>
+    </span>
+  </div>
+  <a class="custom-affirm-message__link affirm-modal-trigger"
+     aria-label="Check your purchasing power - Learn more about Affirm Financing (opens in modal)"
+     href="javascript:void(0)"
+     onclick="openAffirmModal(event)">
+    Check your purchasing power
+  </a>
 </div>
 
 <script>
