@@ -16,6 +16,7 @@
                 {%- render 'card-separator' -%}
 
               {%- when 'product_meta' -%}
+                <!-- Start of Judge.me code --><div style='{{ jm_style }}' class='jdgm-widget jdgm-preview-badge' data-id='{{ product.id }}' data-auto-install='false'>{{ product.metafields.judgeme.badge }}</div><!-- End of Judge.me code -->
                 {%- render 'product-meta', product: product, block: block, update_url: update_url -%}
 
               {%- when 'variant_selector' -%}
