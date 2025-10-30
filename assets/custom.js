@@ -37,15 +37,23 @@
 // App wrapper skeleton loader management
 document.addEventListener('DOMContentLoaded', function () {
   const appWrappers = document.querySelectorAll('.the-app-wrapper.loading');
+  console.log('[APP WRAPPER] Found', appWrappers.length, 'app wrappers to watch');
 
   appWrappers.forEach(wrapper => {
+    console.log('[APP WRAPPER] Watching wrapper:', wrapper);
+
     // Set up a mutation observer to watch for content changes
     const observer = new MutationObserver(function (mutations) {
       mutations.forEach(function (mutation) {
         if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+          console.log('[APP WRAPPER] Content added, checking for app content...');
+
           // Check if meaningful content was added (not just empty divs)
           const hasContent = wrapper.querySelector('.yotpo-widget-instance, .affirm-as-low-as, #infiniteoptions-container, [class*="app-"], [id*="app-"]');
+          console.log('[APP WRAPPER] Has content:', !!hasContent);
+
           if (hasContent) {
+            console.log('[APP WRAPPER] Marking as loaded!');
             wrapper.classList.remove('loading');
             wrapper.classList.add('loaded');
             observer.disconnect();
@@ -63,6 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Fallback: remove loading after 5 seconds regardless
     setTimeout(() => {
       if (wrapper.classList.contains('loading')) {
+        console.log('[APP WRAPPER] Timeout reached, marking as loaded anyway');
         wrapper.classList.remove('loading');
         wrapper.classList.add('loaded');
         observer.disconnect();
