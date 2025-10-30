@@ -340,9 +340,9 @@
                   <a href="{{ product.url }}" class="travel-product-card__button travel-product-card__button--view">
                     {{ section.settings.view_lodge_text }}
                   </a>
-                  <a href="{{ section.settings.plan_trip_url }}" class="travel-product-card__button travel-product-card__button--plan">
+                  <button type="button" data-trip-inquiry-trigger data-trip-name="{{ product.title }}" class="travel-product-card__button travel-product-card__button--plan">
                     {{ section.settings.plan_trip_text }}
-                  </a>
+                  </button>
                 </div>
               </div>
             </div>

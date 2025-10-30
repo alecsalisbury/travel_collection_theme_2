@@ -135,9 +135,9 @@
 
     <div class="travel-cta__buttons">
       {% if section.settings.show_primary_button %}
-        <a href="{{ section.settings.primary_button_url }}" class="travel-cta__button travel-cta__button--primary">
+        <button type="button" data-trip-inquiry-trigger data-trip-name="{{ collection.title }}" class="travel-cta__button travel-cta__button--primary">
           {{ section.settings.primary_button_text }}
-        </a>
+        </button>
       {% endif %}
 
       {% if section.settings.show_secondary_button %}
