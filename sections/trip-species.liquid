@@ -135,9 +135,9 @@
     carousel.addEventListener('scroll', updateButtons);
     window.addEventListener('resize', updateButtons);
 
-    // Initial setup - scroll to show first card at left
+    // Initial setup - start at beginning (first card visible)
     setTimeout(() => {
-      carousel.scrollLeft = 760; // Two clicks worth (380px each)
+      carousel.scrollLeft = 0;
       updateButtons();
     }, 100);
   })();
