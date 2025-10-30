@@ -74,6 +74,12 @@
     object-fit: cover;
     margin-bottom: 12px;
     border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+
+  .travel-map-popup__image:hover {
+    opacity: 0.9;
   }
 
   .travel-map-popup__title {
@@ -216,7 +222,7 @@
       // Create popup content
       const popupContent = `
         <div class="travel-map-popup">
-          ${product.image ? `<img src="${product.image}" alt="${product.title}" class="travel-map-popup__image">` : ''}
+          ${product.image ? `<a href="${product.url}"><img src="${product.image}" alt="${product.title}" class="travel-map-popup__image"></a>` : ''}
           <div class="travel-map-popup__title">${product.title}</div>
           <a href="${product.url}" class="travel-map-popup__button">View Lodge</a>
         </div>
