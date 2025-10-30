@@ -13393,3 +13393,18 @@ button[name="add"][disabled] {
   white-space: nowrap !important;
   border: 0 !important;
 }
+
+/* Fix Affirm modal overlay - make it semi-transparent instead of solid gray */
+.affirm-modal-overlay,
+[class*="affirm"][class*="overlay"],
+.affirm-lightbox-overlay {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(2px) !important;
+}
+
+/* Ensure Affirm modal appears above everything */
+.affirm-modal-container,
+[class*="affirm"][class*="modal"],
+.affirm-lightbox {
+  z-index: 999999 !important;
+}
