@@ -248,49 +248,59 @@
   async function fetchYotpoData() {
     console.log('[CUSTOM RATING API] ========== fetchYotpoData() CALLED ==========');
     console.log('[CUSTOM RATING API] Product ID:', productId);
+    console.log('[CUSTOM RATING API] Product Handle:', productHandle);
     console.log('[CUSTOM RATING API] App Key:', YOTPO_APP_KEY);
 
-    try {
-      // Yotpo API endpoint for product bottomline (star rating summary)
-      const apiUrl = `https://api.yotpo.com/v1/widget/${YOTPO_APP_KEY}/products/${productId}/bottomline`;
-      console.log('[CUSTOM RATING API] API URL:', apiUrl);
+    // Try multiple product identifier formats
+    const productIdentifiers = [
+      productId,           // Shopify product ID
+      productHandle,       // Product handle
+      `shopify_${productId}` // Sometimes Yotpo prefixes with platform
+    ];
 
-      console.log('[CUSTOM RATING API] Making fetch request...');
-      const response = await fetch(apiUrl);
-      console.log('[CUSTOM RATING API] Response received:', response);
+    for (const identifier of productIdentifiers) {
+      try {
+        // Yotpo API endpoint for product bottomline (star rating summary)
+        const apiUrl = `https://api.yotpo.com/v1/widget/${YOTPO_APP_KEY}/products/${identifier}/bottomline`;
+        console.log('[CUSTOM RATING API] Trying API URL:', apiUrl);
 
-      if (!response.ok) {
-        console.error('[CUSTOM RATING API] API request failed with status:', response.status);
-        console.error('[CUSTOM RATING API] Response text:', await response.text());
-        return null;
+        console.log('[CUSTOM RATING API] Making fetch request for identifier:', identifier);
+        const response = await fetch(apiUrl);
+        console.log('[CUSTOM RATING API] Response received:', response.status, response.statusText);
+
+        if (!response.ok) {
+          console.log('[CUSTOM RATING API] API request failed with status:', response.status, '- trying next identifier...');
+          continue; // Try next identifier
+        }
+
+        console.log('[CUSTOM RATING API] Parsing JSON...');
+        const data = await response.json();
+        console.log('[CUSTOM RATING API] Full API response:', JSON.stringify(data, null, 2));
+
+        if (data && data.response && data.response.bottomline) {
+          const bottomline = data.response.bottomline;
+          console.log('[CUSTOM RATING API] Bottomline data:', bottomline);
+
+          const rating = parseFloat(bottomline.average_score) || 0;
+          const reviewCount = parseInt(bottomline.total_reviews) || 0;
+
+          console.log('[CUSTOM RATING API] Parsed rating:', rating);
+          console.log('[CUSTOM RATING API] Parsed reviewCount:', reviewCount);
+          console.log('[CUSTOM RATING API] SUCCESS with identifier:', identifier);
+
+          return reviewCount > 0 ? { rating, reviewCount } : null;
+        }
+
+        console.log('[CUSTOM RATING API] No bottomline data in response for identifier:', identifier);
+      } catch (error) {
+        console.error('[CUSTOM RATING API] Error with identifier:', identifier, error);
+        // Try next identifier
       }
-
-      console.log('[CUSTOM RATING API] Parsing JSON...');
-      const data = await response.json();
-      console.log('[CUSTOM RATING API] Full API response:', JSON.stringify(data, null, 2));
-
-      if (data && data.response && data.response.bottomline) {
-        const bottomline = data.response.bottomline;
-        console.log('[CUSTOM RATING API] Bottomline data:', bottomline);
-
-        const rating = parseFloat(bottomline.average_score) || 0;
-        const reviewCount = parseInt(bottomline.total_reviews) || 0;
-
-        console.log('[CUSTOM RATING API] Parsed rating:', rating);
-        console.log('[CUSTOM RATING API] Parsed reviewCount:', reviewCount);
-        console.log('[CUSTOM RATING API] Will return:', reviewCount > 0 ? { rating, reviewCount } : null);
-
-        return reviewCount > 0 ? { rating, reviewCount } : null;
-      }
-
-      console.log('[CUSTOM RATING API] No bottomline data in response');
-      return null;
-    } catch (error) {
-      console.error('[CUSTOM RATING API] ========== ERROR ==========');
-      console.error('[CUSTOM RATING API] Error fetching data:', error);
-      console.error('[CUSTOM RATING API] Error stack:', error.stack);
-      return null;
     }
+
+    console.error('[CUSTOM RATING API] ========== ALL IDENTIFIERS FAILED ==========');
+    console.error('[CUSTOM RATING API] Tried identifiers:', productIdentifiers);
+    return null;
   }
 
   function renderStars(rating) {
