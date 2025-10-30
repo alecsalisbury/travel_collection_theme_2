@@ -80,18 +80,45 @@
   function extractYotpoData() {
     debugLog('⏳ Attempting to extract Yotpo data...');
 
-    // Look for Yotpo bottom line text (e.g., "Based on 8 reviews")
-    const yotpoText = document.querySelector('.yotpo-bottomline .text-m, .yotpo-bottom-line-basic-text, .yotpo-bottomline-box-1 .text-m');
-    debugLog('Yotpo text element found: ' + (yotpoText ? '✅ YES' : '❌ NO'));
+    // Try multiple selectors to find the review text
+    let yotpoText = null;
+    const selectors = [
+      '.yotpo-bottom-line-basic-text',
+      '.yotpo-bottomline .text-m',
+      '.yotpo-bottomline-box-1 .text-m',
+      '[class*="yotpo"][class*="bottom"]',
+      '.yotpo .text-m'
+    ];
 
+    for (let selector of selectors) {
+      yotpoText = document.querySelector(selector);
+      if (yotpoText && yotpoText.textContent.toLowerCase().includes('review')) {
+        debugLog('✅ Found review text with selector: ' + selector);
+        break;
+      } else if (yotpoText) {
+        debugLog('⚠️ Found element with ' + selector + ' but no review text: "' + (yotpoText.textContent || '').substring(0, 50) + '"');
+        yotpoText = null;
+      }
+    }
+
+    // If still not found, search all Yotpo elements for review text
     if (!yotpoText) {
-      debugLog('❌ Cannot find Yotpo bottomline text element');
-      debugLog('Looking for elements with classes: .yotpo-bottomline .text-m, .yotpo-bottom-line-basic-text');
-
-      // List all Yotpo elements found
+      debugLog('⚠️ Specific selectors failed, searching all Yotpo elements...');
       const allYotpo = document.querySelectorAll('[class*="yotpo"]');
       debugLog('Total elements with "yotpo" in class: ' + allYotpo.length);
 
+      for (let element of allYotpo) {
+        const text = element.textContent || '';
+        if (text.toLowerCase().includes('review') && text.toLowerCase().includes('based')) {
+          yotpoText = element;
+          debugLog('✅ Found review text in element with classes: ' + element.className);
+          break;
+        }
+      }
+    }
+
+    if (!yotpoText) {
+      debugLog('❌ Cannot find Yotpo review text anywhere on page');
       return null;
     }
 
