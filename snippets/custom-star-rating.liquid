@@ -110,7 +110,11 @@
     return starsHtml.join('');
   }
 
+  let hasLoaded = false;
+
   function updateCustomRating() {
+    if (hasLoaded) return; // Only run once
+
     const data = extractYotpoData();
 
     if (!data || data.reviewCount === 0) return;
@@ -125,6 +129,7 @@
       starsContainer.innerHTML = renderStars(data.rating);
       textContainer.textContent = `${data.rating.toFixed(1)} (${data.reviewCount} ${data.reviewCount === 1 ? 'review' : 'reviews'})`;
       customRating.classList.add('loaded');
+      hasLoaded = true;
     }
   }
 
@@ -136,13 +141,46 @@
     document.addEventListener('DOMContentLoaded', updateCustomRating);
   }
 
-  // Try after a delay for Yotpo to load
+  // Watch for Yotpo widget to appear in DOM
+  const observer = new MutationObserver(function(mutations) {
+    if (hasLoaded) {
+      observer.disconnect();
+      return;
+    }
+
+    for (let mutation of mutations) {
+      if (mutation.addedNodes.length > 0) {
+        // Check if Yotpo bottomline was added
+        const yotpoAdded = Array.from(mutation.addedNodes).some(node =>
+          node.nodeType === 1 && (
+            node.classList?.contains('yotpo-bottomline') ||
+            node.querySelector?.('.yotpo-bottomline')
+          )
+        );
+
+        if (yotpoAdded) {
+          setTimeout(updateCustomRating, 100); // Small delay for Yotpo to fully render
+          break;
+        }
+      }
+    }
+  });
+
+  // Start observing
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+
+  // Fallback timeouts in case MutationObserver misses it
   setTimeout(updateCustomRating, 500);
-  setTimeout(updateCustomRating, 1000);
-  setTimeout(updateCustomRating, 2000);
+  setTimeout(updateCustomRating, 1500);
 
   // Listen for Yotpo events
   document.addEventListener('yotpo.bottomline.loaded', updateCustomRating);
   window.addEventListener('yotpo.initialized', updateCustomRating);
+
+  // Cleanup observer after 5 seconds
+  setTimeout(() => observer.disconnect(), 5000);
 })();
 </script>
