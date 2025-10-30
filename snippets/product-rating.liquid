@@ -1,44 +1,221 @@
-{%- if product.metafields.reviews.rating.value != blank -%}
-  {%- assign rating_decimal = 0 -%}
-  {%- assign decimal = product.metafields.reviews.rating.value.rating | modulo: 1 -%}
+<style>
+  /* Skeleton loader for rating */
+  .rating-wrapper {
+    position: relative;
+    min-height: 20px;
+  }
 
-  {%- if decimal >= 0.3 and decimal <= 0.7 -%}
-    {%- assign rating_decimal = 0.5 -%}
-  {%- elsif decimal > 0.7 -%}
-    {%- assign rating_decimal = 1 -%}
-  {%- endif -%}
+  .rating-skeleton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 
-  <div class="rating">
-    <div class="rating__stars" role="img" aria-label="{{ 'general.accessibility.star_reviews_info' | t: rating_value: product.metafields.reviews.rating.value, rating_max: product.metafields.reviews.rating.value.scale_max }}">
-      {%- assign rating_as_float = product.metafields.reviews.rating.value.rating | times: 1.0 -%}
+  .rating-skeleton__stars {
+    display: flex;
+    gap: 2px;
+  }
 
-      {%- for i in (product.metafields.reviews.rating.value.scale_min..product.metafields.reviews.rating.value.scale_max) -%}
-        {%- if rating_as_float >= i -%}
-          {%- render 'icon' with 'rating-star', class: 'rating__star rating__star--full' -%}
-        {%- else -%}
-          {%- if rating_decimal == 0.5 -%}
-            {%- render 'icon' with 'rating-star-half', class: 'rating__star rating__star--half' -%}
-          {%- elsif rating_decimal == 1 -%}
+  .rating-skeleton__star {
+    width: 16px;
+    height: 16px;
+  }
+
+  .rating-skeleton__star svg {
+    fill: #e0e0e0;
+    animation: star-fill 2s ease-in-out infinite;
+  }
+
+  /* Sequential animation delays for left-to-right effect */
+  .rating-skeleton__star:nth-child(1) svg {
+    animation-delay: 0s;
+  }
+
+  .rating-skeleton__star:nth-child(2) svg {
+    animation-delay: 0.15s;
+  }
+
+  .rating-skeleton__star:nth-child(3) svg {
+    animation-delay: 0.3s;
+  }
+
+  .rating-skeleton__star:nth-child(4) svg {
+    animation-delay: 0.45s;
+  }
+
+  .rating-skeleton__star:nth-child(5) svg {
+    animation-delay: 0.6s;
+  }
+
+  .rating-skeleton__text {
+    width: 100px;
+    height: 14px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    opacity: 0.5;
+  }
+
+  @keyframes star-fill {
+    0%, 100% {
+      fill: #e0e0e0;
+    }
+    40%, 60% {
+      fill: #ffa500;
+    }
+  }
+
+  /* Hide skeleton when rating loads */
+  .rating-wrapper.loaded .rating-skeleton {
+    display: none;
+  }
+
+  /* Hide rating until loaded */
+  .rating-wrapper:not(.loaded) .rating {
+    opacity: 0;
+    position: absolute;
+  }
+
+  .rating-wrapper.loaded .rating {
+    opacity: 1;
+  }
+</style>
+
+<div class="rating-wrapper">
+  <!-- Skeleton placeholder -->
+  <div class="rating-skeleton">
+    <div class="rating-skeleton__stars">
+      <span class="rating-skeleton__star">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+      </span>
+      <span class="rating-skeleton__star">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+      </span>
+      <span class="rating-skeleton__star">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+      </span>
+      <span class="rating-skeleton__star">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+      </span>
+      <span class="rating-skeleton__star">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+      </span>
+    </div>
+    <div class="rating-skeleton__text"></div>
+  </div>
+
+  <!-- Actual rating content -->
+  {%- if product.metafields.reviews.rating.value != blank -%}
+    {%- assign rating_decimal = 0 -%}
+    {%- assign decimal = product.metafields.reviews.rating.value.rating | modulo: 1 -%}
+
+    {%- if decimal >= 0.3 and decimal <= 0.7 -%}
+      {%- assign rating_decimal = 0.5 -%}
+    {%- elsif decimal > 0.7 -%}
+      {%- assign rating_decimal = 1 -%}
+    {%- endif -%}
+
+    <div class="rating">
+      <div class="rating__stars" role="img" aria-label="{{ 'general.accessibility.star_reviews_info' | t: rating_value: product.metafields.reviews.rating.value, rating_max: product.metafields.reviews.rating.value.scale_max }}">
+        {%- assign rating_as_float = product.metafields.reviews.rating.value.rating | times: 1.0 -%}
+
+        {%- for i in (product.metafields.reviews.rating.value.scale_min..product.metafields.reviews.rating.value.scale_max) -%}
+          {%- if rating_as_float >= i -%}
             {%- render 'icon' with 'rating-star', class: 'rating__star rating__star--full' -%}
           {%- else -%}
-            {%- render 'icon' with 'rating-star', class: 'rating__star rating__star--empty' -%}
+            {%- if rating_decimal == 0.5 -%}
+              {%- render 'icon' with 'rating-star-half', class: 'rating__star rating__star--half' -%}
+            {%- elsif rating_decimal == 1 -%}
+              {%- render 'icon' with 'rating-star', class: 'rating__star rating__star--full' -%}
+            {%- else -%}
+              {%- render 'icon' with 'rating-star', class: 'rating__star rating__star--empty' -%}
+            {%- endif -%}
+
+            {%- assign rating_decimal = false -%}
           {%- endif -%}
+        {%- endfor -%}
+      </div>
 
-          {%- assign rating_decimal = false -%}
-        {%- endif -%}
-      {%- endfor -%}
+      <span class="rating__caption">{{ 'product.general.reviews_count' | t: count: product.metafields.reviews.rating_count.value }}</span>
     </div>
+  {%- else -%}
+    <div class="rating">
+      <div class="rating__stars" role="img" aria-label="{{ 'general.accessibility.star_reviews_info' | t: rating_value: 0, rating_max: 5 }}">
+        {%- for i in (1..5) -%}
+          {%- render 'icon' with 'rating-star', class: 'rating__star rating__star--empty' -%}
+        {%- endfor -%}
+      </div>
 
-    <span class="rating__caption">{{ 'product.general.reviews_count' | t: count: product.metafields.reviews.rating_count.value }}</span>
-  </div>
-{%- else -%}
-  <div class="rating">
-    <div class="rating__stars" role="img" aria-label="{{ 'general.accessibility.star_reviews_info' | t: rating_value: 0, rating_max: 5 }}">
-      {%- for i in (1..5) -%}
-        {%- render 'icon' with 'rating-star', class: 'rating__star rating__star--empty' -%}
-      {%- endfor -%}
+      <span class="rating__caption">{{ 'product.general.reviews_count' | t: count: 0 }}</span>
     </div>
+  {%- endif -%}
+</div>
 
-    <span class="rating__caption">{{ 'product.general.reviews_count' | t: count: 0 }}</span>
-  </div>
-{%- endif -%}
+<script>
+(function() {
+  console.log('[RATING SKELETON] Initializing...');
+
+  const wrapper = document.querySelector('.rating-wrapper');
+  if (!wrapper) {
+    console.log('[RATING SKELETON] No wrapper found');
+    return;
+  }
+
+  // Check if rating content already has data
+  const ratingElement = wrapper.querySelector('.rating');
+  if (ratingElement) {
+    const hasStars = ratingElement.querySelector('.rating__star--full, .rating__star--half');
+    const hasCaption = ratingElement.querySelector('.rating__caption');
+
+    if (hasStars || (hasCaption && hasCaption.textContent.trim())) {
+      console.log('[RATING SKELETON] Rating already loaded, showing immediately');
+      wrapper.classList.add('loaded');
+      return;
+    }
+  }
+
+  // Watch for when Yotpo metafields populate the rating
+  const observer = new MutationObserver(function(mutations) {
+    console.log('[RATING SKELETON] Mutation detected');
+
+    const ratingElement = wrapper.querySelector('.rating');
+    if (ratingElement) {
+      const hasStars = ratingElement.querySelector('.rating__star--full, .rating__star--half');
+      const hasCaption = ratingElement.querySelector('.rating__caption');
+
+      if (hasStars || (hasCaption && hasCaption.textContent.trim() && !hasCaption.textContent.includes('0'))) {
+        console.log('[RATING SKELETON] Rating loaded!');
+        wrapper.classList.add('loaded');
+        observer.disconnect();
+      }
+    }
+  });
+
+  // Observe the rating element for changes
+  if (ratingElement) {
+    observer.observe(ratingElement, {
+      childList: true,
+      subtree: true,
+      characterData: true
+    });
+  }
+
+  // Fallback: mark as loaded after 3 seconds
+  setTimeout(function() {
+    console.log('[RATING SKELETON] Timeout reached, showing rating');
+    wrapper.classList.add('loaded');
+    observer.disconnect();
+  }, 3000);
+
+  console.log('[RATING SKELETON] Watching for rating to load...');
+})();
+</script>
