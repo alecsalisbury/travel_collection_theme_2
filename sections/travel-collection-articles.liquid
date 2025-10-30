@@ -193,6 +193,7 @@
   }
 </style>
 
+{% if featured_blogs and featured_blogs.value and featured_blogs.value.size > 0 %}
 <section class="travel-articles">
   <div class="travel-articles__container">
 
@@ -213,7 +214,6 @@
       {% endif %}
     </div>
 
-    {% if featured_blogs and featured_blogs.value %}
     <div class="travel-articles__grid">
       {% for article in featured_blogs.value limit: section.settings.articles_limit %}
         {% if article %}
@@ -250,14 +250,10 @@
         {% endif %}
       {% endfor %}
     </div>
-    {% else %}
-    <div style="text-align: center; padding: 40px; background: #fff;">
-      <p style="color: #666; font-size: 14px;">No articles found. Please add blog articles to the <code>collection.metafields.travel.featured_blogs</code> metafield.</p>
-    </div>
-    {% endif %}
 
   </div>
 </section>
+{% endif %}
 
 {% schema %}
 {
