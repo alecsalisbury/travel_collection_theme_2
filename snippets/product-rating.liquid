@@ -2,18 +2,16 @@
   /* Skeleton loader for rating */
   .rating-wrapper {
     position: relative;
-    min-height: 20px;
-  }
-
-  /* Remove min-height when rating is loaded */
-  .rating-wrapper.loaded {
-    min-height: 0;
   }
 
   .rating-skeleton {
+    position: absolute;
+    top: 0;
+    left: 0;
     display: flex;
     align-items: center;
     gap: 8px;
+    z-index: 1;
   }
 
   .rating-skeleton__stars {
