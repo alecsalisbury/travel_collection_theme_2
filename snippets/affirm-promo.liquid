@@ -15,6 +15,12 @@
     /* Reserve space to prevent layout shift - final size is 379x42 */
     min-height: 42px;
     max-width: 379px;
+    opacity: 0;
+    transition: opacity 0.4s ease-in;
+  }
+
+  .affirm-promo-container.loaded {
+    opacity: 1;
   }
 
   .affirm-promo-wrapper {
@@ -143,6 +149,12 @@
       // Hide skeleton once rendered
       if (skeleton) {
         skeleton.classList.add('hidden');
+      }
+
+      // Fade in the container
+      var promoContainer = container.closest('.affirm-promo-container');
+      if (promoContainer) {
+        promoContainer.classList.add('loaded');
       }
 
       console.log('[AFFIRM PROMO] Component rendered successfully');

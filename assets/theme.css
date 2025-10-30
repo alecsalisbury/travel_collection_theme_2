@@ -13592,3 +13592,10 @@ div[class*="affirm-"][class*="-modal"] {
 .affirm-lightbox {
   z-index: 999999 !important;
 }
+
+/* Make Affirm iframe background transparent */
+#iframe-child,
+#iframe-wrapper {
+  background-color: transparent !important;
+  background: transparent !important;
+}
