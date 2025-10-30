@@ -90,13 +90,6 @@
         "secondary_button_phone": "+18884135211"
       }
     },
-    "recently-viewed-products": {
-      "type": "recently-viewed-products",
-      "settings": {
-        "title": "Recently viewed",
-        "show_quick_buy": false
-      }
-    },
     "17570991984bbe5b11": {
       "type": "apps",
       "blocks": {
@@ -125,7 +118,6 @@
     "travel-videos",
     "travel-articles",
     "travel-cta",
-    "recently-viewed-products",
     "17570991984bbe5b11"
   ]
 }
