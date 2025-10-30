@@ -80,6 +80,7 @@
   <a class="custom-affirm-message__link affirm-modal-trigger"
      data-page-type="product"
      data-amount="{{ price }}"
+     href="javascript:void(0)"
      aria-label="Check your purchasing power - Learn more about Affirm Financing (opens in modal)">
     Check your purchasing power
   </a>
@@ -128,19 +129,25 @@
 
         console.log('[AFFIRM] Modal trigger clicked');
 
-        // Find the native Affirm promo element to trigger its modal
-        const affirmPromoElement = document.querySelector('.affirm-as-low-as');
+        const amount = parseInt(trigger.getAttribute('data-amount')) || 0;
 
-        if (affirmPromoElement && window.affirm && window.affirm.ui) {
-          // Wait for Affirm to be ready
+        if (window.affirm && window.affirm.ui && window.affirm.ui.ready) {
           window.affirm.ui.ready(function() {
-            console.log('[AFFIRM] Affirm.ui is ready, triggering modal via promo element');
+            console.log('[AFFIRM] Opening Affirm modal with amount:', amount);
 
-            // Programmatically click the Affirm promo element to open the modal
-            affirmPromoElement.click();
+            // Use Affirm's promos.open method to trigger the modal
+            if (window.affirm.ui.promos && typeof window.affirm.ui.promos.open === 'function') {
+              window.affirm.ui.promos.open({
+                amount: amount,
+                modalId: 'learn-modal'
+              });
+            } else {
+              console.log('[AFFIRM] Fallback: Opening Affirm info page');
+              window.open('https://www.affirm.com/how-it-works', '_blank', 'noopener,noreferrer');
+            }
           });
         } else {
-          console.log('[AFFIRM] Affirm promo element or Affirm.js not found, opening fallback URL');
+          console.log('[AFFIRM] Affirm.js not loaded, opening fallback URL');
           window.open('https://www.affirm.com/how-it-works', '_blank', 'noopener,noreferrer');
         }
       });
