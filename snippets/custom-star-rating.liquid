@@ -9,6 +9,12 @@
 
 <!-- DEBUG: Reviews count: {{ reviews_count }}, Average: {{ reviews_average }} -->
 
+<!-- VISIBLE DEBUG (remove after testing) -->
+<div style="padding: 10px; background: #fff3cd; border: 1px solid #ffc107; margin: 10px 0;">
+  <strong>DEBUG:</strong> Reviews count: {{ reviews_count }} | Average: {{ reviews_average }}
+  <br>Has yotpo namespace: {{ product.metafields.yotpo }}
+</div>
+
 {% if reviews_count > 0 %}
 <style>
   .custom-star-rating {
