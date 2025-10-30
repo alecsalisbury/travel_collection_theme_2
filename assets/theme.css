@@ -13309,7 +13309,7 @@ section>nav.nav-bar>div.nav-bar__inner .nav-bar__linklist.gm-menu .gm-links>li:n
 }
 
 .the-app-wrapper.loaded {
-  min-height: auto;
+  min-height: 0;
 }
 
 /* Hide generic skeleton, use custom star skeleton instead */
