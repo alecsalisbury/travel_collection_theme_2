@@ -156,21 +156,25 @@
           window.affirm.ui.ready(function() {
             console.log('[AFFIRM DEBUG] Inside affirm.ui.ready callback');
 
-            // Try using openModal method
+            // Try using openModal method with amount
             if (typeof window.affirm.ui.openModal === 'function') {
-              console.log('[AFFIRM DEBUG] Calling affirm.ui.openModal()');
-              window.affirm.ui.openModal();
+              console.log('[AFFIRM DEBUG] Calling affirm.ui.openModal() with amount:', amount);
+              window.affirm.ui.openModal({
+                amount: amount
+              });
               console.log('[AFFIRM DEBUG] affirm.ui.openModal() called');
             }
             // Fallback to modal method
             else if (typeof window.affirm.ui.modal === 'function') {
-              console.log('[AFFIRM DEBUG] Calling affirm.ui.modal()');
-              window.affirm.ui.modal();
+              console.log('[AFFIRM DEBUG] Calling affirm.ui.modal() with amount:', amount);
+              window.affirm.ui.modal({
+                amount: amount
+              });
               console.log('[AFFIRM DEBUG] affirm.ui.modal() called');
             }
             // Fallback to prequal method
             else if (typeof window.affirm.ui.prequal === 'function') {
-              console.log('[AFFIRM DEBUG] Calling affirm.ui.prequal()');
+              console.log('[AFFIRM DEBUG] Calling affirm.ui.prequal() with amount:', amount);
               window.affirm.ui.prequal.show({
                 amount: amount
               });
