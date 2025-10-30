@@ -217,8 +217,43 @@
   <span class="custom-star-rating__text"></span>
 </div>
 
+<!-- Debug Panel -->
+<div class="review-debug" id="review-debug">
+  <button class="review-debug__close" onclick="document.getElementById('review-debug').remove()">×</button>
+  <div class="review-debug__title">Review Loading Debug</div>
+  <div id="review-debug-logs"></div>
+</div>
+
 <script>
 (function() {
+  // Debug logging function
+  function debugLog(message, isSuccess = false, isError = false) {
+    const logContainer = document.getElementById('review-debug-logs');
+    if (!logContainer) return;
+
+    const logEntry = document.createElement('div');
+    logEntry.className = 'review-debug__log';
+    if (isSuccess) logEntry.classList.add('success');
+    if (isError) logEntry.classList.add('error');
+
+    const timestamp = new Date().toLocaleTimeString('en-US', {
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      fractionalSecondDigits: 3
+    });
+
+    logEntry.textContent = `[${timestamp}] ${message}`;
+    logContainer.appendChild(logEntry);
+
+    // Auto-scroll to bottom
+    logContainer.parentElement.scrollTop = logContainer.parentElement.scrollHeight;
+
+    // Also log to console
+    console.log('[REVIEW DEBUG]', message);
+  }
+
   function extractYotpoData() {
     // Try multiple selectors to find the review text
     let yotpoText = null;
