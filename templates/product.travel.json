@@ -9,145 +9,90 @@
  */
 {
   "sections": {
-    "sticky-nav": {
-      "type": "trip-sticky-nav",
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "product_meta": {
+          "type": "product_meta",
+          "settings": {
+            "show_vendor": false,
+            "show_sku": false,
+            "show_reviews_badge": false,
+            "show_share_buttons": true
+          }
+        },
+        "yotpo_product_reviews_star_rating_wmm9Cd": {
+          "type": "shopify://apps/yotpo-product-reviews/blocks/star-rating/eb7dfd7d-db44-4334-bc49-c893b51b36cf",
+          "settings": {
+            "product": "{{product}}"
+          }
+        },
+        "variant_selector_mDh3z3": {
+          "type": "variant_selector",
+          "settings": {
+            "selector_mode": "block",
+            "color_mode": "swatch",
+            "variant_image_options": ""
+          }
+        },
+        "powerful_form_builder_app_block_6t4eAw": {
+          "type": "shopify://apps/powerful-form-builder/blocks/app-block/e4bcb1eb-35b2-42e6-bc37-bfe0e1542c9d",
+          "settings": {
+            "shortcode": "<div style=\"margin-top: 20px;\">\n  <button type=\"button\" onclick=\"toggleReservationForm()\" style=\"\n      background-color: #ff6a00;\n      color: white;\n      border: none;\n      padding: 12px 24px;\n      font-size: 16px;\n      cursor: pointer;\n      border-radius: 4px;\n      width: 100%;\n      text-align: center;\n    \">\n    Request a Reservation\n  </button>\n\n  <div id=\"reservationFormContainer\" style=\"display: none; margin-top: 20px;\">\n    <div class=\"globo-formbuilder\" data-id=\"MTAxNTk3\"></div>\n  </div>\n</div>\n\n<script>\n  function toggleReservationForm() {\n    const container = document.getElementById('reservationFormContainer');\n    container.style.display = container.style.display === 'none' ? 'block' : 'none';\n  }\n</script>"
+          }
+        },
+        "description": {
+          "type": "description",
+          "settings": {
+            "display_mode": "show_all"
+          }
+        },
+        "affirm_pay_over_time_messaging_product_block_hdP8mr": {
+          "type": "shopify://apps/affirm-pay-over-time-messaging/blocks/product-block/6dce54be-130d-4d13-9636-1e8f611b3071",
+          "settings": {
+            "logo_align": "left",
+            "font_size": 16,
+            "logo_color": "blue",
+            "logo_type": "logo",
+            "public_api_key": "",
+            "price_selector": ""
+          }
+        }
+      },
+      "block_order": [
+        "product_meta",
+        "yotpo_product_reviews_star_rating_wmm9Cd",
+        "variant_selector_mDh3z3",
+        "powerful_form_builder_app_block_6t4eAw",
+        "description",
+        "affirm_pay_over_time_messaging_product_block_hdP8mr"
+      ],
       "settings": {
-        "scroll_threshold": 500
+        "image_size": "large",
+        "enable_video_looping": false,
+        "enable_image_zoom": true,
+        "zoom_effect": "popup",
+        "carousel_effect": "fade"
       }
     },
-    "hero": {
-      "type": "trip-hero",
+    "product-recommendations": {
+      "type": "product-recommendations",
       "settings": {
-        "location": "Anchorage, Alaska",
-        "title": "Kulik Lodge",
-        "description": "Alaska is a bucket list destination for nearly every angler and offers a little bit of everything. We'll to walk you through everything you need to know before you book your trip."
+        "heading": "You may also like",
+        "show_quick_buy": false
       }
     },
-    "inquiry": {
-      "type": "trip-inquiry",
+    "recently-viewed-products": {
+      "type": "recently-viewed-products",
       "settings": {
-        "title": "Request a Reservation",
-        "description": "<p>Thanks for your interest in this trip. Fill out the form below and our team will contact you shortly to discuss availability and details.</p>",
-        "button_text": "Check Availability",
-        "success_message": "Thank you for your inquiry! We'll be in touch soon."
-      }
-    },
-    "overview": {
-      "type": "trip-overview",
-      "settings": {
-        "use_metafield": true
-      }
-    },
-    "video-features": {
-      "type": "trip-video-features",
-      "settings": {
-        "who_title": "Who's It For?",
-        "features_label": "FEATURES"
-      }
-    },
-    "packages": {
-      "type": "trip-packages",
-      "settings": {
-        "use_metafield": true
-      }
-    },
-    "divider": {
-      "type": "trip-divider",
-      "settings": {
-        "enable_parallax": false
-      }
-    },
-    "calendar": {
-      "type": "trip-calendar",
-      "settings": {}
-    },
-    "map": {
-      "type": "trip-map",
-      "settings": {
-        "title": "Location"
-      }
-    },
-    "lodging": {
-      "type": "trip-lodging",
-      "settings": {}
-    },
-    "species": {
-      "type": "trip-species",
-      "settings": {
-        "title": "Target Species",
-        "use_metafield": true
-      }
-    },
-    "gallery": {
-      "type": "trip-gallery",
-      "settings": {
-        "title": "Gallery",
-        "use_metafield": true
-      }
-    },
-    "itinerary": {
-      "type": "trip-itinerary",
-      "settings": {
-        "title": "10-Day Itinerary",
-        "use_metafield": true
-      }
-    },
-    "faq": {
-      "type": "trip-faq",
-      "settings": {
-        "title": "Frequently Asked Questions",
-        "use_metafield": true
-      }
-    },
-    "testimonial": {
-      "type": "trip-testimonial",
-      "settings": {
-        "use_metafield": true
-      }
-    },
-    "resources": {
-      "type": "trip-resources",
-      "settings": {
-        "title": "Trip Resources & Downloads",
-        "use_metafield": true
-      }
-    },
-    "terms": {
-      "type": "trip-terms",
-      "settings": {
-        "title": "Trip Details & Terms",
-        "use_metafield": true
-      }
-    },
-    "related": {
-      "type": "trip-related",
-      "settings": {
-        "title": "Related Trips",
-        "subtitle": "<p>Explore our other world-class fly fishing adventures around the globe.</p>",
-        "cta_text": "SEE ALL TRIPS",
-        "cta_url": "https://www.tridentflyfishing.com/collections/fly-fishing-travel-trv",
-        "use_metafield": true
+        "title": "Recently viewed",
+        "show_quick_buy": false
       }
     }
   },
   "order": [
-    "sticky-nav",
-    "hero",
-    "inquiry",
-    "overview",
-    "video-features",
-    "packages",
-    "gallery",
-    "divider",
-    "calendar",
-    "map",
-    "lodging",
-    "species",
-    "itinerary",
-    "faq",
-    "testimonial",
-    "resources",
-    "terms",
-    "related"
+    "main",
+    "product-recommendations",
+    "recently-viewed-products"
   ]
 }
