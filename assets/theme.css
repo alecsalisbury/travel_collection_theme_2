@@ -13375,9 +13375,21 @@ button[name="add"][disabled] {
   padding-left: 8px !important;
 }
 
-/* Hide slow-loading Affirm app block - using custom fast version instead */
+/* Hide slow-loading Affirm app block visually but keep scripts loaded */
 .product-info__block-item[data-block-id*="affirm"],
-[data-block-id="affirm_pay_over_time_messaging_product_block_hdP8mr"],
-#affirm-under-price {
+[data-block-id="affirm_pay_over_time_messaging_product_block_hdP8mr"] {
   display: none !important;
+}
+
+/* Hide Affirm widget but allow scripts to load */
+#affirm-under-price {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0,0,0,0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
 }

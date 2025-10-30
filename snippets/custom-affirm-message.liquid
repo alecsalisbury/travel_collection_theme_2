@@ -9,17 +9,6 @@
 {%- assign installment = price | divided_by: 4 -%}
 
 <style>
-  /* Hide the slow-loading Affirm app block */
-  .product-info__block-item[data-block-id*="affirm"],
-  .product-info__block-item--shopify-app-block[data-block-type="shopify-app-block"]:has(.the-app-wrapper) {
-    display: none !important;
-  }
-
-  /* More specific targeting for Affirm */
-  [data-block-id="affirm_pay_over_time_messaging_product_block_hdP8mr"] {
-    display: none !important;
-  }
-
   .custom-affirm-message {
     margin: 12px 0;
     font-size: 14px;
