@@ -116,6 +116,8 @@
     border-radius: 0;
     transition: all 0.3s ease;
     cursor: pointer;
+    border: 2px solid transparent;
+    font-family: inherit;
   }
 
   .travel-hero__button--primary {
@@ -195,9 +197,9 @@
 
     <div class="travel-hero__buttons">
       {% if section.settings.show_primary_button %}
-        <a href="{{ section.settings.primary_button_url }}" class="travel-hero__button travel-hero__button--primary">
+        <button type="button" data-trip-inquiry-trigger data-trip-name="{{ collection.title }}" class="travel-hero__button travel-hero__button--primary">
           {{ section.settings.primary_button_text }}
-        </a>
+        </button>
       {% endif %}
 
       {% if section.settings.show_secondary_button %}
@@ -208,6 +210,8 @@
     </div>
   </div>
 </section>
+
+{% render 'trip-inquiry-modal' %}
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
