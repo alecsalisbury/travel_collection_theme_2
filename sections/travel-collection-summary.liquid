@@ -62,6 +62,12 @@
     assign heading_part = section.settings.default_heading
     assign summary_part = summary_content | metafield_text
   endunless
+
+  # Determine if section should be shown
+  assign show_section = false
+  if summary_part != blank or section.settings.default_content != blank
+    assign show_section = true
+  endif
 -%}
 
 <style>
@@ -138,6 +144,7 @@
   }
 </style>
 
+{% if show_section %}
 <section class="travel-summary">
   <div class="travel-summary__container">
 
@@ -180,6 +187,7 @@
 
   </div>
 </section>
+{% endif %}
 
 {% schema %}
 {
