@@ -320,10 +320,10 @@
     updateCustomRating();
   });
 
-  // Cleanup observer after 5 seconds
+  // Cleanup observer after 10 seconds
   setTimeout(() => {
     observer.disconnect();
-    debugLog('🛑 MutationObserver stopped after 5 seconds');
-  }, 5000);
+    debugLog('🛑 MutationObserver stopped after 10 seconds');
+  }, 10000);
 })();
 </script>
