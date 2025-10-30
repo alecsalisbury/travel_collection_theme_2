@@ -215,35 +215,43 @@
     }, 300);
   }
 
-  // Set up modal triggers
-  function setupModalTriggers() {
-    var triggers = document.querySelectorAll('.affirm-modal-trigger');
+  // Handle modal trigger clicks using event delegation
+  function handleModalClick(e) {
+    var target = e.target;
 
-    triggers.forEach(function(trigger) {
-      trigger.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
+    // Find the closest affirm-modal-trigger element
+    while (target && !target.classList.contains('affirm-modal-trigger')) {
+      target = target.parentElement;
+      if (!target || target === document.body) return;
+    }
 
-        var amount = parseInt(trigger.getAttribute('data-amount')) || 0;
+    e.preventDefault();
+    e.stopPropagation();
 
-        if (window.affirm && window.affirm.ui && window.affirm.ui.ready) {
-          window.affirm.ui.ready(function() {
-            // Try different modal methods based on what's available
-            if (typeof window.affirm.ui.openModal === 'function') {
-              window.affirm.ui.openModal({ amount: amount });
-            } else if (window.affirm.ui.prequal && typeof window.affirm.ui.prequal.show === 'function') {
-              window.affirm.ui.prequal.show({ amount: amount });
-            } else if (typeof window.affirm.ui.modal === 'function') {
-              window.affirm.ui.modal({ amount: amount });
-            } else {
-              console.log('[AFFIRM WIDGET] No suitable modal method found');
-            }
-          });
+    var amount = parseInt(target.getAttribute('data-amount')) || 0;
+    console.log('[AFFIRM WIDGET] Modal trigger clicked, amount:', amount);
+
+    if (window.affirm && window.affirm.ui && window.affirm.ui.ready) {
+      window.affirm.ui.ready(function() {
+        console.log('[AFFIRM WIDGET] Affirm.js ready, opening modal');
+        // Try different modal methods based on what's available
+        if (window.affirm.ui.prequal && typeof window.affirm.ui.prequal.show === 'function') {
+          console.log('[AFFIRM WIDGET] Using prequal.show');
+          window.affirm.ui.prequal.show({ amount: amount });
+        } else if (typeof window.affirm.ui.openModal === 'function') {
+          console.log('[AFFIRM WIDGET] Using openModal');
+          window.affirm.ui.openModal({ amount: amount });
+        } else if (typeof window.affirm.ui.modal === 'function') {
+          console.log('[AFFIRM WIDGET] Using modal');
+          window.affirm.ui.modal({ amount: amount });
         } else {
-          console.log('[AFFIRM WIDGET] Affirm.js not loaded or not ready');
+          console.log('[AFFIRM WIDGET] No suitable modal method found');
+          console.log('[AFFIRM WIDGET] Available methods:', Object.keys(window.affirm.ui));
         }
       });
-    });
+    } else {
+      console.log('[AFFIRM WIDGET] Affirm.js not loaded or not ready');
+    }
   }
 
   // Update modal trigger amounts when variant changes
@@ -258,8 +266,8 @@
   if (!hasListeners) {
     hasListeners = true;
 
-    // Set up modal triggers
-    setupModalTriggers();
+    // Set up modal trigger using event delegation (works even after DOM changes)
+    document.body.addEventListener('click', handleModalClick);
 
     // Variant change handler
     var variantHandler = function(e) {
@@ -286,7 +294,6 @@
       }, 1000);
 
       debounceRefresh(lastPrice);
-      setupModalTriggers(); // Re-setup modal triggers after DOM change
     });
   }
 })();
