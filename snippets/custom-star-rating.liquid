@@ -437,12 +437,15 @@
         );
 
         if (yotpoAdded) {
-          // Give Yotpo a moment to fully render
+          // Give Yotpo a moment to fully render, then check for reviews
           setTimeout(function() {
-            updateCustomRating();
-            if (hasLoaded) {
-              observer.disconnect();
+            const data = extractYotpoData();
+            if (data && data.reviewCount > 0) {
+              updateCustomRating();
+            } else {
+              showNoReviews();
             }
+            observer.disconnect();
           }, 100);
           break;
         }
