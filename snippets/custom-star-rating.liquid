@@ -329,11 +329,21 @@
 
     const data = extractYotpoData();
 
-    // If no data and we've tried enough times, hide the placeholder
+    // If no data and we've tried enough times, show "No reviews" state
     if ((!data || data.reviewCount === 0) && attemptsMade >= maxAttempts) {
       const customRating = document.querySelector('.custom-star-rating');
       if (customRating) {
-        customRating.style.display = 'none';
+        const starsContainer = customRating.querySelector('.custom-star-rating__stars');
+        const textContainer = customRating.querySelector('.custom-star-rating__text');
+
+        if (starsContainer && textContainer) {
+          // Show empty stars and "No reviews" text
+          starsContainer.innerHTML = renderStars(0);
+          textContainer.textContent = 'No reviews yet';
+          customRating.classList.add('loaded');
+          customRating.style.cursor = 'default'; // Not clickable
+          customRating.style.opacity = '0.6'; // Slightly dimmed
+        }
       }
       hasLoaded = true;
       return;
