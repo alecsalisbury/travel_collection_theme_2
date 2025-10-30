@@ -13351,9 +13351,12 @@ button[name="add"][disabled] {
 }
 
 /* Fix Globo Mega Menu - Make blue bar extend full width for tab links */
-ul.gm-tab-links > li.gm-item.gm-has-submenu.gm-active > .gm-target {
-  margin-left: -32px !important;
-  margin-right: -32px !important;
+.gm-tabs-left ul.gm-tab-links > li.gm-item.gm-has-submenu.gm-active > .gm-target {
   padding-left: 32px !important;
   padding-right: 32px !important;
+}
+
+.gm-tabs-left ul.gm-tab-links {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
