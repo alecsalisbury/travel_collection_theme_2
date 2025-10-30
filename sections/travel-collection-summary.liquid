@@ -5,22 +5,32 @@
 
 {%- liquid
   assign summary_content = collection.metafields.travel.summary
+  assign has_custom_format = false
 
-  # Convert to plain text for parsing the structure
-  assign summary_text = summary_content | metafield_text
+  # Check if using custom format with markers
+  if summary_content.value != blank
+    assign summary_html = summary_content.value
+    if summary_html contains 'Heading:' and summary_html contains 'Summary:'
+      assign has_custom_format = true
 
-  # Parse summary metafield if it contains "Heading:" and "Summary:" markers
-  if summary_text contains 'Heading:' and summary_text contains 'Summary:'
-    # Extract heading from plain text
-    assign heading_split = summary_text | split: 'Summary:'
-    assign heading_part = heading_split[0] | remove: 'Heading:' | strip
+      # Split on Summary: to separate heading and content
+      assign parts = summary_html | split: 'Summary:'
 
-    # Extract summary text (with entities decoded)
-    assign summary_part = heading_split[1] | strip
-  else
-    assign heading_part = section.settings.default_heading
-    assign summary_part = summary_text
+      # Extract heading (remove "Heading:" prefix and HTML tags)
+      assign heading_raw = parts[0] | strip_html | remove: 'Heading:' | strip
+      assign heading_part = heading_raw
+
+      # Extract summary content (remove HTML tags but keep text)
+      assign summary_raw = parts[1] | strip_html | strip
+      assign summary_part = summary_raw
+    endif
   endif
+
+  # Use defaults if not using custom format
+  unless has_custom_format
+    assign heading_part = section.settings.default_heading
+    assign summary_part = summary_content | metafield_text
+  endunless
 -%}
 
 <style>
@@ -113,7 +123,7 @@
 
     {% if summary_part != blank %}
       <div class="travel-summary__content">
-        <p>{{ summary_part | replace: '&#39;', "'" | replace: '&quot;', '"' | replace: '&amp;', '&' }}</p>
+        <p>{{ summary_part }}</p>
       </div>
     {% elsif section.settings.default_content != blank %}
       <div class="travel-summary__content">
