@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
       mutations.forEach(function (mutation) {
         if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
           // Check if meaningful content was added (not just empty divs)
-          const hasContent = wrapper.querySelector('.yotpo-widget-instance, #infiniteoptions-container, [class*="app-"], [id*="app-"]');
+          const hasContent = wrapper.querySelector('.yotpo-widget-instance, .affirm-as-low-as, #infiniteoptions-container, [class*="app-"], [id*="app-"]');
           if (hasContent) {
             wrapper.classList.remove('loading');
             wrapper.classList.add('loaded');
@@ -60,14 +60,14 @@ document.addEventListener('DOMContentLoaded', function () {
       subtree: true
     });
 
-    // Fallback: remove loading after 3 seconds regardless
+    // Fallback: remove loading after 5 seconds regardless
     setTimeout(() => {
       if (wrapper.classList.contains('loading')) {
         wrapper.classList.remove('loading');
         wrapper.classList.add('loaded');
         observer.disconnect();
       }
-    }, 3000);
+    }, 5000);
   });
 });
 
