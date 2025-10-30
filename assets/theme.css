@@ -13326,24 +13326,39 @@ section>nav.nav-bar>div.nav-bar__inner .nav-bar__linklist.gm-menu .gm-links>li:n
   align-items: center;
   gap: 8px;
   margin-bottom: 5px;
+  height: 28px;
+  line-height: 28px;
+  transition: opacity 0.3s ease-out;
+  opacity: 1;
 }
 
 .the-app-wrapper.loaded .app-skeleton {
-  display: none;
+  opacity: 0;
+  pointer-events: none;
 }
 
-/* Ensure Yotpo widget and shopify blocks are always visible */
+/* Ensure Yotpo widget and shopify blocks are visible */
 .the-app-wrapper .shopify-block,
 .the-app-wrapper .yotpo-widget-instance,
 .the-app-wrapper .shopify-app-block {
   display: block !important;
   visibility: visible !important;
-  opacity: 1 !important;
+}
+
+/* Smooth transition for Yotpo content */
+.the-app-wrapper .yotpo-widget-instance {
+  transition: opacity 0.3s ease-in;
+  opacity: 0;
+}
+
+.the-app-wrapper.loaded .yotpo-widget-instance {
+  opacity: 1;
 }
 
 /* Position skeleton on top while loading */
 .the-app-wrapper.loading {
   position: relative;
+  min-height: 28px;
 }
 
 .the-app-wrapper.loading .app-skeleton {
