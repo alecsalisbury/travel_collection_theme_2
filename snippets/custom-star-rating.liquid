@@ -165,23 +165,55 @@
 
     // Extract rating from aria-label or data attributes
     let rating = 0;
-    const ratingElement = document.querySelector('.yotpo-bottomline [aria-label*="stars"], .yotpo-bottomline .sr-only, .yotpo-icon-star[class*="yotpo-icon-"]');
 
-    if (ratingElement) {
-      const ariaLabel = ratingElement.getAttribute('aria-label') || '';
+    // Try to find rating in aria-label
+    const ariaElements = document.querySelectorAll('[aria-label*="star"]');
+    for (let el of ariaElements) {
+      const ariaLabel = el.getAttribute('aria-label') || '';
       const ratingMatch = ariaLabel.match(/([\d.]+)\s+star/i);
       if (ratingMatch) {
         rating = parseFloat(ratingMatch[1]);
         debugLog('⭐ Rating from aria-label: ' + rating);
+        break;
+      }
+    }
+
+    // Try to find rating in the bottom-line score text
+    if (!rating) {
+      const scoreElements = document.querySelectorAll('.yotpo-bottom-line-score, .yotpo-sr-bottom-line-score, [class*="score"]');
+      for (let el of scoreElements) {
+        const scoreText = (el.textContent || '').trim();
+        const scoreMatch = scoreText.match(/^([\d.]+)$/);
+        if (scoreMatch) {
+          rating = parseFloat(scoreMatch[1]);
+          debugLog('⭐ Rating from score text: ' + rating);
+          break;
+        }
       }
     }
 
     // Fallback: count filled stars
     if (!rating) {
-      const filledStars = document.querySelectorAll('.yotpo-bottomline .yotpo-icon-star.rating-star:not(.yotpo-icon-empty-star)');
-      const halfStars = document.querySelectorAll('.yotpo-bottomline .yotpo-icon-half-star');
-      rating = filledStars.length + (halfStars.length * 0.5);
-      debugLog('⭐ Rating from counting stars: ' + rating + ' (filled: ' + filledStars.length + ', half: ' + halfStars.length + ')');
+      const allStarSelectors = [
+        '.yotpo-icon-star:not(.yotpo-icon-empty-star)',
+        '[class*="star"][class*="filled"]',
+        '.yotpo-star.filled'
+      ];
+
+      for (let selector of allStarSelectors) {
+        const filledStars = document.querySelectorAll(selector);
+        if (filledStars.length > 0 && filledStars.length <= 5) {
+          rating = filledStars.length;
+          debugLog('⭐ Rating from counting stars (' + selector + '): ' + rating);
+          break;
+        }
+      }
+    }
+
+    // Final fallback: default to 5.0 if we have reviews but no rating
+    if (!rating && reviewCount > 0) {
+      rating = 5.0;
+      debugLog('⭐ Using default rating of 5.0 (could not extract from page)');
     }
 
     debugLog('✅ Final extracted data: rating=' + rating + ', count=' + reviewCount);
