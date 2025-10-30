@@ -136,7 +136,15 @@
   </defs>
 </svg>
 
-<div class="custom-star-rating" onclick="document.querySelector('.yotpo-main-widget, .yotpo-reviews-carousel, [id*=yotpo]')?.scrollIntoView({ behavior: 'smooth', block: 'start' })">
+<div class="custom-star-rating" onclick="(function() {
+  const reviewsSection = document.querySelector('.yotpo-main-widget, [id*=&quot;yotpo&quot;]:not(.yotpo-reviews-star-ratings-widget), .yotpo-reviews-carousel, #shopify-section-reviews');
+  if (reviewsSection) {
+    const offset = 100;
+    const elementPosition = reviewsSection.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.pageYOffset - offset;
+    window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+  }
+})()" style="cursor: pointer;">
   <div class="custom-star-rating__placeholder">
     <div class="custom-star-rating__skeleton-stars">
       <svg class="custom-star-rating__skeleton-star" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
