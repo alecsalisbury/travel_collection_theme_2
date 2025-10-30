@@ -315,15 +315,10 @@
       "settings": {
         "include_margins": true
       }
-    },
-    "judgeme_reviews": {
-      "type": "custom-liquid",
-      "settings": {}
     }
   },
   "order": [
     "main",
-    "judgeme_reviews",
     "custom_liquid_gWxtyQ",
     "custom_liquid_PVqXJF",
     "custom_liquid_Mjrh93",

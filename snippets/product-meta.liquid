@@ -118,8 +118,6 @@
   {%- endif -%} {% endcomment %}
 
   {%- if block.settings.show_reviews_badge -%}
-    {%- comment -%}Yotpo rating - hidden{%- endcomment -%}
-    {%- comment -%}
     <a
       href="{% if template.name != 'product' or template == 'product.quick-view' %}{{ product.url }}{% endif %}#product-reviews"
       class="product-meta__reviews-badge link"
@@ -127,7 +125,6 @@
     >
       {%- render 'product-rating', product: product -%}
     </a>
-    {%- endcomment -%}
   {%- endif -%}
 
   {%- if block.settings.show_share_buttons -%}
