@@ -84,41 +84,19 @@
     /* Keep visible but show skeleton on top */
     position: relative;
   }
-
-  .rating-wrapper.loaded .rating {
-    opacity: 1;
-  }
 </style>
 
 <div class="rating-wrapper">
   <!-- Skeleton placeholder -->
   <div class="rating-skeleton">
     <div class="rating-skeleton__stars">
-      <span class="rating-skeleton__star">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-        </svg>
-      </span>
-      <span class="rating-skeleton__star">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-        </svg>
-      </span>
-      <span class="rating-skeleton__star">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-        </svg>
-      </span>
-      <span class="rating-skeleton__star">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-        </svg>
-      </span>
-      <span class="rating-skeleton__star">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-        </svg>
-      </span>
+      {%- for i in (1..5) -%}
+        <span class="rating-skeleton__star">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+        </span>
+      {%- endfor -%}
     </div>
     <div class="rating-skeleton__text"></div>
   </div>
@@ -172,13 +150,8 @@
 
 <script>
 (function() {
-  console.log('[RATING SKELETON] Initializing...');
-
   const wrapper = document.querySelector('.rating-wrapper');
-  if (!wrapper) {
-    console.log('[RATING SKELETON] No wrapper found');
-    return;
-  }
+  if (!wrapper) return;
 
   // Check if rating content already has data
   const ratingElement = wrapper.querySelector('.rating');
@@ -187,45 +160,14 @@
     const hasCaption = ratingElement.querySelector('.rating__caption');
 
     if (hasStars || (hasCaption && hasCaption.textContent.trim())) {
-      console.log('[RATING SKELETON] Rating already loaded, showing immediately');
       wrapper.classList.add('loaded');
       return;
     }
   }
 
-  // Watch for when Yotpo metafields populate the rating
-  const observer = new MutationObserver(function(mutations) {
-    console.log('[RATING SKELETON] Mutation detected');
-
-    const ratingElement = wrapper.querySelector('.rating');
-    if (ratingElement) {
-      const hasStars = ratingElement.querySelector('.rating__star--full, .rating__star--half');
-      const hasCaption = ratingElement.querySelector('.rating__caption');
-
-      if (hasStars || (hasCaption && hasCaption.textContent.trim() && !hasCaption.textContent.includes('0'))) {
-        console.log('[RATING SKELETON] Rating loaded!');
-        wrapper.classList.add('loaded');
-        observer.disconnect();
-      }
-    }
-  });
-
-  // Observe the rating element for changes
-  if (ratingElement) {
-    observer.observe(ratingElement, {
-      childList: true,
-      subtree: true,
-      characterData: true
-    });
-  }
-
-  // Fallback: mark as loaded after 3 seconds
+  // Fallback: mark as loaded after 2 seconds
   setTimeout(function() {
-    console.log('[RATING SKELETON] Timeout reached, showing rating');
     wrapper.classList.add('loaded');
-    observer.disconnect();
-  }, 3000);
-
-  console.log('[RATING SKELETON] Watching for rating to load...');
+  }, 2000);
 })();
 </script>

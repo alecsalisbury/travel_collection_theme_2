@@ -128,20 +128,20 @@
 
         console.log('[AFFIRM] Modal trigger clicked');
 
-        // Wait for Affirm.js to load
-        if (window.affirm && window.affirm.ui && typeof window.affirm.ui.ready === 'function') {
+        // Find the native Affirm promo element to trigger its modal
+        const affirmPromoElement = document.querySelector('.affirm-as-low-as');
+
+        if (affirmPromoElement && window.affirm && window.affirm.ui) {
+          // Wait for Affirm to be ready
           window.affirm.ui.ready(function() {
-            console.log('[AFFIRM] Affirm.ui is ready, opening modal');
-            if (typeof window.affirm.ui.error === 'object' && window.affirm.ui.error.modal) {
-              window.affirm.ui.error.modal();
-            } else {
-              // Fallback: open Affirm info page
-              window.open('https://www.affirm.com/how-it-works', '_blank');
-            }
+            console.log('[AFFIRM] Affirm.ui is ready, triggering modal via promo element');
+
+            // Programmatically click the Affirm promo element to open the modal
+            affirmPromoElement.click();
           });
         } else {
-          console.log('[AFFIRM] Affirm not loaded, opening fallback URL');
-          window.open('https://www.affirm.com/how-it-works', '_blank');
+          console.log('[AFFIRM] Affirm promo element or Affirm.js not found, opening fallback URL');
+          window.open('https://www.affirm.com/how-it-works', '_blank', 'noopener,noreferrer');
         }
       });
     });

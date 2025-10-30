@@ -13297,10 +13297,6 @@ section>nav.nav-bar>div.nav-bar__inner .nav-bar__linklist.gm-menu .gm-links>li:n
   margin-bottom: 12px;
 }
 
-/*.the-app-wrapper:has(#infiniteoptions-container:not(:empty)) {
-  height: 268px;
-}*/
-
 /* App wrapper skeleton loader */
 .the-app-wrapper {
   position: relative;
@@ -13522,12 +13518,6 @@ button[name="add"][disabled] {
 .gm-tabs-left ul.gm-tab-links > li.gm-item.gm-has-submenu > .gm-target > .gm-icon {
   padding-left: 8px !important;
 }
-
-/* DISABLED - Now showing Yotpo star rating with skeleton loader */
-/* .product-info__block-item[data-block-id*="yotpo_product_reviews_star_rating"],
-#yotpo-reviews-star-ratings-widget {
-  display: none !important;
-} */
 
 /* Reduce spacing for Yotpo app block */
 .product-info__block-item--@app:has(.yotpo-widget-instance) {
