@@ -13304,12 +13304,7 @@ section>nav.nav-bar>div.nav-bar__inner .nav-bar__linklist.gm-menu .gm-links>li:n
 
 /* App wrapper skeleton loader */
 .the-app-wrapper {
-  min-height: 30px;
   position: relative;
-}
-
-.the-app-wrapper.loaded {
-  min-height: 0;
 }
 
 /* Hide generic skeleton, use custom star skeleton instead */
