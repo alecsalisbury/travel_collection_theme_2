@@ -9,6 +9,12 @@
 {%- assign installment = price | divided_by: 4 -%}
 
 <style>
+  /* Hide the slow-loading Affirm app block */
+  .product-info__block-item--shopify-app-block .the-app-wrapper:has([class*="affirm"]),
+  .product-info__block-item--shopify-app-block:has([class*="affirm"]) {
+    display: none !important;
+  }
+
   .custom-affirm-message {
     display: flex;
     align-items: center;
