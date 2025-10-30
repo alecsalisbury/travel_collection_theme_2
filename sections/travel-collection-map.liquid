@@ -44,11 +44,21 @@
 
   /* Custom map tile styling with brand colors */
   .leaflet-tile-pane {
-    filter: hue-rotate(10deg) saturate(0.7) brightness(1.05);
+    /* Tint the map with a subtle blue to match brand colors */
+    filter: saturate(0.9) brightness(1.02) contrast(0.95);
   }
 
-  .leaflet-tile {
-    filter: sepia(0.15) hue-rotate(180deg) saturate(1.2);
+  /* Add a subtle blue overlay to water areas */
+  #travel-collection-map::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(62, 144, 197, 0.08) 0%, rgba(62, 144, 197, 0.03) 100%);
+    pointer-events: none;
+    z-index: 400;
   }
 
   .travel-map__overlay {
