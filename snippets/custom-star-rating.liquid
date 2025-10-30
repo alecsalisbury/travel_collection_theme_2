@@ -409,6 +409,8 @@
   let attemptsMade = 0;
   const maxAttempts = 15; // Total attempts before giving up (within 5 seconds)
 
+  debugLog('🚀 Review loading script initialized');
+
   function updateCustomRating(source) {
     if (hasLoaded) return;
 
@@ -457,6 +459,7 @@
       textContainer.textContent = `${data.rating.toFixed(1)} (${data.reviewCount} ${data.reviewCount === 1 ? 'review' : 'reviews'})`;
       customRating.classList.add('loaded');
       hasLoaded = true;
+      debugLog('✅ Reviews displayed successfully on page!', true);
 
       // Add click handler to scroll to reviews
       customRating.addEventListener('click', function() {
