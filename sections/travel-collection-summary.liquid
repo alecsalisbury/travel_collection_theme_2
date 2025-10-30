@@ -60,12 +60,13 @@
   # Use defaults if not using custom format
   unless has_custom_format
     assign heading_part = section.settings.default_heading
-    assign summary_part = summary_content | metafield_text
+    # Store raw metafield for proper rendering
+    assign use_metafield_tag = true
   endunless
 
   # Determine if section should be shown
   assign show_section = false
-  if summary_part != blank or section.settings.default_content != blank
+  if summary_part != blank or section.settings.default_content != blank or summary_content.value != blank
     assign show_section = true
   endif
 -%}
@@ -169,19 +170,15 @@
       </h2>
     </div>
 
-    {% if summary_content.value != blank %}
-      <div class="travel-summary__content">
-        {% if has_custom_format and summary_part != blank %}
-          <p>{{ summary_part }}</p>
-        {% else %}
-          {{ summary_content | metafield_tag }}
-        {% endif %}
-      </div>
-    {% elsif section.settings.default_content != blank %}
-      <div class="travel-summary__content">
+    <div class="travel-summary__content">
+      {% if has_custom_format and summary_part != blank %}
+        <p>{{ summary_part }}</p>
+      {% elsif use_metafield_tag and summary_content.value != blank %}
+        {{ summary_content | metafield_tag }}
+      {% elsif section.settings.default_content != blank %}
         {{ section.settings.default_content }}
-      </div>
-    {% endif %}
+      {% endif %}
+    </div>
 
     {% if section.settings.show_callout %}
       <div class="travel-summary__callout">
