@@ -65,57 +65,16 @@
     color: #3939c9;
   }
 
-  .custom-affirm-message__skeleton {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    opacity: 1;
-    transition: opacity 0.3s ease;
-  }
-
-  .custom-affirm-message__skeleton.hidden {
-    display: none;
-  }
-
-  .skeleton-price-text {
-    background: linear-gradient(90deg, #f0f0f0 0%, #e0e0e0 50%, #f0f0f0 100%);
-    background-size: 200% 100%;
-    height: 1em;
-    width: 2.5em;
-    border-radius: 3px;
-    display: inline-block;
-    vertical-align: baseline;
-    position: relative;
-    top: 0.1em;
-    animation: skeletonShimmerAnimation 2s ease-in-out infinite;
-  }
-
-  @keyframes skeletonShimmerAnimation {
-    0% {
-      background-position: 200% 0;
-      opacity: 0.6;
-    }
-    50% {
-      opacity: 0.8;
-    }
-    100% {
-      background-position: -200% 0;
-      opacity: 0.6;
-    }
-  }
 </style>
 
 <div class="custom-affirm-message" data-product-price="{{ price }}">
   <div class="custom-affirm-message__main">
     <span class="custom-affirm-message__text">
       4 interest-free payments or as low as
-      <span class="custom-affirm-message__skeleton" id="affirm-skeleton-loader">
-        <span class="skeleton-price-text"></span>
-      </span>
-      <span class="custom-affirm-message__price" style="display: none;"></span><span id="custom-affirm-suffix" style="display: none;">/mo with
+      <span class="custom-affirm-message__price"></span>/mo with
       <span class="custom-affirm-message__logo-text affirm-modal-trigger"
             data-page-type="product"
-            data-amount="{{ price }}" id="custom-affirm-logo-container"></span></span>
+            data-amount="{{ price }}" id="custom-affirm-logo-container"></span>
     </span>
   </div>
   <a class="custom-affirm-message__link affirm-modal-trigger"
@@ -144,23 +103,16 @@
     if (!messageContainer) return;
 
     const priceInCents = parseInt(messageContainer.getAttribute('data-product-price')) || 0;
-    const skeletonLoader = document.querySelector('#affirm-skeleton-loader');
     const priceElement = document.querySelector('.custom-affirm-message__price');
     const logoContainer = document.querySelector('#custom-affirm-logo-container');
-    const suffixElement = document.querySelector('#custom-affirm-suffix');
 
-    if (!priceElement || !logoContainer || !suffixElement || !skeletonLoader) return;
+    if (!priceElement || !logoContainer) return;
 
     // Calculate and display monthly price immediately
     const monthlyPrice = calculateMonthlyPayment(priceInCents);
 
     priceElement.textContent = monthlyPrice;
     logoContainer.innerHTML = affirmLogoSvg;
-
-    // Hide skeleton and show content
-    skeletonLoader.classList.add('hidden');
-    priceElement.style.display = 'inline';
-    suffixElement.style.display = 'inline';
 
     console.log('[AFFIRM] Custom message initialized with price:', monthlyPrice);
   }
