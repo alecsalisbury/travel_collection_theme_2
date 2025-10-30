@@ -155,47 +155,31 @@
 
           window.affirm.ui.ready(function() {
             console.log('[AFFIRM DEBUG] Inside affirm.ui.ready callback');
-            console.log('[AFFIRM DEBUG] Creating temporary promo element');
 
-            // Create a temporary Affirm promo element
-            const tempPromo = document.createElement('span');
-            tempPromo.className = 'affirm-as-low-as';
-            tempPromo.setAttribute('data-page-type', 'product');
-            tempPromo.setAttribute('data-amount', amount);
-            tempPromo.style.position = 'absolute';
-            tempPromo.style.left = '-9999px';
-            tempPromo.style.width = '1px';
-            tempPromo.style.height = '1px';
-            tempPromo.style.overflow = 'hidden';
-
-            console.log('[AFFIRM DEBUG] Temp promo element created:', tempPromo);
-            document.body.appendChild(tempPromo);
-            console.log('[AFFIRM DEBUG] Temp promo element appended to body');
-
-            // Refresh Affirm to process the new element
-            console.log('[AFFIRM DEBUG] window.affirm.ui.refresh exists?', !!(window.affirm.ui.refresh));
-            if (window.affirm.ui.refresh) {
-              console.log('[AFFIRM DEBUG] Calling affirm.ui.refresh()');
-              window.affirm.ui.refresh();
-              console.log('[AFFIRM DEBUG] affirm.ui.refresh() called');
+            // Try using openModal method
+            if (typeof window.affirm.ui.openModal === 'function') {
+              console.log('[AFFIRM DEBUG] Calling affirm.ui.openModal()');
+              window.affirm.ui.openModal();
+              console.log('[AFFIRM DEBUG] affirm.ui.openModal() called');
             }
-
-            // Wait a moment for Affirm to process, then click it
-            setTimeout(function() {
-              console.log('[AFFIRM DEBUG] Timeout fired, about to click temp promo');
-              console.log('[AFFIRM DEBUG] Temp promo element:', tempPromo);
-              tempPromo.click();
-              console.log('[AFFIRM DEBUG] Temp promo clicked');
-
-              // Remove after a delay
-              setTimeout(function() {
-                console.log('[AFFIRM DEBUG] Removing temp promo element');
-                if (tempPromo.parentNode) {
-                  document.body.removeChild(tempPromo);
-                  console.log('[AFFIRM DEBUG] Temp promo removed');
-                }
-              }, 1000);
-            }, 100);
+            // Fallback to modal method
+            else if (typeof window.affirm.ui.modal === 'function') {
+              console.log('[AFFIRM DEBUG] Calling affirm.ui.modal()');
+              window.affirm.ui.modal();
+              console.log('[AFFIRM DEBUG] affirm.ui.modal() called');
+            }
+            // Fallback to prequal method
+            else if (typeof window.affirm.ui.prequal === 'function') {
+              console.log('[AFFIRM DEBUG] Calling affirm.ui.prequal()');
+              window.affirm.ui.prequal.show({
+                amount: amount
+              });
+              console.log('[AFFIRM DEBUG] affirm.ui.prequal.show() called');
+            }
+            else {
+              console.log('[AFFIRM DEBUG] No suitable modal method found');
+              console.log('[AFFIRM DEBUG] Available methods:', Object.keys(window.affirm.ui));
+            }
           });
         } else {
           console.log('[AFFIRM DEBUG] Affirm.js not loaded or not ready');
