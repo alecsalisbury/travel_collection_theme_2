@@ -7,6 +7,13 @@
 {%- assign reviews_count = product.metafields.yotpo.reviews_count | default: 0 -%}
 {%- assign reviews_average = product.metafields.yotpo.reviews_average | default: 0 -%}
 
+{%- comment -%}DEBUG: Check metafield values{%- endcomment -%}
+<script>
+  console.log('[RATING DEBUG] Reviews count:', {{ reviews_count | json }});
+  console.log('[RATING DEBUG] Reviews average:', {{ reviews_average | json }});
+  console.log('[RATING DEBUG] Metafield exists:', {% if product.metafields.yotpo.reviews_count %}true{% else %}false{% endif %});
+</script>
+
 {% if reviews_count > 0 %}
 <style>
   .custom-star-rating {
