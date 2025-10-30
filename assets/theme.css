@@ -6974,6 +6974,15 @@ select option {
     opacity: 1;
   }
 
+  .nav-bar__inner {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .nav-bar__linklist {
+    white-space: nowrap;
+  }
+
   .nav-bar:after {
     content: "";
     background: linear-gradient(to right, rgba(var(--secondary-background-rgb), .1), rgba(var(--secondary-background-rgb), .6) 35%, var(--secondary-background));

@@ -67,30 +67,23 @@
   var container = null;
   var skeleton = null;
 
-  console.log('[AFFIRM PROMO] Initializing for section:', SECTION_ID, 'price:', INITIAL_PRICE);
-
-  // Create component with exponential backoff for better performance
+  // Create component with fast retry
   var createRetryCount = 0;
-  var createMaxRetries = 20; // Max 2 seconds (100ms + 150ms + 200ms + ... up to 300ms)
+  var createMaxRetries = 30;
 
   function createPromoComponent(price) {
     if (!window.affirm || !window.affirm.ui || !window.affirm.ui.components) {
       if (createRetryCount >= createMaxRetries) {
-        console.log('[AFFIRM PROMO] Max retries reached, giving up');
         if (skeleton) skeleton.classList.add('hidden');
         return;
       }
 
       createRetryCount++;
-      var delay = Math.min(100 + (createRetryCount * 10), 300); // Exponential backoff up to 300ms
-      console.log('[AFFIRM PROMO] Affirm.js not ready, retry', createRetryCount, 'in', delay, 'ms');
-      setTimeout(function() { createPromoComponent(price); }, delay);
+      setTimeout(function() { createPromoComponent(price); }, 50); // Check every 50ms
       return;
     }
 
     try {
-      console.log('[AFFIRM PROMO] Creating promo component with price:', price);
-
       promoComponent = window.affirm.ui.components.create('promo', {
         amount: price,
         pageType: 'product',
@@ -98,28 +91,18 @@
         learnMoreShow: true
       });
 
-      console.log('[AFFIRM PROMO] Component created successfully');
       createRetryCount = 0; // Reset counter
 
       // Try to render if DOM is already ready
       renderComponent();
     } catch (error) {
-      console.error('[AFFIRM PROMO] Error creating component:', error);
       if (skeleton) skeleton.classList.add('hidden');
     }
   }
 
   // Render component to DOM
   function renderComponent() {
-    if (!promoComponent) {
-      console.log('[AFFIRM PROMO] Component not created yet');
-      return;
-    }
-
-    if (isRendered) {
-      console.log('[AFFIRM PROMO] Component already rendered');
-      return;
-    }
+    if (!promoComponent || isRendered) return;
 
     // Check if container exists before rendering
     var containerId = 'affirm-promo-' + SECTION_ID;
@@ -128,14 +111,9 @@
     container = document.getElementById(containerId);
     skeleton = document.getElementById(skeletonId);
 
-    if (!container) {
-      console.log('[AFFIRM PROMO] Container not ready yet, will retry');
-      return;
-    }
+    if (!container) return;
 
     try {
-      console.log('[AFFIRM PROMO] Rendering component with selector:', '#' + containerId);
-
       // Affirm's render() expects a CSS selector string, not a DOM element
       promoComponent.render('#' + containerId);
       isRendered = true;
@@ -145,13 +123,9 @@
         skeleton.classList.add('hidden');
       }
 
-      console.log('[AFFIRM PROMO] Component rendered successfully');
-
       // Setup click handler for modal
       setupModalHandler();
     } catch (error) {
-      console.error('[AFFIRM PROMO] Error rendering component:', error);
-
       // Hide skeleton on error too
       if (skeleton) {
         skeleton.classList.add('hidden');
@@ -162,14 +136,11 @@
   // Update component with new price
   function updateComponent(newPrice) {
     if (!promoComponent) {
-      console.log('[AFFIRM PROMO] Component not created, creating with new price:', newPrice);
       createPromoComponent(newPrice);
       return;
     }
 
     try {
-      console.log('[AFFIRM PROMO] Updating component with new price:', newPrice);
-
       // Show skeleton during update
       if (skeleton) {
         skeleton.classList.remove('hidden');
@@ -189,14 +160,12 @@
         }
       }, 500);
 
-      console.log('[AFFIRM PROMO] Component updated successfully');
-
       // Update container data attribute
       if (container) {
         container.setAttribute('data-amount', newPrice);
       }
     } catch (error) {
-      console.error('[AFFIRM PROMO] Error updating component:', error);
+      // Silent fail
     }
   }
 
@@ -209,15 +178,11 @@
       e.stopPropagation();
 
       var amount = parseInt(container.getAttribute('data-amount')) || INITIAL_PRICE;
-      console.log('[AFFIRM PROMO] Opening modal for amount:', amount);
 
       if (window.affirm && window.affirm.ui && window.affirm.ui.ready) {
         window.affirm.ui.ready(function() {
           if (window.affirm.ui.prequal && window.affirm.ui.prequal.show) {
-            console.log('[AFFIRM PROMO] Opening prequal modal');
             window.affirm.ui.prequal.show({ amount: amount });
-          } else {
-            console.log('[AFFIRM PROMO] Prequal not available');
           }
         });
       }
@@ -227,16 +192,12 @@
   // Listen for variant changes
   function handleVariantChange(e) {
     if (e.detail && e.detail.variant && e.detail.variant.price) {
-      var newPrice = e.detail.variant.price;
-      console.log('[AFFIRM PROMO] Variant changed to price:', newPrice);
-      updateComponent(newPrice);
+      updateComponent(e.detail.variant.price);
     }
   }
 
   // Re-initialize after DOM changes
   function handleRerender() {
-    console.log('[AFFIRM PROMO] Product rerendered');
-
     // Reset state
     isRendered = false;
     container = null;
