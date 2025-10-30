@@ -57,6 +57,35 @@
   .custom-affirm-message__link:hover {
     color: #3939c9;
   }
+
+  .custom-affirm-message__skeleton {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+  }
+
+  .custom-affirm-message__skeleton.hidden {
+    display: none;
+  }
+
+  .skeleton-price-text {
+    background: var(--border-color, #e0e0e0);
+    height: 16px;
+    width: 60px;
+    border-radius: 3px;
+    animation: skeletonShimmerAnimation 1.5s linear infinite alternate;
+  }
+
+  @keyframes skeletonShimmerAnimation {
+    0% {
+      opacity: 0.45;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
 </style>
 
 <div class="custom-affirm-message" data-product-price="{{ price }}">
