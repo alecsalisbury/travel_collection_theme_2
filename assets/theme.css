@@ -13465,11 +13465,11 @@ button[name="add"][disabled] {
   padding-left: 8px !important;
 }
 
-/* Hide slow-loading Yotpo star rating app block - replaced with custom fast-loading version */
-.product-info__block-item[data-block-id*="yotpo_product_reviews_star_rating"],
+/* DISABLED - Now showing Yotpo star rating with skeleton loader */
+/* .product-info__block-item[data-block-id*="yotpo_product_reviews_star_rating"],
 #yotpo-reviews-star-ratings-widget {
   display: none !important;
-}
+} */
 
 /* Hide slow-loading Affirm app block visually but keep scripts loaded */
 .product-info__block-item[data-block-id*="affirm"],
