@@ -81,20 +81,47 @@
   function openAffirmModal(e) {
     e.preventDefault();
 
-    // Try to trigger Affirm's native modal if it exists
-    if (window.affirm && window.affirm.ui && window.affirm.ui.error && window.affirm.ui.error.modal) {
-      // Affirm modal for promotional messaging
-      if (window.affirm.ui.ready) {
-        window.affirm.ui.ready(function() {
-          affirm.ui.error.modal({
-            message: 'Pay over time with Affirm',
-            learn_more_url: 'https://www.affirm.com/how-it-works'
-          });
+    // Get current product price
+    const priceElement = document.querySelector('.custom-affirm-message');
+    const price = priceElement ? priceElement.getAttribute('data-product-price') : 0;
+
+    // Try to trigger Affirm's native modal if loaded
+    if (window.affirm && window.affirm.ui) {
+      // Method 1: Try Affirm's promo modal (most common)
+      if (typeof window.affirm.ui.error === 'object' && typeof window.affirm.ui.error.modal === 'function') {
+        window.affirm.ui.error.modal({
+          title: 'Flexible Financing',
+          message: 'Pay over time with Affirm',
+          type: 'promo'
         });
       }
+      // Method 2: Try opening Affirm's info modal with pricing
+      else if (typeof window.affirm.ui.ready === 'function') {
+        window.affirm.ui.ready(function() {
+          // Trigger Affirm modal programmatically
+          if (window.affirm.ui.modal) {
+            window.affirm.ui.modal.open({
+              amount: price,
+              type: 'promo'
+            });
+          } else {
+            // Fallback to website
+            window.open('https://www.affirm.com/how-it-works', '_blank', 'noopener,noreferrer');
+          }
+        });
+      } else {
+        // Affirm is loaded but modal not available - open website
+        window.open('https://www.affirm.com/how-it-works', '_blank', 'noopener,noreferrer');
+      }
     } else {
-      // Fallback: open Affirm how-it-works page
-      window.open('https://www.affirm.com/how-it-works', '_blank', 'noopener,noreferrer');
+      // Affirm not loaded yet - wait a bit and retry, or open website
+      setTimeout(function() {
+        if (window.affirm && window.affirm.ui) {
+          openAffirmModal(e);
+        } else {
+          window.open('https://www.affirm.com/how-it-works', '_blank', 'noopener,noreferrer');
+        }
+      }, 500);
     }
   }
 
