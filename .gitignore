@@ -30,6 +30,3 @@ wheels/
 # OS
 .DS_Store
 Thumbs.db
-
-# Shopify
-config/settings_data.json
