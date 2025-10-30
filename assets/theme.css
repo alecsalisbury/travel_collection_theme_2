@@ -13346,12 +13346,54 @@ section>nav.nav-bar>div.nav-bar__inner .nav-bar__linklist.gm-menu .gm-links>li:n
 
 /* Smooth transition for Yotpo content */
 .the-app-wrapper .yotpo-widget-instance {
-  transition: opacity 0.3s ease-in;
   opacity: 0;
 }
 
 .the-app-wrapper.loaded .yotpo-widget-instance {
   opacity: 1;
+}
+
+/* Left-to-right fade-in animation for Yotpo stars */
+.the-app-wrapper.loaded .yotpo-widget-instance .star-container {
+  animation: star-fade-in 0.4s ease-out forwards;
+  opacity: 0;
+}
+
+.the-app-wrapper.loaded .yotpo-widget-instance .star-container:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.the-app-wrapper.loaded .yotpo-widget-instance .star-container:nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+.the-app-wrapper.loaded .yotpo-widget-instance .star-container:nth-child(3) {
+  animation-delay: 0.16s;
+}
+
+.the-app-wrapper.loaded .yotpo-widget-instance .star-container:nth-child(4) {
+  animation-delay: 0.24s;
+}
+
+.the-app-wrapper.loaded .yotpo-widget-instance .star-container:nth-child(5) {
+  animation-delay: 0.32s;
+}
+
+.the-app-wrapper.loaded .yotpo-widget-instance .yotpo-sr-bottom-line-text {
+  animation: star-fade-in 0.4s ease-out forwards;
+  animation-delay: 0.4s;
+  opacity: 0;
+}
+
+@keyframes star-fade-in {
+  from {
+    opacity: 0;
+    transform: translateX(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 /* Position skeleton on top while loading */
