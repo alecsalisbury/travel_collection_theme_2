@@ -357,8 +357,10 @@
       customRating.addEventListener('click', function() {
         // Find the reviews section (not the star rating widget)
         const reviewsSelectors = [
+          '#yotpo-app',
           '.yotpo-main-widget',
           '#yotpo-reviews-widget',
+          '[id*="yotpo-reviews"]',
           '[class*="yotpo"][class*="widget"]:not([class*="star-ratings"])',
           '.yotpo-reviews-carousel'
         ];
@@ -366,20 +368,23 @@
         let reviewsSection = null;
         for (let selector of reviewsSelectors) {
           const element = document.querySelector(selector);
-          if (element && element.offsetHeight > 100) { // Make sure it's visible and substantial
+          if (element && element.offsetHeight > 50) { // Make sure it exists and is visible
             reviewsSection = element;
             break;
           }
         }
 
         if (reviewsSection) {
-          const offset = 100;
+          const offset = 80;
           const elementPosition = reviewsSection.getBoundingClientRect().top;
           const offsetPosition = elementPosition + window.scrollY - offset;
+
           window.scrollTo({
             top: offsetPosition,
             behavior: 'smooth'
           });
+        } else {
+          console.log('Reviews section not found');
         }
       });
 
