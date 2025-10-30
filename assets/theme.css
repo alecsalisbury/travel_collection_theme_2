@@ -13376,7 +13376,8 @@ button[name="add"][disabled] {
 }
 
 /* Hide slow-loading Yotpo star rating app block - replaced with custom fast-loading version */
-.product-info__block-item[data-block-id*="yotpo_product_reviews_star_rating"] {
+.product-info__block-item[data-block-id*="yotpo_product_reviews_star_rating"],
+#yotpo-reviews-star-ratings-widget {
   display: none !important;
 }
 
