@@ -13289,7 +13289,8 @@ section>nav.nav-bar>div.nav-bar__inner .nav-bar__linklist.gm-menu .gm-links>li:n
 }
 
 .the-app-wrapper:has(.yotpo-widget-instance) {
-  height: 30px;
+  min-height: 30px;
+  height: auto;
 }
 
 .the-app-wrapper.loaded:has(span.affirm-as-low-as) {
