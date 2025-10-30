@@ -245,15 +245,23 @@
 
 <div class="travel-filters" id="travel-filters">
 
-  <h2 class="travel-filters__main-title">Filters</h2>
+  <!-- Mobile Toggle Button -->
+  <button class="travel-filters__mobile-toggle" id="mobile-filter-toggle">
+    <span>Filters</span>
+    <span class="travel-filters__mobile-toggle-icon">▼</span>
+  </button>
 
-  <!-- Active Filter Count -->
-  <div id="filter-count-container" style="display: none; margin-bottom: 16px;">
-    <span style="font-size: 13px; color: #666;">Active Filters:</span>
-    <span class="travel-filters__count" id="active-filter-count">0</span>
-  </div>
+  <!-- Filter Content Wrapper -->
+  <div class="travel-filters__content-wrapper" id="filter-content-wrapper">
+    <h2 class="travel-filters__main-title">Filters</h2>
 
-  <!-- Price Range Filter -->
+    <!-- Active Filter Count -->
+    <div id="filter-count-container" style="display: none; margin-bottom: 16px;">
+      <span style="font-size: 13px; color: #666;">Active Filters:</span>
+      <span class="travel-filters__count" id="active-filter-count">0</span>
+    </div>
+
+    <!-- Price Range Filter -->
   <div class="travel-filters__group">
     <div class="travel-filters__header" data-filter-toggle="price">
       <h3 class="travel-filters__title">Price Range</h3>
