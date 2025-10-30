@@ -15,12 +15,6 @@
     /* Reserve space to prevent layout shift - final size is 379x42 */
     min-height: 42px;
     max-width: 379px;
-    opacity: 0;
-    transition: opacity 0.4s ease-in;
-  }
-
-  .affirm-promo-container.loaded {
-    opacity: 1;
   }
 
   .affirm-promo-wrapper {
@@ -146,40 +140,12 @@
       promoComponent.render('#' + containerId);
       isRendered = true;
 
-      // Wait for Affirm to actually render content, then fade in
-      var checkInterval = setInterval(function() {
-        // Check if Affirm has added content to the container
-        if (container && container.innerHTML.trim().length > 0) {
-          clearInterval(checkInterval);
+      // Hide skeleton immediately
+      if (skeleton) {
+        skeleton.classList.add('hidden');
+      }
 
-          // Hide skeleton once rendered
-          if (skeleton) {
-            skeleton.classList.add('hidden');
-          }
-
-          // Fade in the container with a small delay for smooth transition
-          var promoContainer = container.closest('.affirm-promo-container');
-          if (promoContainer) {
-            requestAnimationFrame(function() {
-              promoContainer.classList.add('loaded');
-            });
-          }
-
-          console.log('[AFFIRM PROMO] Component rendered successfully');
-        }
-      }, 50);
-
-      // Fallback timeout after 3 seconds
-      setTimeout(function() {
-        clearInterval(checkInterval);
-        if (skeleton) {
-          skeleton.classList.add('hidden');
-        }
-        var promoContainer = container.closest('.affirm-promo-container');
-        if (promoContainer && !promoContainer.classList.contains('loaded')) {
-          promoContainer.classList.add('loaded');
-        }
-      }, 3000);
+      console.log('[AFFIRM PROMO] Component rendered successfully');
 
       // Setup click handler for modal
       setupModalHandler();
