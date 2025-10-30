@@ -23,29 +23,34 @@
   .custom-affirm-message {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     margin: 12px 0;
     font-size: 14px;
     line-height: 1.5;
+    cursor: pointer;
+  }
+
+  .custom-affirm-message:hover .custom-affirm-message__logo-text {
+    text-decoration: underline;
   }
 
   .custom-affirm-message__text {
     color: #333;
   }
 
-  .custom-affirm-message__link {
-    color: #0fa0ea;
-    text-decoration: underline;
-    cursor: pointer;
-    font-weight: 500;
-  }
-
-  .custom-affirm-message__link:hover {
-    color: #0c7db8;
-  }
-
   .custom-affirm-message__price {
     font-weight: 600;
+  }
+
+  .custom-affirm-message__logo {
+    display: inline-block;
+    margin-left: 2px;
+  }
+
+  .custom-affirm-message__logo-text {
+    color: #0FA0EA;
+    font-weight: 700;
+    text-decoration: none;
   }
 </style>
 
