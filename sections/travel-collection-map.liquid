@@ -11,7 +11,7 @@
     assign coordinates = product.metafields.trip.lodge_coordinates
     if coordinates != blank and coordinates contains ','
       if mapped_products != ''
-        assign mapped_products = mapped_products | append: '|'
+        assign mapped_products = mapped_products | append: '###'
       endif
 
       assign image_url = ''
@@ -159,7 +159,7 @@
     console.log('Raw products data:', productsData);
 
     // Parse product data
-    const products = productsData.split('|').map(function(item) {
+    const products = productsData.split('###').map(function(item) {
       console.log('Processing item:', item);
       const parts = item.split('|||');
       console.log('Parts:', parts);
