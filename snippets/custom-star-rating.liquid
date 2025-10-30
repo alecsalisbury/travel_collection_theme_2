@@ -320,7 +320,7 @@
 
   let hasLoaded = false;
   let attemptsMade = 0;
-  const maxAttempts = 8; // Total attempts before giving up
+  const maxAttempts = 5; // Total attempts before giving up (within 2 seconds)
 
   function updateCustomRating() {
     if (hasLoaded) return;
