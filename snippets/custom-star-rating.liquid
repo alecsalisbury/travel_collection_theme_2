@@ -107,13 +107,28 @@
       const allYotpo = document.querySelectorAll('[class*="yotpo"]');
       debugLog('Total elements with "yotpo" in class: ' + allYotpo.length);
 
+      // Log first 10 elements to see what we're dealing with
+      let loggedCount = 0;
       for (let element of allYotpo) {
-        const text = element.textContent || '';
-        if (text.toLowerCase().includes('review') && text.toLowerCase().includes('based')) {
+        const text = (element.textContent || '').trim();
+
+        // Show what we're finding
+        if (loggedCount < 10 && text.length > 0 && text.length < 100) {
+          debugLog('  Element "' + element.className.substring(0, 30) + '...": "' + text.substring(0, 50) + '"');
+          loggedCount++;
+        }
+
+        // Look for review text more loosely
+        if (text.toLowerCase().includes('review')) {
           yotpoText = element;
           debugLog('✅ Found review text in element with classes: ' + element.className);
+          debugLog('📝 Text content: "' + text + '"');
           break;
         }
+      }
+
+      if (!yotpoText) {
+        debugLog('❌ No element found containing "review" in text');
       }
     }
 
