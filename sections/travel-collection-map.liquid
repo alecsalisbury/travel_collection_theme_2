@@ -19,7 +19,7 @@
         assign image_url = product.featured_image | image_url: width: 400
       endif
 
-      assign mapped_products = mapped_products | append: product.id | append: ':' | append: coordinates | append: ':' | append: product.title | append: ':' | append: product.url | append: ':' | append: image_url
+      assign mapped_products = mapped_products | append: product.id | append: '|||' | append: coordinates | append: '|||' | append: product.title | append: '|||' | append: product.url | append: '|||' | append: image_url
     endif
   endfor
 -%}
@@ -159,33 +159,16 @@
 
     // Parse product data
     const products = productsData.split('|').map(function(item) {
-      const parts = item.split(':');
+      const parts = item.split('|||');
       const coords = parts[1].split(',');
-
-      // Reconstruct URLs by finding where the second protocol starts
-      let urlParts = [];
-      let imageParts = [];
-      let foundSecondProtocol = false;
-
-      for (let i = 3; i < parts.length; i++) {
-        if (i > 3 && (parts[i] === 'https' || parts[i] === 'http')) {
-          foundSecondProtocol = true;
-        }
-
-        if (foundSecondProtocol) {
-          imageParts.push(parts[i]);
-        } else {
-          urlParts.push(parts[i]);
-        }
-      }
 
       return {
         id: parts[0],
         lat: parseFloat(coords[0].trim()),
         lng: parseFloat(coords[1].trim()),
         title: parts[2],
-        url: urlParts.join(':'),
-        image: imageParts.join(':')
+        url: parts[3],
+        image: parts[4]
       };
     }).filter(function(product) {
       return !isNaN(product.lat) && !isNaN(product.lng);
