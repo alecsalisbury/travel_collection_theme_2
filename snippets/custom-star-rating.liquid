@@ -11,8 +11,15 @@
 
 <!-- VISIBLE DEBUG (remove after testing) -->
 <div style="padding: 10px; background: #fff3cd; border: 1px solid #ffc107; margin: 10px 0;">
-  <strong>DEBUG:</strong> Reviews count: {{ reviews_count }} | Average: {{ reviews_average }}
-  <br>Has yotpo namespace: {{ product.metafields.yotpo }}
+  <strong>DEBUG - Yotpo:</strong> Reviews count: {{ reviews_count }} | Average: {{ reviews_average }}
+  <br>Yotpo namespace: {{ product.metafields.yotpo }}
+  <br><br>
+  <strong>DEBUG - Shopify Native Reviews:</strong>
+  <br>Rating value: {{ product.metafields.reviews.rating.value }}
+  <br>Rating count: {{ product.metafields.reviews.rating_count.value }}
+  <br><br>
+  <strong>DEBUG - All metafield namespaces:</strong>
+  <br>{% for metafield in product.metafields %}{{ metafield[0] }}, {% endfor %}
 </div>
 
 {% if reviews_count > 0 %}
